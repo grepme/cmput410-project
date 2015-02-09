@@ -97,7 +97,7 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
   config.vm.provision "chef_solo" do |chef|
 	chef.add_recipe "apache"
 	chef.add_recipe "build-essential"
-    chef.add_recipe "mysqld"
+	chef.add_recipe "mysqld"
 	chef.add_recipe "python"
 	chef.add_recipe "django"
   end
