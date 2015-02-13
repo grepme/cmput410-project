@@ -6,8 +6,8 @@ All definitions are testMATCH as well. nosetests will pick these up and run them
 I'd suggest reading up on more complex examples here:
 http://ivory.idyll.org/articles/nose-intro.html
 
-
-
+More examples can be found here:
+https://nose.readthedocs.org/en/latest/writing_tests.html
 """
 
 
