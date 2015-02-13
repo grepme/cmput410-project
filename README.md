@@ -37,7 +37,7 @@ Basic Auth should not be considered a secure way of storing user's passwords, bu
 You can add additional to the api_password_file to access /api with:
 
 ```bash
-htdbm -bm -TSDBM api_password_file /vagrant/api_password_file <username> <password>
+htdbm -bm -TSDBM /vagrant/api_password_file <username> <password>
 ```
 
 For debug purposes, the default username is set to "node" with the password "api" for anything on the URI /api.
