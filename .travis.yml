@@ -4,11 +4,7 @@ python:
 # command to install dependencies, e.g. pip install -r requirements.txt --use-mirrors
 install:
   - "pip install django"
-
-# Environment variables
-env:
-  - CHEF_VERSION=0.10.4
-
+  - "curl -L https://www.opscode.com/chef/install.sh | bash"
 # command to run before the tests, setup chef.
 before_script: chef-solo -j chef_installation.json
 # command to run tests, e.g. python setup.py test
