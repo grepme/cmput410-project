@@ -31,6 +31,17 @@ The provisioning can take awhile to install, but once done, project is viewable 
 
 All changes on your local machine update in real-time on the virtual machine!
 
+# HTTP Base Auth
+
+Basic Auth should not be considered a secure way of storing user's passwords, but it is apart of this spec.
+You can add additional to the api_password_file to access /api with:
+
+```bash
+htdbm -bm -TSDBM api_password_file /vagrant/api_password_file <username> <password>
+```
+
+For debug purposes, the default username is set to "node" with the password "api" for anything on the URI /api.
+
 # Important Tips
 
 * I left on sqlite3, we may migrate to MySQL later. It is installed with root password of 'SomethingSpecial'.
