@@ -6,6 +6,6 @@ install:
   - "pip install django"
   - "curl -L https://www.opscode.com/chef/install.sh | sudo bash"
 # command to run before the tests, setup chef.
-before_script: sudo chef-solo -j chef_installation.json -c chef_config.rb
+before_script: sudo -E chef-solo -j chef_installation.json -c chef_config.rb
 # command to run tests, e.g. python setup.py test
 script:  nosetests tests
