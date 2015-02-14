@@ -1,5 +1,7 @@
 # CMPUT 410 Project
 
+[![Build Status](https://travis-ci.org/grepme/cmput410-project.svg?branch=master)](https://travis-ci.org/grepme/cmput410-project)
+
 A base example of a social network.
 
 # Do I Need Vagrant?
