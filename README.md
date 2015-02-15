@@ -43,6 +43,7 @@ htdbm -bm -TSDBM /vagrant/api_password_file <username> <password>
 ```
 
 For debug purposes, the default username is set to "node" with the password "api" for anything on the URI /api.
+ie. http://localhost:8080/api
 
 # Important Tips
 
