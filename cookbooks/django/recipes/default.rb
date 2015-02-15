@@ -12,10 +12,23 @@ file "/etc/apache2/sites-available/project" do
                  Allow from all
             </Files>
         </Directory>
+		<Location /api>
+			AuthType basic
+			AuthName \"Secure API\"
+			AuthBasicProvider dbm
+			AuthDBMType SDBM
+			AuthDBMUserFile /vagrant/api_password_file
+			Require valid-user
+		</Location>
     </VirtualHost>"
 end
 
 execute "a2enmod" do
+	command "a2enmod authn_dbm"
+	action :run
+end
+
+execute "a2ensite" do
     command "a2ensite project"
     action :run
 end
