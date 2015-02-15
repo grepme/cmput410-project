@@ -1,0 +1,9 @@
+{
+  "run_list": [
+    "recipe[apache]",
+    "recipe[build-essential]",
+    "recipe[mysqld]",
+    "recipe[python]",
+    "recipe[django]"
+  ]
+}
