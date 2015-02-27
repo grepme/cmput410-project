@@ -18,6 +18,8 @@ def login(request):
             # Password is good
             if user.is_active:
                 django_login(request, user)
+                if request.POST.get("remember-me", None):
+                    request.session.set_expiry(0)
                 return redirect(dashboard)
     return render(request, 'framework/login.html', {'body_class': 'login-page'})
 

@@ -146,6 +146,10 @@ textarea {
 
 /* Bootstrap Dashboard */
 
+.navbar-padding {
+    padding-top: 50px;
+}
+
 /*
  * Global add-ons
  */
