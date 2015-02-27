@@ -57,3 +57,8 @@ ie. http://localhost:8080/api
 # Github Pages
 Our API can be found at:
 http://grepme.github.io/cmput410-project
+
+# Other Contributions
+
+* HTML 5 Boilerplate
+* Bootstrap
