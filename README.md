@@ -60,4 +60,5 @@ http://grepme.github.io/cmput410-project
 
 # Other Contributions
 
-* HTML 5 Boilerplate 
+* HTML 5 Boilerplate
+* Bootstrap

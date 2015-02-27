@@ -84,5 +84,8 @@ STATIC_URL = '/static/'
 
 # Templates
 TEMPLATE_DIRS = (
-    os.path.join(os.path.dirname(__file__), 'templates').replace('\\', '/'),
+    os.path.join(BASE_DIR, 'templates').replace('\\', '/'),
 )
+
+# Login URL to redirect to when the user fails the check.
+LOGIN_URL = "/login/"
