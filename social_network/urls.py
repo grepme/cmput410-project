@@ -10,7 +10,7 @@ urlpatterns = patterns('',
                        # url(r'^$', 'untitled.views.home', name='home'),
                        # url(r'^blog/', include('blog.urls')),
                        (r'^', include(framework.urls)),
-                       (r'^profile/', include(user_profile.urls))
+                       (r'^profile/', include(user_profile.urls)),
                        (r'^admin/', include(admin.site.urls)),
 )
 #

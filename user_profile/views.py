@@ -3,12 +3,9 @@ from django.shortcuts import render, redirect
 # Create your views here.
 
 
-def profile(request, username=None):
+def profile(request, author):
     """Returns a specific author profile"""
-    if not username:
-        return redirect("/")
-    else:
-        return render(request, "profile/author.html")
+    return render(request, "profile/author.html")
 
 
 def user_profile(request):
