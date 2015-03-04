@@ -10,4 +10,4 @@ def profile(request, author):
 
 def user_profile(request):
     """This will redirect /profile/ to /profile/<username>"""
-    return redirect(profile, author=request.user.username)
+    return redirect(profile, request.user.username)
