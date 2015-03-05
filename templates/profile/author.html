@@ -14,7 +14,8 @@
                     <div class="panel-body">
                         {# We allow editing of the profile if this is the user' profile, else display #}
                         {% if user.username == profile.author.username %}
-                            <div class="row">
+                        <div class="row">
+                            <div class="col-lg-12">
                                 <div class="input-group">
                                     <span class="input-group-addon">Display Name</span>
                                     <input type="text" class="form-control" placeholder="{{ profile.display_name }}"
@@ -38,6 +39,7 @@
                                     </div>
                                 </div>
 
+                            </div>
                             </div>
                         {% else %}
                             <p>Display Name: {{ profile.display_name }}</p>
