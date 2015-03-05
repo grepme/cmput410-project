@@ -1,7 +1,8 @@
 from django.shortcuts import render, redirect
 from user_profile.models import Profile
-from django.contrib.auth.models import User
 from django.contrib.auth.decorators import login_required
+from django.http import HttpResponse
+import json
 
 # Create your views here.
 
@@ -20,3 +21,22 @@ def profile(request, author):
 def user_profile(request):
     """This will redirect /profile/ to /profile/<username>"""
     return redirect(profile, request.user.username)
+
+
+@login_required()
+def update_profile(request):
+    """This will update all posted fields"""
+
+    # Allowed fields the user can update
+    allowed_field = ['display_name']
+
+    # Profile object to save
+    user = Profile.objects.get(author__username=request.user.username)
+
+    # Iterate over all posted fields in profile update
+    for key, value in request.POST.items():
+        if key in allowed_field:
+            setattr(user, key, value)
+    user.save()
+
+    return HttpResponse(json.dumps({'status': True}), content_type='application/json')
