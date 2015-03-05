@@ -14,6 +14,9 @@
         <![endif]-->
 
         <!-- Add your site or application content here -->
+        {% if nav_bar == True or nav_bar == None %}
+            {% include 'framework/navbar.html' %}
+        {% endif %}
         {% block content %}
         {% endblock %}
 

@@ -150,6 +150,11 @@ textarea {
     padding-top: 50px;
 }
 
+/* Profile */
+.profile-padding{
+    padding-top: 75px;
+}
+
 /*
  * Global add-ons
  */

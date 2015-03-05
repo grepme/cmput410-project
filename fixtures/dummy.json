@@ -1,0 +1,28 @@
+[
+  {
+    "fields": {
+      "username": "admin",
+      "first_name": "",
+      "last_name": "",
+      "is_active": true,
+      "is_superuser": true,
+      "is_staff": true,
+      "last_login": "2015-03-04T23:44:37.841Z",
+      "groups": [],
+      "user_permissions": [],
+      "password": "pbkdf2_sha256$15000$2CoOSiriXDJy$xDdZoZHyGw1v2PQ9J1rycY9v/BydMOi9ZXSGP93HQ1s=",
+      "email": "admin@admin.com",
+      "date_joined": "2015-02-26T21:20:21.440Z"
+    },
+    "model": "auth.user",
+    "pk": 1
+  },
+  {
+    "fields": {
+      "author": ["admin"],
+      "display_name": "Admin"
+    },
+    "model": "user_profile.profile",
+    "pk": 1
+  }
+]

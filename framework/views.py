@@ -21,7 +21,8 @@ def login(request):
                 if request.POST.get("remember-me", None):
                     request.session.set_expiry(0)
                 return redirect(dashboard)
-    return render(request, 'framework/login.html', {'body_class': 'login-page'})
+    return render(request, 'framework/login.html', {'body_class': 'login-page', 'nav_bar': False})
+
 
 @login_required
 def dashboard(request):
