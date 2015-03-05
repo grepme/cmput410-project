@@ -101,3 +101,9 @@ LOGIN_URL = "/login/"
 # Template Additions
 TEMPLATE_CONTEXT_PROCESSORS = ('django.core.context_processors.csrf',
                                'django.contrib.auth.context_processors.auth',)
+
+# Fixtures for loading in dummy data
+FIXTURE_DIRS = (
+    os.path.join(BASE_DIR, "fixtures"),
+)
+
