@@ -1,5 +1,6 @@
 from django.db import models
 from django.contrib.auth.models import User
+from django.contrib.auth.models import Tag
 
 # Create your models here.
 
@@ -27,9 +28,8 @@ class Post(models.Model):
     origin = models.GenericIPAddressField()
     source = models.GenericIPAddressField()
     author = models.ForeignKey(User)
-    # Can't store arrays of strings, so have to do this a custom way
-    # http://cramer.io/2008/08/08/custom-fields-in-django/
-    # categories = SeperatedValuesField(blank=True)
+    # Tags that can be used to filter posts
+    tags = models.ManyToManyField(Tag, blank=True)
     visibility = models.IntegerField(choices=visibilityChoices)
 
     def __unicode__(self):

@@ -41,7 +41,8 @@ INSTALLED_APPS = (
     'user_profile',
     'friends',
     'posts',
-    'comments'
+    'comments',
+    'tags'
 )
 
 MIDDLEWARE_CLASSES = (
