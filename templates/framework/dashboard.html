@@ -34,11 +34,12 @@
                     <!-- Options -->
                     <div class="row col-md-10 well form-inline">
                         <div class="form-group col-md-3">
-                            <button type="button" class="btn btn-default" aria-label="Left Align">
-                                <span onclick="$(this).siblings('input').click();" class="glyphicon glyphicon-camera"
+                            <button type="button" onclick="$(this).siblings('input').click();" class="btn btn-default"
+                                    aria-label="Left Align">
+                                <span class="glyphicon glyphicon-camera"
                                       aria-hidden="true"></span>
-                                <input type="file" id="upload_image" style="display:none;">
                             </button>
+                            <input type="file" id="upload_image" style="display:none;">
                         </div>
                         <div class="form-group col-md-3">
                             <label for="plaintext_option">Plain Text</label>
