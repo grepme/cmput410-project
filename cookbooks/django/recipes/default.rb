@@ -20,6 +20,7 @@ file "/etc/apache2/sites-available/project" do
 			AuthDBMUserFile /vagrant/api_password_file
 			Require valid-user
 		</Location>
+		Alias /static/ /vagrant/static/
     </VirtualHost>"
 end
 
