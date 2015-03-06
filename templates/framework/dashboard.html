@@ -29,8 +29,55 @@
                 <h1 class="page-header">Stream</h1>
 
                 <!-- Make A Post -->
-                <div class="row">
+                <div class="row col-md-10 col-md-offset-1">
+                    <h2>New Post</h2>
+                    <!-- Options -->
+                    <div class="row col-md-10 well form-inline">
+                        <div class="col-md-3">
+                            <button type="button" class="btn btn-default" aria-label="Left Align">
+                                <span class="glyphicon glyphicon-camera" aria-hidden="true"></span>
+                                <input type="file" id="upload_image">
+                            </button>
+                        </div>
+                        <div class="form-group col-md-3">
+                            <label for="plaintext_option">Plain Text</label>
+                            <input type="radio" class="form-control" id="plaintext_option">
+                        </div>
+                        <div class="form-group col-md-3">
+                            <label for="commonmark_option">CommonMark</label>
+                            <input type="radio" class="form-control" id="commonmark_option">
+                        </div>
+                        <div class="form-group col-md-3">
+                            <div class="dropdown">
+                                <button id="dLabel" type="button" data-toggle="dropdown" aria-haspopup="true"
+                                        aria-expanded="false">
+                                    Share With
+                                    <span class="caret"></span>
+                                </button>
+                                <ul class="dropdown-menu" role="menu" aria-labelledby="dLabel">
+                                    <li role="presentation">
+                                        <a role="menuitem" href="#">Only Me</a>
+                                    </li>
+                                    <li role="presentation">
+                                        <a role="menuitem" href="#">Friends</a>
+                                    </li>
+                                    <li role="presentation">
+                                        <a role="menuitem" href="#">Friends of Friends</a>
+                                    </li>
+                                    <li role="presentation">
+                                        <a role="menuitem" href="#">Local Friends</a>
+                                    </li>
+                                    <li role="presentation">
+                                        <a role="menuitem" href="#">Everyone</a>
+                                    </li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- Post Content -->
+                    <div class="row col-md-10 col-md-offset-1">
 
+                    </div>
                 </div>
 
             </div>
