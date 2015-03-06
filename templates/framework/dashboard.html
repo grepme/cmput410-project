@@ -11,14 +11,16 @@
             <!-- Sticky Left Sidebar -->
             <div class="col-sm-3 col-md-2 sidebar">
                 <ul class="nav nav-sidebar">
-                    <li class="active"><a href="#">Stream<span class="sr-only">(current)</span></a></li>
-                    <li><a href="#">My Posts</a></li>
-                    <li><a href="#">All Posts</a></li>
+                    <li id="steam_nav" class="active"><a href="#">Stream</a></li>
+                    <li id="myposts_nav"><a href="#">My Posts</a></li>
+                    <li id="allposts_nav"><a href="#">All Posts</a></li>
                 </ul>
             </div>
 
             <!-- Main content -->
-            <div class="col-sm-9 col-sm-offset-3 col-md-10 col-md-offset-2 main">
+
+            <!-- Stream -->
+            <div id="stream" class="col-sm-9 col-sm-offset-3 col-md-10 col-md-offset-2 main">
                 <h1 class="page-header">Stream</h1>
 
                 <div class="row placeholders">
@@ -176,6 +178,27 @@
                         </tr>
                         </tbody>
                     </table>
+                </div>
+            </div>
+
+            <!-- My Posts -->
+            <div id="myposts" style="display:none;" class="col-sm-9 col-sm-offset-3 col-md-10 col-md-offset-2 main">
+                <h1 class="page-header">My Posts</h1>
+
+                <!-- Posts -->
+                <div class="row">
+
+                </div>
+
+            </div>
+
+            <!-- All Posts -->
+            <div id="allposts" style="display:none;" class="col-sm-9 col-sm-offset-3 col-md-10 col-md-offset-2 main">
+                <h1 class="page-header">All Posts</h1>
+
+                <!-- Posts -->
+                <div class="row">
+
                 </div>
             </div>
         </div>
