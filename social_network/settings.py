@@ -40,7 +40,8 @@ INSTALLED_APPS = (
     'framework',
     'user_profile',
     'friends',
-    'posts'
+    'posts',
+    'comments'
 )
 
 MIDDLEWARE_CLASSES = (
