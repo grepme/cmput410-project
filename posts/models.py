@@ -1,6 +1,6 @@
 from django.db import models
 from django.contrib.auth.models import User
-from django.contrib.auth.models import Tag
+from tags.models import Tag
 
 # Create your models here.
 
