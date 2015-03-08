@@ -9,12 +9,14 @@ from posts.models import Post
 @login_required
 def new_post(request):
     if request.method == 'POST':
-		title = request.POST.get("title", "")
-		description = request.POST.get("description", "")
+        title = request.POST.get("title", "")
+        description = request.POST.get("description", "")
         format = request.POST.get("content_type", "")
         visibility = request.POST.get("visibility", "")
         text = request.POST.get("text", "")
         # p = Post.objects.get_or_create(title="???", date=datetime.now(), text=text, image = ???, origin = ???, source = ???,author=, visibility=visibility)[0]
+        return render(request, 'framework/dashboard.html')
+    else:
+        redirect('/')
 
-    return render(request, 'framework/dashboard.html')
-
+#
