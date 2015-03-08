@@ -1,11 +1,20 @@
 from django.db import models
 from django.contrib.auth.models import User
 from tags.models import Tag
+import uuid
 
 # Create your models here.
 
+def get_guid():
+    return uuid.uuid1().__str__()
 
 class Post(models.Model):
+    def __init__(self, *args, **kwargs):
+        super(Post, self).__init__(*args, **kwargs)
+        if not self.guid:
+            self.guid = uuid.uuid1().__str__()
+
+
     private = 1
     friend = 2
     FOAF = 3
@@ -34,6 +43,9 @@ class Post(models.Model):
     # Tags that can be used to filter posts
     tags = models.ManyToManyField(Tag, blank=True)
     visibility = models.IntegerField(choices=visibilityChoices)
+
+    # guid
+    guid = models.CharField(max_length=55)
 
     @staticmethod
     def get_visibility(visibility):

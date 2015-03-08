@@ -32,7 +32,10 @@ def new_post(request, source=None):
         text = request.POST.get("text", "")
 
         # Images are in a dictionary that were encoded in the multipart
-        image = request.FILES['upload_image']
+        if "upload_image" in request.FILES:
+            image = request.FILES['upload_image']
+        else:
+            image = None
 
         # Fetch the user that uploaded this
         a = User.objects.get(username=request.user.username)
