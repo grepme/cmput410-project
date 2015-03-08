@@ -28,6 +28,9 @@ class Post(models.Model):
     origin = models.GenericIPAddressField()
     source = models.GenericIPAddressField()
     author = models.ForeignKey(User)
+    # whether or not they used commonmark
+    commonmark = models.BooleanField(default=False)
+
     # Tags that can be used to filter posts
     tags = models.ManyToManyField(Tag, blank=True)
     visibility = models.IntegerField(choices=visibilityChoices)
