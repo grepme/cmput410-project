@@ -4,12 +4,14 @@ from django.contrib import admin
 # Import the urls from our apps
 import framework.urls
 import user_profile.urls
+import api.urls
 
 urlpatterns = patterns('',
                        # Examples:
                        # url(r'^$', 'untitled.views.home', name='home'),
                        # url(r'^blog/', include('blog.urls')),
                        (r'^', include(framework.urls)),
+                       (r'^api/', include(api.urls)),
                        (r'^profile/', include(user_profile.urls)),
                        (r'^admin/', include(admin.site.urls)),
 )
