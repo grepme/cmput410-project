@@ -13,7 +13,7 @@ urlpatterns = patterns('',
                        (r'^', include(framework.urls)),
                        (r'^profile/', include(user_profile.urls)),
                        (r'^admin/', include(admin.site.urls)),
-                       (r'^posts/', include(posts.urls))
+                       (r'^post/', include(posts.urls))
 )
 #
 # Example of named-group pattern
