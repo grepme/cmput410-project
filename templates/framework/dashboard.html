@@ -76,12 +76,18 @@
                         </div>
                     </form>
                 </div>
+
+
                 <div class="row col-md-10 col-md-offset-1">
+
+                    <!-- Line Break -->
                     <div style="margin: 0; padding: 0;" class="row col-md-10">
                         <hr>
                     </div>
-                    <div class="row col-md-10">
-                        <p>Content Here.</p>
+
+                    <!-- Include all posts from stream -->
+                    <div class="row col-md-10" style="margin: 0; padding: 0;">
+                        {% include 'posts/all.html' %}
                     </div>
                 </div>
 

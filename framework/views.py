@@ -2,6 +2,7 @@ from django.shortcuts import render, redirect
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth import authenticate, login as django_login, logout as django_logout
 from django.views.decorators.csrf import csrf_protect
+from posts.models import Post
 
 # Create your views here.
 
@@ -27,7 +28,9 @@ def login(request):
 @login_required
 def dashboard(request):
     """The dashboard contains all required information for the social network."""
-    return render(request, 'framework/dashboard.html')
+    # Grab the user's stream
+    posts = Post.objects.filter(author__username=request.user.username)
+    return render(request, 'framework/dashboard.html', {'posts': posts})
 
 
 @login_required()
