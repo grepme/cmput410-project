@@ -5,6 +5,8 @@ from django.contrib import admin
 import framework.urls
 import user_profile.urls
 import api.urls
+import posts.urls
+import dispatch_files.urls
 
 urlpatterns = patterns('',
                        # Examples:
@@ -14,6 +16,8 @@ urlpatterns = patterns('',
                        (r'^api/', include(api.urls)),
                        (r'^profile/', include(user_profile.urls)),
                        (r'^admin/', include(admin.site.urls)),
+                       (r'^post/', include(posts.urls)),
+                       (r'^uploads/', include(dispatch_files.urls))
 )
 #
 # Example of named-group pattern
@@ -24,6 +28,6 @@ urlpatterns = patterns('',
 #
 # Example of patterns with optional parameter
 # urlpatterns = patterns('',
-#     (r'^foo/$', views.foobar_view, {'template_name': 'template1.html'}),
+# (r'^foo/$', views.foobar_view, {'template_name': 'template1.html'}),
 #     (r'^bar/$', views.foobar_view, {'template_name': 'template2.html'}),
 # )
