@@ -38,7 +38,10 @@ INSTALLED_APPS = (
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'framework',
-    'user_profile'
+    'user_profile',
+    'friends',
+    'posts',
+    'comments'
 )
 
 MIDDLEWARE_CLASSES = (
@@ -100,10 +103,13 @@ LOGIN_URL = "/login/"
 
 # Template Additions
 TEMPLATE_CONTEXT_PROCESSORS = ('django.core.context_processors.csrf',
-                               'django.contrib.auth.context_processors.auth',)
+                               'django.contrib.auth.context_processors.auth',
+                               'django.core.context_processors.media')
 
 # Fixtures for loading in dummy data
 FIXTURE_DIRS = (
     os.path.join(BASE_DIR, "fixtures"),
 )
 
+# Upload directory for media from MEDIA_URL tags
+MEDIA_ROOT = os.path.join(BASE_DIR, 'uploads')
