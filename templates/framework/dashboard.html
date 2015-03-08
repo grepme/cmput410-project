@@ -32,7 +32,7 @@
                 <div class="row col-md-10 col-md-offset-1">
                     <h2>New Post</h2>
                     <!-- Options -->
-                    <form id="new_post">
+                    <form id="new_post" method="POST" action="/posts/new_post/">
                         <div style="margin: 0;" class="row col-md-10 well form-inline">
                             <div class="form-group col-md-3">
                                 <button type="button" onclick="$(this).siblings('input').click();"
@@ -52,7 +52,7 @@
                                 <input type="radio" name="content_type" class="form-control" id="commonmark_option">
                             </div>
                             <div class="form-group col-md-3">
-                                <select class="form-control">
+                                <select class="form-control" name="visibility">
                                     <option>Only Me</option>
                                     <option>Friends</option>
                                     <option>Friends of Friends</option>
