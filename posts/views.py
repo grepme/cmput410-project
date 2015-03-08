@@ -9,6 +9,8 @@ from posts.models import Post
 @login_required
 def new_post(request):
     if request.method == 'POST':
+		title = request.POST.get("title", "")
+		description = request.POST.get("description", "")
         format = request.POST.get("content_type", "")
         visibility = request.POST.get("visibility", "")
         text = request.POST.get("text", "")
