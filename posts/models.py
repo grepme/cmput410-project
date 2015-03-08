@@ -5,8 +5,6 @@ import uuid
 
 # Create your models here.
 
-def get_guid():
-    return uuid.uuid1().__str__()
 
 class Post(models.Model):
     def __init__(self, *args, **kwargs):
