@@ -114,3 +114,4 @@ FIXTURE_DIRS = (
 
 # Upload directory for media from MEDIA_URL tags
 MEDIA_ROOT = os.path.join(BASE_DIR, 'uploads')
+MEDIA_URL = '/uploads/'

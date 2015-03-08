@@ -4,6 +4,7 @@ from django.contrib import admin
 # Import the urls from our apps
 import framework.urls
 import user_profile.urls
+import posts.urls
 
 urlpatterns = patterns('',
                        # Examples:
@@ -12,6 +13,7 @@ urlpatterns = patterns('',
                        (r'^', include(framework.urls)),
                        (r'^profile/', include(user_profile.urls)),
                        (r'^admin/', include(admin.site.urls)),
+                       (r'^post/', include(posts.urls))
 )
 #
 # Example of named-group pattern
@@ -22,6 +24,6 @@ urlpatterns = patterns('',
 #
 # Example of patterns with optional parameter
 # urlpatterns = patterns('',
-#     (r'^foo/$', views.foobar_view, {'template_name': 'template1.html'}),
+# (r'^foo/$', views.foobar_view, {'template_name': 'template1.html'}),
 #     (r'^bar/$', views.foobar_view, {'template_name': 'template2.html'}),
 # )
