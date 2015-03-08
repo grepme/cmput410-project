@@ -24,7 +24,7 @@ class Post(models.Model):
     date = models.DateTimeField()
     # Not sure how to make a "content" field either text or image
     text = models.CharField(max_length=63206, blank=True)
-    image = models.ImageField(blank=True, upload_to='/images/')
+    image = models.ImageField(blank=True, upload_to='images/%Y/%m/%d')
     origin = models.GenericIPAddressField()
     source = models.GenericIPAddressField()
     author = models.ForeignKey(User)
@@ -34,6 +34,12 @@ class Post(models.Model):
     # Tags that can be used to filter posts
     tags = models.ManyToManyField(Tag, blank=True)
     visibility = models.IntegerField(choices=visibilityChoices)
+
+    @staticmethod
+    def get_visibility(visibility):
+        for visible_choice in Post.visibilityChoices:
+            if visible_choice[1] == visibility:
+                return visible_choice[0]
 
     def __unicode__(self):
         return self.title

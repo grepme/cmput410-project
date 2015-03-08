@@ -1,7 +1,8 @@
 from django.shortcuts import render, redirect
 from django.contrib.auth.decorators import login_required
-
+from django.utils import timezone
 from posts.models import Post
+from django.contrib.auth.models import User
 
 # Create your views here
 
@@ -10,13 +11,20 @@ from posts.models import Post
 def new_post(request):
     if request.method == 'POST':
         title = request.POST.get("title", "")
-        description = request.POST.get("description", "")
-        format = request.POST.get("content_type", "")
-        visibility = request.POST.get("visibility", "")
+        text_format = request.POST.get("content_type", "")
+        if text_format == "commonmark":
+            text_format = True
+        else:
+            text_format = False
+        visibility = request.POST.get("visibility", "Private")
+        visibility = Post.get_visibility(visibility)
         text = request.POST.get("text", "")
-        # p = Post.objects.get_or_create(title="???", date=datetime.now(), text=text, image = ???, origin = ???, source = ???,author=, visibility=visibility)[0]
-        return render(request, 'framework/dashboard.html')
+        image = request.FILES['upload_image']
+        print request.FILES
+        a = User.objects.get(username=request.user.username)
+        p = Post.objects.create(title=title, date=timezone.now(), text=text, image=image, origin='127.0.0.1',
+                                source='127.0.0.1', visibility=visibility, commonmark=text_format, author=a)
+        p.save()
+        return redirect('/dashboard/')
     else:
         redirect('/')
-
-#
