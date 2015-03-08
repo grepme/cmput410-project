@@ -3,7 +3,7 @@ from django.contrib.auth.models import User
 
 # Create your models here.
 
-
+@login_required
 class Post(models.Model):
     private = 1
     friend = 2
