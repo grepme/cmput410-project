@@ -9,7 +9,7 @@ urlpatterns = patterns('api.views',
                        (r'^author/(?P<author_id>[^/]+)/posts(?:/(?P<page>\d+))?/$', 'get_posts'),
 
                        # Get a specific post
-                       (r'^posts/(?P<post_id>[^/]+)/$', 'get_post'),
+                       (r'^posts/(?P<post_id>[^/]+)?/$', 'get_post'),
 
                        #See if a author_id is a friend with author_2_id
                        (r'^friends/(?P<author_id>[^/]+)/(?P<author_2_id>[^/]+)$', 'is_friend'),

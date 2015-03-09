@@ -1,9 +1,10 @@
 from django.contrib.auth.models import AnonymousUser, User
+from posts.models import Post
 from django.test import TestCase, RequestFactory
 # create an instance of the client for our use
 # Create your tests here.
 
-from api.views import get_posts
+from api.views import get_posts,get_post
 
 class ApiViewTests(TestCase):
     def setUp(self):
@@ -23,4 +24,12 @@ class ApiViewTests(TestCase):
 
         response = get_posts(request)
         print (response)
+
+    def test_get_post(self):
+        # Factory for get request
+        request = self.factory.get('/api/posts')
+
+        response = get_post(request)
+        print (response)
+
 
