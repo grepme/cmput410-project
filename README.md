@@ -13,6 +13,15 @@ python manage.py runserver
 Go to town, work from localhost. You may run into issues with a different environment and MySQL if we choose to
 migrate. You have been warned.
 
+# Requirements
+
+If you are not using Vagrant, you'll also need to run this:
+
+```bash
+pip install commonmark
+pip install django
+```
+
 # Vagrant Installation
 
 [Download and install Vagrant](https://www.vagrantup.com/downloads.html)
