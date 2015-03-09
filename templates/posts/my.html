@@ -1,15 +1,10 @@
-{% for post in all_posts reversed %}
+{% for post in my_posts reversed %}
     <div class="col-md-12 well" style="">
         <span style="font-weight:bold;font-size:125%;">{{ post.title }}</span>
         <div style="float: right;">
             <button type="button" class="btn btn-default btn-xs" style="vertical-align:center; margin-left: 10px;">
             <span class="glyphicon  glyphicon-comment" aria-hidden="true"></span> Add Comment
             </button>
-            <form action="/post/delete/{{ post.guid }}/" method="post" id="delete_post">
-                {% csrf_token %}
-                <input type="submit" name="deleteButton" class="btn btn-default btn-xs" style="vertical-align:center; margin-left: 10px; margin-top: 1em;" value="Delete Post">
-                </input>
-            </form>
         </div>
         <div style="float: right;">{{ post.date }}</div>
 
