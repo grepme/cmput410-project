@@ -25,6 +25,19 @@ class ApiViewTests(TestCase):
         response = get_posts(request)
         print (response)
 
+    def test_author_posts_id(self):
+        ''' get the current logged in users visible posts '''
+
+        # Factory for get request
+        request = self.factory.get('/api/author/%d/posts' % self.user.id)
+        print('/api/author/%d/posts' % self.user.id)
+
+        # Set the user
+        request.user = self.user;
+
+        response = get_posts(request,self.user.id)
+        print (response)
+
     def test_get_post(self):
         # Factory for get request
         request = self.factory.get('/api/posts')

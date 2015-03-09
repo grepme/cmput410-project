@@ -1,12 +1,10 @@
 from django.conf.urls import patterns, include, url
 
 urlpatterns = patterns('api.views',
-                        # get posts that are visible to current authenticated user
-                       (r'^author/posts(?:/(?P<page>\d+))?/$', 'get_posts'),
 
                         # get posts by a specific author that the current authenticated user
                         # can view
-                       (r'^author/(?P<author_id>[^/]+)/posts(?:/(?P<page>\d+))?/$', 'get_posts'),
+                        (r'^author/(?:/(?P<author_id>[^/]+))?/posts(?:/(?P<page>\d+))?/$', 'get_posts'),
 
                        # Get a specific post
                        (r'^posts/(?P<post_id>[^/]+)?/$', 'get_post'),
