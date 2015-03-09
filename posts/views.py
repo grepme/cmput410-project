@@ -99,5 +99,5 @@ def all_posts(request):
 @login_required
 def my_posts(request):
     """AJAX call that returns the user's posts"""
-    posts = Post.objects.filter(author__username=request.user.username)
-    return render(request, 'posts/all.html', {{'posts': posts}})
+    p = Post.objects.filter(author__username=request.user.username)
+    return render(request, 'posts/all.html', {'posts': p})
