@@ -11,7 +11,7 @@
             <!-- Sticky Left Sidebar -->
             <div class="col-sm-3 col-md-2 sidebar">
                 <ul class="nav nav-sidebar">
-                    <li id="steam_nav" class="active">
+                    <li id="stream_nav" class="active">
                         <a href="#"><span class="glyphicon glyphicon-menu-hamburger" aria-hidden="true"></span>
                             Stream</a>
                     </li>
@@ -100,7 +100,18 @@
 
                 <!-- Posts -->
                 <div class="row">
+                    <div class="row col-md-10 col-md-offset-1">
 
+                    <!-- Line Break -->
+                    <div style="margin: 0; padding: 0;" class="row col-md-10">
+                        <hr>
+                    </div>
+
+                    <!-- Include all posts from stream -->
+                    <div class="row col-md-10" style="margin: 0; padding: 0;">
+                        {% include 'posts/all.html' %}
+                    </div>
+                </div>
                 </div>
 
             </div>
@@ -111,7 +122,17 @@
 
                 <!-- Posts -->
                 <div class="row">
+                    <div class="row col-md-10 col-md-offset-1">
 
+                    <!-- Line Break -->
+                    <div style="margin: 0; padding: 0;" class="row col-md-10">
+                        <hr>
+                    </div>
+
+                    <!-- Include all posts from stream -->
+                    <div class="row col-md-10" style="margin: 0; padding: 0;">
+                        {% include 'posts/all.html' %}
+                    </div>
                 </div>
             </div>
         </div>
