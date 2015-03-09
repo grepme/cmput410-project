@@ -1,6 +1,15 @@
-{% for post in posts %}
+{% for post in posts reversed %}
     <div class="col-md-12 well" style="">
-        <span>{{ post.title }}</span>
+        <span style="font-weight:bold;font-size:125%;">{{ post.title }}</span>
+        <div style="float: right;">
+            <button type="button" class="btn btn-default btn-xs" style="vertical-align:center; margin-left: 10px;">
+            <span class="glyphicon  glyphicon-comment" aria-hidden="true"></span> Add Comment
+            </button>
+        </div>
+        <div style="float: right;">{{ post.date }}</div>
+
+        <br/>
+        <span>{{ post.text }}</span>
     </div>
     {% if post.image %}
         <div class="col-md-12" style="">
