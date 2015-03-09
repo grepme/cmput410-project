@@ -74,7 +74,7 @@ def delete_post(request, guid):
 
 @login_required
 def all_posts(request):
-    """This will grab all posts that a user can see"""
+    """AJAX call that will grab all posts that a user can see."""
 
     # Complex queries abound!
     # https://docs.djangoproject.com/en/1.7/topics/db/queries/#complex-lookups-with-q-objects
@@ -93,4 +93,11 @@ def all_posts(request):
 
     # Nested query lookups aren't supported, so we need to make multiple queries :(
 
-    return render(request, 'posts/all.html', {'all_posts': p})
+    return render(request, 'posts/all.html', {'posts': p})
+
+
+@login_required
+def my_posts(request):
+    """AJAX call that returns the user's posts"""
+    posts = Post.objects.filter(author__username=request.user.username)
+    return render(request, 'posts/all.html', {{'posts': posts}})
