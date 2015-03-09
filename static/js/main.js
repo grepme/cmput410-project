@@ -83,3 +83,39 @@ function confirmEditProfileField(that, field_name){
 
     })
 }
+
+$("#myposts_nav").click(function(){
+    //Hide other streams
+    $("#stream").hide();
+    $("#allposts").hide();
+    //Show the My Posts stream
+    $("#myposts").show();
+    //Update Sidebar
+    $("#myposts_nav").addClass("active");
+    $("#stream_nav").removeClass("active");
+    $("#allposts_nav").removeClass("active");
+});
+
+$("#allposts_nav").click(function(){
+    //Hide other streams
+    $("#stream").hide();
+    $("#myposts").hide();
+    //Show the My Posts stream
+    $("#allposts").show();
+    //Update Sidebar
+    $("#allposts_nav").addClass("active");
+    $("#stream_nav").removeClass("active");
+    $("#myposts_nav").removeClass("active");
+});
+
+$("#stream_nav").click(function(){
+    //Hide other streams
+    $("#myposts").hide();
+    $("#allposts").hide();
+    //Show the My Posts stream
+    $("#stream").show();
+    //Update Sidebar
+    $("#stream_nav").addClass("active");
+    $("#myposts_nav").removeClass("active");
+    $("#allposts_nav").removeClass("active");
+});
