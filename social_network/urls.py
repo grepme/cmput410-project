@@ -5,6 +5,7 @@ from django.contrib import admin
 import framework.urls
 import user_profile.urls
 import posts.urls
+import dispatch_files.urls
 
 urlpatterns = patterns('',
                        # Examples:
@@ -13,7 +14,8 @@ urlpatterns = patterns('',
                        (r'^', include(framework.urls)),
                        (r'^profile/', include(user_profile.urls)),
                        (r'^admin/', include(admin.site.urls)),
-                       (r'^post/', include(posts.urls))
+                       (r'^post/', include(posts.urls)),
+                       (r'^uploads/', include(dispatch_files.urls))
 )
 #
 # Example of named-group pattern

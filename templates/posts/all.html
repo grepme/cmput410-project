@@ -1,0 +1,10 @@
+{% for post in posts %}
+    <div class="col-md-12 well" style="">
+        <span>{{ post.title }}</span>
+    </div>
+    {% if post.image %}
+        <div class="col-md-12" style="">
+            <img style="max-width:100%" src="{{ post.image.url }}">
+        </div>
+    {% endif %}
+{% endfor %}
