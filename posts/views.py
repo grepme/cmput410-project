@@ -59,13 +59,8 @@ def new_post(request, source=None):
 def delete_post(request, guid):
     #post = Post.objects.get(guid=guid)
     #Post.objects.remove(post)
-    Post.objects.get(guid=guid).delete()
+    post = Post.objects.get(guid=guid)
+    post.delete()
 
     return redirect('/dashboard/')
-    
-
-
-
-
-
 

@@ -10,7 +10,7 @@ class Post(models.Model):
     def __init__(self, *args, **kwargs):
         super(Post, self).__init__(*args, **kwargs)
         if not self.guid:
-            self.guid = uuid.uuid1().__str__().replace("-", "_")
+            self.guid = uuid.uuid1().__str__()
         #self.guid = self.guid.replace("-", "_")
 
 
