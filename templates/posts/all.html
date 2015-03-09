@@ -1,3 +1,4 @@
+{% load posts_extra %}
 {% for post in all_posts reversed %}
     <div class="col-md-12 well" style="">
         <span style="font-weight:bold;font-size:125%;">{{ post.title }}</span>
@@ -14,7 +15,11 @@
         <div style="float: right;">{{ post.date }}</div>
 
         <br/>
-        <span>{{ post.text }}</span>
+        {% if  post.commonmark %}
+            <span>{{ post.text|commonmark|safe }}</span>
+        {% else %}
+            <span>{{ post.text }}</span>
+        {% endif %}
     </div>
     {% if post.image %}
         <div class="col-md-12" style="">
