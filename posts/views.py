@@ -56,11 +56,16 @@ def new_post(request, source=None):
         # Accept only POST, otherwise, redirect
         redirect('/')
 
+
+@login_required
 def delete_post(request, guid):
-    #post = Post.objects.get(guid=guid)
-    #Post.objects.remove(post)
-    post = Post.objects.get(guid=guid)
-    post.delete()
+    try:
+        # Try to find the user the post belongs to
+        post = Post.objects.get(guid=guid, author__username=request.user.username)
+        post.delete()
+    except Post.DoesNotExist:
+        # Post doesn't exist or they don't have permission to delete it
+        pass
 
     return redirect('/dashboard/')
 
