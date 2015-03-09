@@ -16,6 +16,7 @@ def new_post(request, source=None):
         source = origin
 
     if request.method == 'POST':
+
         title = request.POST.get("title", "")
 
         # Either commonmark or plain
@@ -54,3 +55,12 @@ def new_post(request, source=None):
     else:
         # Accept only POST, otherwise, redirect
         redirect('/')
+
+def delete_post(request, guid):
+    #post = Post.objects.get(guid=guid)
+    #Post.objects.remove(post)
+    post = Post.objects.get(guid=guid)
+    post.delete()
+
+    return redirect('/dashboard/')
+
