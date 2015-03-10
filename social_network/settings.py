@@ -42,7 +42,8 @@ INSTALLED_APPS = (
     'friends',
     'posts',
     'comments',
-    'tags'
+    'tags',
+    'api'
 )
 
 MIDDLEWARE_CLASSES = (

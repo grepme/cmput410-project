@@ -65,7 +65,7 @@ class UserProfileTests(TestCase):
         response = profile(request)
         self.assertEqual(response.status_code,405)
 
-    def test_get_profile(self):
+    def test_get_profile_not_logged_in(self):
         ''' test get profile when not logged in '''
         request = self.factory.get('/profile/')
         request.user = AnonymousUser()

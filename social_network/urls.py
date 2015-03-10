@@ -4,6 +4,7 @@ from django.contrib import admin
 # Import the urls from our apps
 import framework.urls
 import user_profile.urls
+import api.urls
 import posts.urls
 import dispatch_files.urls
 
@@ -12,6 +13,7 @@ urlpatterns = patterns('',
                        # url(r'^$', 'untitled.views.home', name='home'),
                        # url(r'^blog/', include('blog.urls')),
                        (r'^', include(framework.urls)),
+                       (r'^api/', include(api.urls)),
                        (r'^profile/', include(user_profile.urls)),
                        (r'^admin/', include(admin.site.urls)),
                        (r'^post/', include(posts.urls)),
