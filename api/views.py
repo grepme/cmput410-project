@@ -4,45 +4,80 @@ from django.contrib.auth import authenticate, login as django_login, logout as d
 from django.views.decorators.csrf import csrf_protect
 from django.contrib.auth.models import User
 from django.db.models import Q
+from django.http import HttpResponse
+from django.core import serializers
+import json
+import pickle
 
 from comments.models import Comment
 from friends.models import Friend, Follow
 from posts.models import Post
 from tags.models import Tag
 from django.contrib.auth.models import User
+from django.http import JsonResponse
+from django.views.decorators.http import require_http_methods
 
 # Create your views here.
 
+def check_accept_type(content_type):
+    supported_content_types = ['*/*' , 'application/json']
+    for supported_type in supported_content_types:
+        if content_type == supported_type:
+            return True
+    return False
+
+class SetEncoder(json.JSONEncoder):
+    def default(self, obj):
+       if isinstance(obj, set):
+          return list(obj)
+       return json.JSONEncoder.default(self, obj)
+
+
 @login_required
+@require_http_methods(["GET"])
 def get_posts(request,author_id=None,page="0"):
     #author/posts
     #author/author_id/posts
 
-    # authenticated user
-    user = request.user
+    #assume */*
+    valid_accept = True
 
-    # Get all direct friends of the user
-    friends = Friend.objects.filter(Q(accepter=user) | Q(requester=user))
+    # check specificed content
+    if 'ACCEPT' in request.META:
+        accept_type = request.META['ACCEPT']
+        valid_accept = check_accept_type(accept_type)
 
-    # Get all friend of friends, where we are not friends with them
-    friend_of_friend = Friend.objects.filter(Q(accepter__in=friends) | Q(requester__in=friends)).exclude(Q(accepter=user) | Q(requester=user))
+    if valid_accept:
+        query = ( Q(visibility=Post.private, author__username=request.user.username) |
+                Q(visibility=Post.public) | Q(visibility=Post.server) |
+                Q(visibility=Post.friend, author__accepter=request.user.id) |
+                Q(visibility=Post.friend, author__requester=request.user.id) |
+                Q(visibility=Post.FOAF, author__requester__requester=request.user.id) |
+                Q(visibility=Post.FOAF, author__requester__accepter=request.user.id) |
+                Q(visibility=Post.FOAF, author__accepter__requester=request.user.id) |
+                Q(visibility=Post.FOAF, author__accepter__accepter=request.user.id) )
 
-    # get all posts from friends with proper visibilty
-    # Check if we are direct friends, see if post is visibile by friends or FOAF
-    # next check for posts from FOAF, check visibilty FOAF
-    # After we can get all public posts
-    public = Post.get_visibility('Public')
-    foaf = Post.get_visibilty('Friend of A Friend')
-    friend_only = Post.get_visibilty('Friend')
+        # user specified a specific user id they want to find
+        if author_id is not None:
+            query = ( Q(visibility=Post.private, author__username=request.user.username, author_id=author_id) |
+                Q(visibility=Post.public, author_id=author_id) | Q(visibility=Post.server, author_id=author_id) |
+                (Q(visibility=Post.friend, author__accepter=request.user.id, author_id=author_id) | Q(visibility=Post.friend, author=request.user, author_id=author_id)) |
+                (Q(visibility=Post.friend, author__requester=request.user.id, author_id=author_id)| Q(visibility=Post.friend, author=request.user, author_id=author_id)) |
+                (Q(visibility=Post.FOAF, author__requester__requester=request.user.id, author_id=author_id)| Q(visibility=Post.friend, author=request.user, author_id=author_id)) |
+                (Q(visibility=Post.FOAF, author__requester__accepter=request.user.id, author_id=author_id)| Q(visibility=Post.friend, author=request.user, author_id=author_id)) |
+                (Q(visibility=Post.FOAF, author__accepter__requester=request.user.id, author_id=author_id)| Q(visibility=Post.friend, author=request.user, author_id=author_id)) |
+                (Q(visibility=Post.FOAF, author__accepter__accepter=request.user.id, author_id=author_id)| Q(visibility=Post.friend, author=request.user, author_id=author_id)) )
 
-    query = (Q(author__in=friends) & (Q(visibility=friend_only) | Q(visibility=foaf))) | ( Q(author__in=friend_of_friend) & Q(visibility=foaf) ) | (Q(visibility=public))
+        posts = Post.objects.filter(query)
+        print posts.query
+        posts = serializers.serialize("json", posts)
 
-    # user specified a specific user id they want to find
-    if author_id is not None:
-        query = ( query ) & Q(author_id=author_id)
+        #TODO Add Pagination
+        data = {"posts":posts};
 
-    #TODO Add Pagination
-    return Post.objects.filter(query)
+        return JsonResponse(data)
+    else:
+        return HttpResponse(status_code=406)
 
 def get_post(request,post_id=None,page="0"):
     if post_id is not None:
