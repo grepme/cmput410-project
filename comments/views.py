@@ -13,6 +13,7 @@ from friends.models import Friend
 def new_comment(request, source=None):
     if request.method == 'POST':
 
+        # Text from the context of the comment
         text = request.POST.get("text", "")
 
         # Images are in a dictionary that were encoded in the multipart
@@ -20,9 +21,8 @@ def new_comment(request, source=None):
             image = request.FILES['upload_image']
         else:
             image = None
-        # TODO : Don't rely on post title!
-        post_title = request.POST.get("post", "")
-        p = Post.objects.get(title=post_title)
+        post_id = request.POST.get("post_id", "")
+        p = Post.objects.get(id=post_id)
 
         # Fetch the user that uploaded this
         a = User.objects.get(username=request.user.username)
@@ -30,14 +30,13 @@ def new_comment(request, source=None):
         # Make the comment object
         c = Comment.objects.create(date=timezone.now(), text=text, image=image, post=p, author=a)
         c.save()
-        print("Saved")
-        print(c)
 
         # Since this is a view, redirect successfully
         return redirect('/dashboard/')
     else:
         # Accept only POST, otherwise, redirect
         return redirect('/')
+
 
 @login_required
 def posts_comments(request):
@@ -49,6 +48,5 @@ def posts_comments(request):
     # c = Comment.objects.filter(Q(text="justAtest"))
     c = Comment.objects.all()
     print c[0]
-
 
     return render(request, 'comments/post.html', {'comments': c})
