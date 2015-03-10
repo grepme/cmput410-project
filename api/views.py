@@ -12,11 +12,6 @@ from tags.models import Tag
 from django.contrib.auth.models import User
 
 '''
-    private = 1
-    friend = 2
-    FOAF = 3
-    server = 4
-    public = 5
     visibilityChoices = (
         (private, 'Private'),
         (friend, 'Friend'),
@@ -30,7 +25,6 @@ from django.contrib.auth.models import User
 
 @login_required
 def get_posts(request,author_id=None,page="0"):
-    print(author_id,page)
     #author/posts
     #author/author_id/posts
 
@@ -47,15 +41,18 @@ def get_posts(request,author_id=None,page="0"):
     # Check if we are direct friends, see if post is visibile by friends or FOAF
     # next check for posts from FOAF, check visibilty FOAF
     # After we can get all public posts
-    query = (Q(author__in=friends) & (Q(visibility=2) | Q(visibility=3))) | ( Q(author__in=friend_of_friend) & Q(visibility=3) ) | (Q(visibility=5))
+    public = Post.get_visibility('Public')
+    foaf = Post.get_visibilty('Friend of A Friend')
+    friend_only = Post.get_visibilty('Friend')
+
+    query = (Q(author__in=friends) & (Q(visibility=friend_only) | Q(visibility=foaf))) | ( Q(author__in=friend_of_friend) & Q(visibility=foaf) ) | (Q(visibility=public))
 
     # user specified a specific user id they want to find
     if author_id is not None:
         query = ( query ) & Q(author_id=author_id)
 
+    #TODO Add Pagination
     return Post.objects.filter(query)
-
-
 
 def get_post(request,post_id=None,page="0"):
     if post_id is not None:
