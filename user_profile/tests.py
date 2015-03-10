@@ -141,7 +141,7 @@ class UserProfileTests(TestCase):
         self.assertEqual(response.status_code,405)
 
     def test_update_profile_valid(self):
-        ''' test update profile when not logged in '''
+        ''' test update profile when logged in '''
         request = self.factory.post('/profile/update/',{'display_name':'my new display name'})
         request.user = self.user
         add_session_to_request(request)
