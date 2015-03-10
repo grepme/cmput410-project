@@ -1,4 +1,5 @@
 python_pip "django"
+python_pip "commonmark"
 
 file "/etc/apache2/sites-available/project" do
     action :create

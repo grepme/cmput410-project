@@ -1,8 +1,11 @@
 from django.shortcuts import render, redirect
 from django.contrib.auth.decorators import login_required
+from django.http import HttpResponseNotAllowed
 from django.utils import timezone
 from posts.models import Post
 from django.contrib.auth.models import User
+from django.db.models import Q
+from friends.models import Friend
 
 # Create your views here
 
@@ -16,6 +19,7 @@ def new_post(request, source=None):
         source = origin
 
     if request.method == 'POST':
+
         title = request.POST.get("title", "")
 
         # Either commonmark or plain
@@ -53,4 +57,47 @@ def new_post(request, source=None):
         return redirect('/dashboard/')
     else:
         # Accept only POST, otherwise, redirect
-        redirect('/')
+        return redirect('/')
+
+
+@login_required
+def delete_post(request, guid):
+        try:
+            # Try to find the user the post belongs to
+            post = Post.objects.get(guid=guid, author__username=request.user.username)
+            post.delete()
+        except Post.DoesNotExist:
+            # Post doesn't exist or they don't have permission to delete it
+            pass
+
+        return redirect('/dashboard/')
+
+@login_required
+def all_posts(request):
+    """AJAX call that will grab all posts that a user can see."""
+
+    # Complex queries abound!
+    # https://docs.djangoproject.com/en/1.7/topics/db/queries/#complex-lookups-with-q-objects
+    # Any posts that are private and owned, public, are on this server, or are friends, or friends of friends.
+    # TODO: Friends of friends improvement. OH GOD MY EYES!
+    # TODO: DAMMIT DJANGO! ALLOW MORE NESTED JOINS!
+    p = Post.objects.filter(Q(visibility=Post.private, author__username=request.user.username) |
+                            Q(visibility=Post.public) | Q(visibility=Post.server) |
+                            Q(visibility=Post.friend, author__accepter=request.user.id) |
+                            Q(visibility=Post.friend, author__requester=request.user.id) |
+                            Q(visibility=Post.FOAF, author__requester__requester=request.user.id) |
+                            Q(visibility=Post.FOAF, author__requester__accepter=request.user.id) |
+                            Q(visibility=Post.FOAF, author__accepter__requester=request.user.id) |
+                            Q(visibility=Post.FOAF, author__accepter__accepter=request.user.id)
+    )
+
+    # Nested query lookups aren't supported, so we need to make multiple queries :(
+
+    return render(request, 'posts/all.html', {'posts': p})
+
+
+@login_required
+def my_posts(request):
+    """AJAX call that returns the user's posts"""
+    p = Post.objects.filter(author__username=request.user.username)
+    return render(request, 'posts/all.html', {'posts': p})

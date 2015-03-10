@@ -11,16 +11,6 @@ from posts.models import Post
 from tags.models import Tag
 from django.contrib.auth.models import User
 
-'''
-    visibilityChoices = (
-        (private, 'Private'),
-        (friend, 'Friend'),
-        (FOAF, 'Friend of A Friend'),
-        (server, 'Server'),
-        (public, 'Public'),
-    )
-'''
-
 # Create your views here.
 
 @login_required

@@ -11,6 +11,8 @@ class Post(models.Model):
         super(Post, self).__init__(*args, **kwargs)
         if not self.guid:
             self.guid = uuid.uuid1().__str__()
+        #self.guid = self.guid.replace("-", "_")
+
 
 
     private = 1
@@ -43,7 +45,7 @@ class Post(models.Model):
     visibility = models.IntegerField(choices=visibilityChoices)
 
     # guid
-    guid = models.CharField(max_length=55)
+    guid = models.CharField(max_length=55, default=None)
 
     @staticmethod
     def get_visibility(visibility):
