@@ -77,6 +77,40 @@
                     </form>
                 </div>
 
+                <!--TEST FOR NOW-->
+                <div class="row col-md-10 col-md-offset-1">
+                    <h3>New Comment</h3>
+                    <!-- Options -->
+                    <form id="new_comment" method="post" action="/comment/new/" enctype="multipart/form-data">
+                        {% csrf_token %}
+                        <!--<div style="margin: 0;" class="row col-md-10 well form-inline">-->
+                            <!--<div class="form-group col-md-3">-->
+                                <!--<button type="button" onclick="$(this).siblings('input').click();"-->
+                                        <!--class="btn btn-default"-->
+                                        <!--aria-label="Left Align">-->
+                                <!--<span class="glyphicon glyphicon-camera"-->
+                                      <!--aria-hidden="true"></span>-->
+                                <!--</button>-->
+                                <!--<input type="file" name="upload_image" id="upload_image" style="display:none;">-->
+                            <!--</div>-->
+                        <!--</div>-->
+                        <!-- Comment Content -->
+                        <div style="margin: 0; padding: 0;" class="row col-md-10 form-inline">
+                            <textarea style="width:100%" class="form-control" rows="2" form="new_comment"
+                                      name="text"></textarea>
+                        </div>
+                        <h4>Post Title to link to</h4>
+                        <div style="margin: 0; padding: 0;" class="row col-md-10 form-inline">
+                            <textarea style="width:50%" class="form-control" rows="2" form="new_comment"
+                                      name="post">This should</textarea>
+                        </div>
+                        <div style="margin: 0; padding: 0;" class="row col-md-10 form-inline">
+                            <input style="float:right;" class="btn button" type="submit" value="Add">
+                        </div>
+                    </form>
+                </div>
+                <!--END TEST FOR NOW-->
+
 
                 <div class="row col-md-10 col-md-offset-1">
 

@@ -5,6 +5,7 @@ from django.contrib import admin
 import framework.urls
 import user_profile.urls
 import posts.urls
+import comments.urls
 import dispatch_files.urls
 
 urlpatterns = patterns('',
@@ -15,6 +16,7 @@ urlpatterns = patterns('',
                        (r'^profile/', include(user_profile.urls)),
                        (r'^admin/', include(admin.site.urls)),
                        (r'^post/', include(posts.urls)),
+                       (r'^comment/', include(comments.urls)),
                        (r'^uploads/', include(dispatch_files.urls))
 )
 #

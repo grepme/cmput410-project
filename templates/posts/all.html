@@ -26,4 +26,9 @@
             <img style="max-width:100%" src="{{ post.image.url }}">
         </div>
     {% endif %}
+    <!-- Include all comments from post -->
+    <div class="row col-md-10" style="margin: 0; padding: 0;">
+        comment div here
+        {% include 'comments/post.html' %}
+    </div>
 {% endfor %}

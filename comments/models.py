@@ -14,4 +14,4 @@ class Comment(models.Model):
     author = models.ForeignKey(User)
 
     def __unicode__(self):
-        return self.date
+        return self.text[:10]
