@@ -33,6 +33,25 @@ class ApiViewTests(TestCase):
         json_obj = json.loads(response.content)
         self.assertEqual(json_obj['posts'],[])
 
+    def test_methods_posts(self):
+        ''' make sure we cant wrong methods '''
+
+        # Factory for get request
+        request = self.factory.post('/api/author/posts')
+        request.user = self.user;
+        response = get_posts(request)
+        self.assertEqual(response.status_code,405)
+
+        request = self.factory.delete('/api/author/posts')
+        request.user = self.user;
+        response = get_posts(request)
+        self.assertEqual(response.status_code,405)
+
+        request = self.factory.put('/api/author/posts')
+        request.user = self.user;
+        response = get_posts(request)
+        self.assertEqual(response.status_code,405)
+
 
     def test_author_posts_id_incorrect(self):
         ''' get the current logged in users visible posts '''
