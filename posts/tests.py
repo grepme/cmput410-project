@@ -65,15 +65,27 @@ class PostsViewTests(TestCase):
         response = new_post(request)
         self.assertEqual(response.status_code, 405)
 
+        request = self.factory.get('/post/new')
+        response = new_post(request)
+        self.assertEqual(response.status_code, 400)
+
         request = self.factory.delete('/post/new')
         request.user = self.user
         response = new_post(request)
         self.assertEqual(response.status_code, 405)
 
+        request = self.factory.delete('/post/new')
+        response = new_post(request)
+        self.assertEqual(response.status_code, 400)
+
         request = self.factory.put('/post/new')
         request.user = self.user
         response = new_post(request)
         self.assertEqual(response.status_code, 405)
+
+        request = self.factory.put('/post/new')
+        response = new_post(request)
+        self.assertEqual(response.status_code, 400)
 
     def test_delete(self):
         ''' Test deleting a post that the user has access to '''
@@ -101,6 +113,13 @@ class PostsViewTests(TestCase):
 
         self.assertEqual(len(Post.objects.filter(guid=self.post.guid)),0)
 
+    def test_delete_invalid_no_user(self):
+        ''' Tests model to see if we can delete a new post without a user '''
+        request = self.factory.delete('/post/delete/')
+
+        response = delete_post(request)
+        self.assertEqual(response.status_code, 400)
+
     def test_delete_unauthorized(self):
         ''' Test deleting a post that the user does not have access to '''
         request = self.factory.delete('/post/delete/')
@@ -114,24 +133,30 @@ class PostsViewTests(TestCase):
     def test_delete_wrong_methods(self):
         request = self.factory.post('/post/delete/')
         request.user = self.user
-
         response = delete_post(request,self.post.guid)
-
         self.assertEqual(response.status_code, 405)
+
+        request = self.factory.post('/post/delete/')
+        response = delete_post(request,self.post.guid)
+        self.assertEqual(response.status_code, 400)
 
         request = self.factory.get('/post/delete/')
         request.user = self.user
-
         response = delete_post(request,self.post.guid)
-
         self.assertEqual(response.status_code, 405)
+
+        request = self.factory.get('/post/delete/')
+        response = delete_post(request,self.post.guid)
+        self.assertEqual(response.status_code, 400)
 
         request = self.factory.put('/post/delete/')
         request.user = self.user
-
         response = delete_post(request,self.post.guid)
-
         self.assertEqual(response.status_code, 405)
+
+        request = self.factory.put('/post/delete/')
+        response = delete_post(request,self.post.guid)
+        self.assertEqual(response.status_code, 400)
 
         self.assertEqual(len(Post.objects.filter(guid=self.post.guid)),1)
 
@@ -146,6 +171,13 @@ class PostsViewTests(TestCase):
 
         self.assertEqual(response.status_code, 200)
         self.assertTemplateUsed(response,'post/all.html')
+
+    def test_get_all_invalid_no_user(self):
+        ''' Tests model to see if we can delete a new post without a user '''
+        request = self.factory.get('/post/all/')
+
+        response = delete_post(request)
+        self.assertEqual(response.status_code, 400)
 
     def test_get_all_posts_unauthorized(self):
         ''' Test getting all posts while not logged in '''
@@ -165,15 +197,27 @@ class PostsViewTests(TestCase):
         response = all_posts(request)
         self.assertEqual(response.status_code, 405)
 
+        request = self.factory.post('/post/all/')
+        response = all_posts(request)
+        self.assertEqual(response.status_code, 400)
+
         request = self.factory.delete('/post/all/')
         request.user = self.user
         response = all_posts(request)
         self.assertEqual(response.status_code, 405)
 
+        request = self.factory.delete('/post/all/')
+        response = all_posts(request)
+        self.assertEqual(response.status_code, 400)
+
         request = self.factory.put('/post/all/')
         request.user = self.user
         response = all_posts(request)
         self.assertEqual(response.status_code, 405)
+
+        request = self.factory.put('/post/all/')
+        response = all_posts(request)
+        self.assertEqual(response.status_code, 400)
 
     def test_get_my_posts(self):
         ''' Test getting my posts for the current user '''
@@ -194,12 +238,24 @@ class PostsViewTests(TestCase):
         response = my_posts(request)
         self.assertEqual(response.status_code, 405)
 
+        request = self.factory.post('/post/my/')
+        response = my_posts(request)
+        self.assertEqual(response.status_code, 400)
+
         request = self.factory.delete('/post/my/')
         request.user = self.user
         response = my_posts(request)
         self.assertEqual(response.status_code, 405)
 
+        request = self.factory.delete('/post/my/')
+        response = my_posts(request)
+        self.assertEqual(response.status_code, 400)
+
         request = self.factory.put('/post/my/')
         request.user = self.user
         response = my_posts(request)
         self.assertEqual(response.status_code, 405)
+
+        request = self.factory.delete('/post/my/')
+        response = my_posts(request)
+        self.assertEqual(response.status_code, 400)
