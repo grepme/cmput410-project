@@ -56,7 +56,7 @@ def new_post(request, source=None):
         return redirect('/dashboard/')
     else:
         # Accept only POST, otherwise, redirect
-        redirect('/')
+        return redirect('/')
 
 
 @login_required

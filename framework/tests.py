@@ -3,7 +3,6 @@ from django.test import TestCase, RequestFactory
 
 from framework.views import login,dashboard,logout
 from django.contrib.sessions.middleware import SessionMiddleware
-from django.contrib.sessions.middleware import SessionMiddleware
 
 # Create your tests here.
 
