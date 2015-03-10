@@ -1,6 +1,9 @@
 from django.contrib.auth.models import AnonymousUser, User
 from django.test import TestCase, RequestFactory
+from django.db import IntegrityError
 from django.utils import timezone
+
+from uuid import UUID
 
 from posts.views import new_post, delete_post, all_posts, my_posts
 from posts.models import Post
@@ -29,7 +32,29 @@ class PostsViewTests(TestCase):
 
         self.assertEqual(len(Post.objects.filter(title='my new title')),1)
 
-    def test_new_post_wrong_type(self):
+    def test_new_post_invalid_field(self):
+        ''' Tests model to see if we can add a new post with an invalid visibility '''
+        invalid_field = timezone.now()
+        request = self.factory.post('/post/new',{'title':'valid title', 'content_type':'text',
+                                                 'visibility':invalid_field})
+        request.user = self.user
+        try:
+            response = new_post(request)
+            assert False
+        except IntegrityError:
+            assert True
+
+    def test_new_post_invalid_no_user(self):
+        ''' Tests model to see if we can add a new post without a user '''
+        request = self.factory.post('/post/new',{'title':'OK title','content_type':'text','visibility':'Public'})
+        # request.user = self.user
+        try:
+            response = new_post(request)
+            assert False
+        except AttributeError:
+            assert True
+
+    def test_new_post_wrong_methods(self):
         ''' tests if we can do a get to create a new post we should not'''
         request = self.factory.get('/post/new')
         request.user = self.user
@@ -56,6 +81,19 @@ class PostsViewTests(TestCase):
         self.assertEqual(response.__class__.__name__,'HttpResponseRedirect')
         self.assertEqual(response.status_code, 302)
         self.assertEqual(response.url, '/dashboard/')
+
+        self.assertEqual(len(Post.objects.filter(guid=self.post.guid)),0)
+
+    def test_delete_nonexistent(self):
+        ''' Test deleting a post that does not exist '''
+        request = self.factory.delete('/post/delete/')
+        request.user = self.user
+        self.post.guid = UUID('{12345678-1234-5678-1234-567812345678}')
+
+        response = delete_post(request,self.post.guid)
+
+        self.assertEqual(response.__class__.__name__,'HttpResponseRedirect')
+        self.assertEqual(response.status_code, 404)
 
         self.assertEqual(len(Post.objects.filter(guid=self.post.guid)),0)
 
@@ -105,7 +143,7 @@ class PostsViewTests(TestCase):
         self.assertEqual(response.status_code, 200)
         self.assertTemplateUsed(response,'post/all.html')
 
-    def test_get_all_posts(self):
+    def test_get_all_posts_unauthorized(self):
         ''' Test getting all posts while not logged in '''
         request = self.factory.get('/post/all/')
         request.user = AnonymousUser()
