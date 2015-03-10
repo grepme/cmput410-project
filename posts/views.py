@@ -1,5 +1,6 @@
 from django.shortcuts import render, redirect
 from django.contrib.auth.decorators import login_required
+from django.http import HttpResponseNotAllowed
 from django.utils import timezone
 from posts.models import Post
 from django.contrib.auth.models import User
@@ -61,16 +62,15 @@ def new_post(request, source=None):
 
 @login_required
 def delete_post(request, guid):
-    try:
-        # Try to find the user the post belongs to
-        post = Post.objects.get(guid=guid, author__username=request.user.username)
-        post.delete()
-    except Post.DoesNotExist:
-        # Post doesn't exist or they don't have permission to delete it
-        pass
+        try:
+            # Try to find the user the post belongs to
+            post = Post.objects.get(guid=guid, author__username=request.user.username)
+            post.delete()
+        except Post.DoesNotExist:
+            # Post doesn't exist or they don't have permission to delete it
+            pass
 
-    return redirect('/dashboard/')
-
+        return redirect('/dashboard/')
 
 @login_required
 def all_posts(request):
