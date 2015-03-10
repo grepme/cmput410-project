@@ -8,6 +8,8 @@ class PostsViewTests(TestCase):
     def setUp(self):
         self.factory = RequestFactory()
         self.user = User.objects.create_user(username='test',email='test@test.com',password='test')
+        self.post = Post.objects.create(title='randomtitle', date=timezone.now(), text='sometext', image=None,
+                                 visibility=Post.friend, commonmark=false, author=self.user)
 
     def test_new_post(self):
         request = self.factory.post('/post/new',{'title':'my new title', 'content_type':'text','visibility':'Public'})
@@ -31,3 +33,14 @@ class PostsViewTests(TestCase):
         self.assertEqual(response.status_code, 302)
         self.assertEqual(response.url, '/')
 
+    def test_delete_post(self):
+        request = self.factory.delete('/post/delete/%s' % self.post.id)
+        request.user = self.user
+
+        response = delete_post(request)
+
+        self.assertEqual(response.__class__.__name__,'HttpResponseRedirect')
+        self.assertEqual(response.status_code, 302)
+        self.assertEqual(response.url, '/dashboard/')
+
+        self.assertEqual(len(Post.objects.filter(guid=self.post.id)),0)
