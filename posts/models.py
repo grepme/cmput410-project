@@ -50,7 +50,7 @@ class Post(models.Model):
     guid = models.CharField(max_length=55, default=None)
 
     def visibility_string(self):
-        return Post.visibilityChoices[self.visibility][1]
+        return Post.visibilityChoices[self.visibility-1][1]
 
     def as_dict(self): 
         return {
