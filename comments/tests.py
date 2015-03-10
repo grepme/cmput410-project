@@ -3,7 +3,7 @@ from django.test import TestCase, RequestFactory
 from django.utils import timezone
 
 from posts.views import new_post, delete_post, all_posts, my_posts
-from comments.views import new_comment
+from comments.views import new_comment, posts_comments
 from posts.models import Post
 from comments.models import Comment
 
@@ -16,7 +16,7 @@ class PostsViewTests(TestCase):
                                  visibility=Post.friend, commonmark=False, author=self.user, origin="localhost", source="localhost")
         # self.post2 = Post.objects.create(title='randomtitle2', date=timezone.now(), text='sometext', image=None,
         #                          visibility=Post.friend, commonmark=False, author=self.user2, origin="localhost", source="localhost")
-        self.comment = Comment.objects.create(date=timezone.now(), text='commentText', image=None, post=self.post, author=self.user)
+        self.comment = Comment.objects.create(date=timezone.now(), text='justAtest', image=None, post=self.post, author=self.user)
 
 
     def test_new_comment(self):
@@ -31,3 +31,19 @@ class PostsViewTests(TestCase):
         self.assertEqual(response.__class__.__name__,'HttpResponseRedirect')
         self.assertEqual(response.status_code, 302)
         self.assertEqual(response.url, '/dashboard/')
+
+        self.assertEqual(len(Comment.objects.filter(text='justAtest')),1)
+
+    def test_get_posts_comment(self):
+        post = Post.objects.get(title=self.post.title)
+        ''' Tests if we can get comments associated to a post '''
+        request = self.factory.get('/comments/post',{"text":'new comment text', "post":post, "author":self.user})
+        request.user = self.user
+
+        response = posts_comments(request)
+
+        # self.assertEqual(response.__class__.__name__,'HttpResponseRedirect')
+        self.assertEqual(response.status_code, 200)
+        # self.assertEqual(response.url, '/dashboard/')
+
+        self.assertEqual(len(Comment.objects.filter(text='justAtest')),1)

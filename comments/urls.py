@@ -3,7 +3,7 @@ from django.conf.urls import patterns, include, url
 urlpatterns = patterns('comments.views',
                        (r'^new/$', 'new_comment'),
                        # (r'^delete/(?P<guid>[-\w]+)/$', 'delete_post'),
-                       (r'^post', 'posts_comments'),
+                       (r'^post/$', 'posts_comments'),
                        # (r'^my/', 'my_posts')
 )
 

@@ -22,8 +22,6 @@ def new_comment(request, source=None):
             image = None
         # TODO : Don't rely on post title!
         post_title = request.POST.get("post", "")
-        print("TITLE")
-        print(post_title)
         p = Post.objects.get(title=post_title)
 
         # Fetch the user that uploaded this
@@ -32,6 +30,8 @@ def new_comment(request, source=None):
         # Make the comment object
         c = Comment.objects.create(date=timezone.now(), text=text, image=image, post=p, author=a)
         c.save()
+        print("Saved")
+        print(c)
 
         # Since this is a view, redirect successfully
         return redirect('/dashboard/')
@@ -41,9 +41,14 @@ def new_comment(request, source=None):
 
 @login_required
 def posts_comments(request):
+    print("You Got To Me")
+    # if request.method == 'GET':
     """AJAX call that will grab all comments belonging to a post."""
-    print("YOU ARE A GENIUS!")
-    # TODO: Add all other filters
-    c = Comment.objects.filter(Q(text="justAtest"))
+    print(request)
+    # TODO: Add all filters
+    # c = Comment.objects.filter(Q(text="justAtest"))
+    c = Comment.objects.all()
+    print c[0]
 
-    return render(request, 'comments/posts.html', {'comments': c})
+
+    return render(request, 'comments/post.html', {'comments': c})
