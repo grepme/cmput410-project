@@ -58,18 +58,13 @@ def get_posts(request,author_id=None,page="0"):
                 Q(visibility=Post.FOAF, author__accepter__accepter=request.user.id) )
 
         # user specified a specific user id they want to find
-        if author_id is not None:
-            query = ( Q(visibility=Post.private, author__username=request.user.username, author_id=author_id) |
-                Q(visibility=Post.public, author_id=author_id) | Q(visibility=Post.server, author_id=author_id) |
-                (Q(visibility=Post.friend, author__accepter=request.user.id, author_id=author_id) | Q(visibility=Post.friend, author=request.user, author_id=author_id)) |
-                (Q(visibility=Post.friend, author__requester=request.user.id, author_id=author_id)| Q(visibility=Post.friend, author=request.user, author_id=author_id)) |
-                (Q(visibility=Post.FOAF, author__requester__requester=request.user.id, author_id=author_id)| Q(visibility=Post.friend, author=request.user, author_id=author_id)) |
-                (Q(visibility=Post.FOAF, author__requester__accepter=request.user.id, author_id=author_id)| Q(visibility=Post.friend, author=request.user, author_id=author_id)) |
-                (Q(visibility=Post.FOAF, author__accepter__requester=request.user.id, author_id=author_id)| Q(visibility=Post.friend, author=request.user, author_id=author_id)) |
-                (Q(visibility=Post.FOAF, author__accepter__accepter=request.user.id, author_id=author_id)| Q(visibility=Post.friend, author=request.user, author_id=author_id)) )
+        if author_id is not None and author_id != request.user.id:
+            query = ( query ) & Q(author_id=author_id)
+        elif author_id is not None:
+            # author id = same user
+            query = Q(author_id=request.user.id)
 
         posts = Post.objects.filter(query)
-        print posts.query
         posts = serializers.serialize("json", posts)
 
         #TODO Add Pagination

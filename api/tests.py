@@ -38,11 +38,27 @@ class ApiViewTests(TestCase):
                                  visibility=Post.friend, commonmark=False, author=self.user, origin="localhost", source="localhost")
 
         # Factory for get request
+        request = self.factory.get('/api/author/%d/posts' % self.user2.id)
+
+        # Set the user
+        request.user = self.user;
+
+        response = get_posts(request,self.user2.id)
+        json_obj = json.loads(response.content)
+        self.assertEqual(json_obj['posts'],u'[]')
+
+    def test_author_posts_id(self):
+        ''' get the current logged in users visible posts '''
+
+        Post.objects.create(title='randomtitle', date=timezone.now(), text='sometext', image=None,
+                                 visibility=Post.friend, commonmark=False, author=self.user, origin="localhost", source="localhost")
+
+        # Factory for get request
         request = self.factory.get('/api/author/%d/posts' % self.user.id)
-        print('/api/author/%d/posts' % self.user2.id)
 
         # Set the user
         request.user = self.user;
 
         response = get_posts(request,self.user.id)
-        print (response)
+        json_obj = json.loads(response.content)
+        self.assertEqual(len(json_obj['posts']),1)

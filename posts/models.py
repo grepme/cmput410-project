@@ -21,11 +21,11 @@ class Post(models.Model):
     server = 4
     public = 5
     visibilityChoices = (
-        (private, 'Private'),
-        (friend, 'Friend'),
-        (FOAF, 'Friend of A Friend'),
-        (server, 'Server'),
-        (public, 'Public'),
+        (private, 'PRIVATE'),
+        (friend, 'FRIEND'),
+        (FOAF, 'FOAF'),
+        (server, 'SERVER'),
+        (public, 'PUBLIC'),
     )
 
     # 55 characters is (usually) enough to show up in a Google search
@@ -46,6 +46,31 @@ class Post(models.Model):
 
     # guid
     guid = models.CharField(max_length=55, default=None)
+
+    def json(self):
+        return json.dumps({
+            "title": self.title,
+            "source": self.source,
+            "origin": self.origin,
+            # TODO: implement description
+            "description": "",
+            "content-type": get_content_type(self.commonmark),
+            "content": self.content,
+            "author": self.author,
+            "categories": self.tags,
+            "comments": [], 
+            "pubDate": self.date,
+            "guid": self.guid, 
+            "visibility": 
+            })
+
+    @staticmethod
+    def get_content_type(commonmark):
+        if commonmark:
+            return "text/x-markdown"
+        else: 
+            return "text/plain"
+
 
     @staticmethod
     def get_visibility(visibility):
