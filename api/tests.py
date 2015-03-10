@@ -33,7 +33,7 @@ class ApiViewTests(TestCase):
         json_obj = json.loads(response.content)
         self.assertEqual(json_obj['posts'],[])
 
-    def test_methods_posts(self):
+    def test_methods_author_posts(self):
         ''' make sure we cant wrong methods '''
 
         # Factory for get request
@@ -159,3 +159,84 @@ class ApiViewTests(TestCase):
 
         response = get_posts(request)
         self.assertEqual(response.status_code,406)
+
+    def test_invalid_accept_api_posts(self):
+        ''' try to get with invalid accept /api/posts'''
+
+        # Factory for get request
+        request = self.factory.get('/api/posts',Accept='html/text')
+
+        # Set the user
+        request.user = self.user;
+        response = get_post(request)
+        self.assertEqual(response.status_code,406)
+
+    def test_invalid_accept_api_posts_id(self):
+        post_id = 200
+        ''' try to get with invalid accept /api/posts/200'''
+
+        # Factory for get request
+        request = self.factory.get('/api/posts/%d' % post_id,Accept='html/text')
+
+        # Set the user
+        request.user = self.user;
+        response = get_post(request,post_id)
+        self.assertEqual(response.status_code,406)
+
+
+    def test_methods_posts(self):
+        ''' make sure we cant wrong methods '''
+
+        # Factory for get request
+        request = self.factory.post('/api/posts')
+        request.user = self.user;
+        response = get_posts(request)
+        self.assertEqual(response.status_code,405)
+
+        request = self.factory.delete('/api/posts')
+        request.user = self.user;
+        response = get_posts(request)
+        self.assertEqual(response.status_code,405)
+
+        request = self.factory.put('/api/posts')
+        request.user = self.user;
+        response = get_posts(request)
+        self.assertEqual(response.status_code,405)
+
+    def test_post_id_doesnot_exist(self):
+        ''' try to get a invalid post'''
+
+        post_id = 20000
+
+        Post.objects.create(title='randomtitlepublic', date=timezone.now(), text='sometext', image=None,
+                                 visibility=Post.public, commonmark=False, author=self.user2, origin="localhost", source="localhost")
+
+        # Factory for get request
+        request = self.factory.get('/api/posts/%d/' % post_id )
+
+        # Set the user
+        request.user = self.user;
+
+        response = get_post(request,post_id)
+        json_obj = json.loads(response.content)
+        self.assertEqual(response.status_code,404)
+        self.assertEqual(json_obj['message'],"Post with id %d does not exist" % post_id)
+
+    def test_post_id_exist(self):
+        ''' try to get a post'''
+
+        post = Post.objects.create(title='randomtitlepublic', date=timezone.now(), text='sometext', image=None,
+                                 visibility=Post.public, commonmark=False, author=self.user2, origin="localhost", source="localhost")
+
+        # Factory for get request
+        request = self.factory.get('/api/posts/%d/' % post.id )
+
+        # Set the user
+        request.user = self.user;
+
+        response = get_post(request,post.id)
+        json_obj = json.loads(response.content)
+        self.assertEqual(response.status_code,200)
+        self.assertEqual(len(json_obj['posts']),1)
+
+

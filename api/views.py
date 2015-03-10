@@ -73,6 +73,20 @@ class SetEncoder(json.JSONEncoder):
           return list(obj)
        return json.JSONEncoder.default(self, obj)
 
+def get_post_query(request):
+        return ( Q(visibility=Post.private, author__username=request.user.username) |
+        Q(visibility=Post.public) | Q(visibility=Post.server) |
+        Q(visibility=Post.friend, author__accepter=request.user.id) |
+        Q(visibility=Post.friend, author__requester=request.user.id) |
+        Q(visibility=Post.FOAF, author__requester__requester=request.user.id) |
+        Q(visibility=Post.FOAF, author__requester__accepter=request.user.id) |
+        Q(visibility=Post.FOAF, author__accepter__requester=request.user.id) |
+        Q(visibility=Post.FOAF, author__accepter__accepter=request.user.id) )
+
+def post_list(posts_query):
+    return list(obj.as_dict() for obj in posts_query)
+
+
 
 @login_required
 @require_http_methods(["GET"])
@@ -81,14 +95,7 @@ def get_posts(request,author_id=None,page="0"):
     #author/posts
     #author/author_id/posts
 
-    query = ( Q(visibility=Post.private, author__username=request.user.username) |
-        Q(visibility=Post.public) | Q(visibility=Post.server) |
-        Q(visibility=Post.friend, author__accepter=request.user.id) |
-        Q(visibility=Post.friend, author__requester=request.user.id) |
-        Q(visibility=Post.FOAF, author__requester__requester=request.user.id) |
-        Q(visibility=Post.FOAF, author__requester__accepter=request.user.id) |
-        Q(visibility=Post.FOAF, author__accepter__requester=request.user.id) |
-        Q(visibility=Post.FOAF, author__accepter__accepter=request.user.id) )
+    query = get_post_query(request)
 
     # user specified a specific user id they want to find
     if author_id is not None and author_id != request.user.id:
@@ -109,30 +116,51 @@ def get_posts(request,author_id=None,page="0"):
             return response
 
     posts_query = Post.objects.filter(query)
-    posts = list(obj.as_dict() for obj in posts_query)
+    posts = post_list(posts_query)
 
     #TODO Add Pagination
     data = {"posts":posts};
 
     return JsonResponse(data)
 
+@login_required
+@require_http_methods(["GET"])
+@require_http_accept(['application/json'])
 def get_post(request,post_id=None,page="0"):
+    return_data = list()
     if post_id is not None:
-        try:
-            post = Post.objects.get(post_id)
-        except Post.DoesNotExist as e:
+
+        query = get_post_query(request) & Q(id=post_id)
+        posts_query = Post.objects.filter(query)
+        return_data = post_list(posts_query)
+
+        if len(posts_query) == 0:
             response = JsonResponse({"message":"Post with id %d does not exist" % post_id})
             response.status_code = 404
             return response
 
     else:
-        return Post.objects.filter(visibility=Post.public).order_by('-date')
+        posts_query = Post.objects.filter(visibility=Post.public).order_by('-date')
+        return_data = post_list(posts_query)
 
-def friend_request(request,page="1"):
+    # TODO Add pagination
+    return JsonResponse({"posts":return_data})
+
+@login_required
+@require_http_methods(["POST"])
+@require_http_accept(['application/json'])
+def friend_request(request,page="0"):
     return None
 
-def get_friends(request,page="1"):
+
+@login_required
+@require_http_methods(["GET"])
+@require_http_accept(['application/json'])
+def get_friends(request,page="0"):
     return None
 
-def is_friend(request,page="1"):
+@login_required
+@require_http_methods(["GET"])
+@require_http_accept(['application/json'])
+def is_friend(request,page="0"):
     return None
