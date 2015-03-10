@@ -38,21 +38,25 @@ class PostsViewTests(TestCase):
         request = self.factory.post('/post/new',{'title':'valid title', 'content_type':'text',
                                                  'visibility':invalid_field})
         request.user = self.user
-        try:
-            response = new_post(request)
-            assert False
-        except IntegrityError:
-            assert True
+        response = new_post(request)
+        self.assertEqual(response.status_code, 400)
+        # try:
+        #     response = new_post(request)
+        #     assert False
+        # except IntegrityError:
+        #     assert True
 
     def test_new_post_invalid_no_user(self):
         ''' Tests model to see if we can add a new post without a user '''
         request = self.factory.post('/post/new',{'title':'OK title','content_type':'text','visibility':'Public'})
-        # request.user = self.user
-        try:
-            response = new_post(request)
-            assert False
-        except AttributeError:
-            assert True
+
+        response = new_post(request)
+        self.assertEqual(response.status_code, 400)
+        # try:
+        #     response = new_post(request)
+        #     assert False
+        # except AttributeError:
+        #     assert True
 
     def test_new_post_wrong_methods(self):
         ''' tests if we can do a get to create a new post we should not'''
