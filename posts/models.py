@@ -47,6 +47,9 @@ class Post(models.Model):
     # guid
     guid = models.CharField(max_length=55, default=None)
 
+    def visibility_string(self):
+        return visibilityChoices[self.visibility][1]
+
     def json(self):
         return json.dumps({
             "title": self.title,
@@ -61,7 +64,7 @@ class Post(models.Model):
             "comments": [], 
             "pubDate": self.date,
             "guid": self.guid, 
-            "visibility": 
+            "visibility": self.visibility_string()
             })
 
     @staticmethod
