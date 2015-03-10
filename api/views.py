@@ -11,7 +11,7 @@ import pickle
 
 from comments.models import Comment
 from friends.models import Friend, Follow
-from posts.models import Post
+from posts.models import Post, PostEncoder
 from tags.models import Tag
 from django.contrib.auth.models import User
 from django.http import JsonResponse
@@ -64,8 +64,8 @@ def get_posts(request,author_id=None,page="0"):
             # author id = same user
             query = Q(author_id=request.user.id)
 
-        posts = Post.objects.filter(query)
-        posts = serializers.serialize("json", posts)
+        posts_query = Post.objects.filter(query)
+        posts = list(obj.as_dict() for obj in posts_query)
 
         #TODO Add Pagination
         data = {"posts":posts};

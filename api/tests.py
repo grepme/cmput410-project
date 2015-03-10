@@ -1,5 +1,6 @@
 from django.contrib.auth.models import AnonymousUser, User
 from posts.models import Post
+from user_profile.models import Profile
 from django.test import TestCase, RequestFactory
 from django.utils import timezone
 import json
@@ -14,6 +15,7 @@ class ApiViewTests(TestCase):
         self.factory = RequestFactory()
         self.user = User.objects.create_user(
             username='chris', email='chris@email.com', password='top_secret')
+        self.user_profile = Profile.objects.create(author=self.user,display_name="Chris")
         self.user2 = User.objects.create_user(
             username='ffff', email='chris@email.com', password='top_secret')
 
@@ -28,10 +30,10 @@ class ApiViewTests(TestCase):
 
         response = get_posts(request)
         json_obj = json.loads(response.content)
-        self.assertEqual(json_obj['posts'],u'[]')
+        self.assertEqual(json_obj['posts'],[])
 
 
-    def test_author_posts_id(self):
+    def test_author_posts_id_incorrect(self):
         ''' get the current logged in users visible posts '''
 
         Post.objects.create(title='randomtitle', date=timezone.now(), text='sometext', image=None,
@@ -45,9 +47,9 @@ class ApiViewTests(TestCase):
 
         response = get_posts(request,self.user2.id)
         json_obj = json.loads(response.content)
-        self.assertEqual(json_obj['posts'],u'[]')
+        self.assertEqual(json_obj['posts'],[])
 
-    def test_author_posts_id(self):
+    def test_author_posts_id_correct(self):
         ''' get the current logged in users visible posts '''
 
         Post.objects.create(title='randomtitle', date=timezone.now(), text='sometext', image=None,
