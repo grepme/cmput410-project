@@ -22,6 +22,8 @@ def new_comment(request, source=None):
             image = None
         # TODO : Don't rely on post title!
         post_title = request.POST.get("post", "")
+        print("TITLE")
+        print(post_title)
         p = Post.objects.get(title=post_title)
 
         # Fetch the user that uploaded this
@@ -36,3 +38,12 @@ def new_comment(request, source=None):
     else:
         # Accept only POST, otherwise, redirect
         return redirect('/')
+
+@login_required
+def posts_comments(request):
+    """AJAX call that will grab all comments belonging to a post."""
+    print("YOU ARE A GENIUS!")
+    # TODO: Add all other filters
+    c = Comment.objects.filter(Q(text="justAtest"))
+
+    return render(request, 'comments/posts.html', {'comments': c})
