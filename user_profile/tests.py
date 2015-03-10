@@ -30,6 +30,14 @@ class UserProfileTests(TestCase):
         self.assertEqual(response.status_code,302)
         self.assertEqual(response.url,'/login/?next=/profile/test/')
 
+    def test_get_user_profile_no_user(self):
+        ''' test get user profile without a user '''
+        request = self.factory.get('/profile/test/')
+        add_session_to_request(request)
+
+        response = profile(request)
+        self.assertEqual(response.status_code, 400)
+
     def test_get_user_profile(self):
         ''' test get user profile '''
         request = self.factory.get('/profile/test/')
@@ -44,7 +52,7 @@ class UserProfileTests(TestCase):
         request = self.factory.get('/profile/')
         request.user = self.user
         add_session_to_request(request)
-        response = profile(request)
+        response = user_profile(request)
         self.assertEqual(response.status_code,302)
         self.assertEqual(response.url,'/profile/test/')
 
@@ -72,8 +80,15 @@ class UserProfileTests(TestCase):
         add_session_to_request(request)
 
         response = user_profile(request)
-
         self.assertEqual(response.status_code,302)
+
+    def test_get_profile_no_user(self):
+        ''' test get profile with no user '''
+        request = self.factory.get('/profile/')
+        add_session_to_request(request)
+
+        response = user_profile(request)
+        self.assertEqual(response.status_code, 400)
 
     def test_other_methods_profile(self):
         ''' test other methods profile when not logged in '''
@@ -82,15 +97,27 @@ class UserProfileTests(TestCase):
         response = profile(request)
         self.assertEqual(response.status_code,405)
 
+        request = self.factory.post('/profile/')
+        response = profile(request)
+        self.assertEqual(response.status_code,400)
+
         request = self.factory.delete('/profile/')
         request.user = AnonymousUser()
         response = profile(request)
         self.assertEqual(response.status_code,405)
 
+        request = self.factory.delete('/profile/')
+        response = profile(request)
+        self.assertEqual(response.status_code,400)
+
         request = self.factory.put('/profile/')
         request.user = AnonymousUser()
         response = profile(request)
         self.assertEqual(response.status_code,405)
+
+        request = self.factory.put('/profile/')
+        response = profile(request)
+        self.assertEqual(response.status_code,400)
 
     def test_update_profile(self):
         ''' test update profile when not logged in '''
@@ -102,6 +129,14 @@ class UserProfileTests(TestCase):
         self.assertEqual(response.status_code,302)
         self.assertEqual(response.url,'/login/?next=/profile/update/')
 
+    def test_update_profile_no_user(self):
+        ''' test update profile with no user'''
+        request = self.factory.post('/profile/update/')
+        add_session_to_request(request)
+
+        response = user_profile(request)
+        self.assertEqual(response.status_code, 400)
+
     def test_update_profile_invalid_methods(self):
         ''' test update profile invalid methods when not logged in '''
         request = self.factory.get('/profile/update/')
@@ -110,17 +145,32 @@ class UserProfileTests(TestCase):
         response = user_profile(request)
         self.assertEqual(response.status_code,405)
 
+        request = self.factory.get('/profile/update/')
+        add_session_to_request(request)
+        response = user_profile(request)
+        self.assertEqual(response.status_code,400)
+
         request = self.factory.delete('/profile/update/')
         request.user = AnonymousUser()
         add_session_to_request(request)
         response = user_profile(request)
         self.assertEqual(response.status_code,405)
 
+        request = self.factory.delete('/profile/update/')
+        add_session_to_request(request)
+        response = user_profile(request)
+        self.assertEqual(response.status_code,400)
+
         request = self.factory.put('/profile/update/')
         request.user = AnonymousUser()
         add_session_to_request(request)
         response = user_profile(request)
         self.assertEqual(response.status_code,405)
+
+        request = self.factory.put('/profile/update/')
+        add_session_to_request(request)
+        response = user_profile(request)
+        self.assertEqual(response.status_code,400)
 
         request = self.factory.get('/profile/update/')
         request.user = self.user
