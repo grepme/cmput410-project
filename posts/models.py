@@ -45,7 +45,7 @@ class Post(models.Model):
     visibility = models.IntegerField(choices=visibilityChoices)
 
     # guid
-    guid = models.CharField(max_length=55)
+    guid = models.CharField(max_length=55, default=None)
 
     @staticmethod
     def get_visibility(visibility):

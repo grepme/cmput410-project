@@ -29,12 +29,9 @@ def login(request):
 def dashboard(request):
     """The dashboard contains all required information for the social network."""
     # Grab the user's stream (needs to be updated)
+    # TODO: Is the stream only their posts?
     posts = Post.objects.filter(author__username=request.user.username)
-    # Grab the user's posts
-    my_posts = Post.objects.filter(author__username=request.user.username)
-    # Grab all the posts visible to the user (public, or ones you're friends wiht and have the appropriate filter)
-    all_posts = Post.objects.all()
-    return render(request, 'framework/dashboard.html', {'posts': posts, 'my_posts': my_posts, 'all_posts': all_posts})
+    return render(request, 'framework/dashboard.html', {'posts': posts})
 
 
 @login_required()
