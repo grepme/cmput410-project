@@ -71,7 +71,7 @@ class ApiViewTests(TestCase):
 
         Post.objects.create(title='randomtitlepublic', date=timezone.now(), text='sometext', image=None,
                                  visibility=Post.public, commonmark=False, author=self.user2, origin="localhost", source="localhost")
-        
+
         Post.objects.create(title='randomtitle', date=timezone.now(), text='sometext', image=None,
                                  visibility=Post.friend, commonmark=False, author=self.user2, origin="localhost", source="localhost")
         Post.objects.create(title='randomtitle', date=timezone.now(), text='sometext', image=None,
@@ -89,3 +89,54 @@ class ApiViewTests(TestCase):
         json_obj = json.loads(response.content)
         self.assertEqual(len(json_obj['posts']),1)
         self.assertEqual(json_obj['posts'][0]['title'],'randomtitlepublic')
+
+    def test_author_posts_id_doesnot_exist(self):
+        ''' try to get a invalid users posts'''
+
+        author_id = 20000
+
+        Post.objects.create(title='randomtitlepublic', date=timezone.now(), text='sometext', image=None,
+                                 visibility=Post.public, commonmark=False, author=self.user2, origin="localhost", source="localhost")
+
+        Post.objects.create(title='randomtitle', date=timezone.now(), text='sometext', image=None,
+                                 visibility=Post.friend, commonmark=False, author=self.user2, origin="localhost", source="localhost")
+        Post.objects.create(title='randomtitle', date=timezone.now(), text='sometext', image=None,
+                                 visibility=Post.private, commonmark=False, author=self.user2, origin="localhost", source="localhost")
+        Post.objects.create(title='randomtitle', date=timezone.now(), text='sometext', image=None,
+                                 visibility=Post.FOAF, commonmark=False, author=self.user2, origin="localhost", source="localhost")
+
+        # Factory for get request
+        request = self.factory.get('/api/author/%d/posts' % author_id)
+
+        # Set the user
+        request.user = self.user;
+
+        response = get_posts(request,author_id)
+        json_obj = json.loads(response.content)
+        self.assertEqual(response.status_code,404)
+        self.assertEqual(json_obj['message'],"Author with id %d does not exist" % author_id)
+
+    def test_invalid_accept(self):
+        ''' try to get with invalid accept '''
+
+        # Factory for get request
+        request = self.factory.get('/api/author/%d/posts' % self.user2.id,Accept='html/text')
+
+        # Set the user
+        request.user = self.user;
+
+        response = get_posts(request,self.user2.id)
+        self.assertEqual(response.status_code,406)
+
+
+    def test_invalid_accept_2(self):
+        ''' try to get with invalid accept '''
+
+        # Factory for get request
+        request = self.factory.get('/api/author/posts',Accept='html/text')
+
+        # Set the user
+        request.user = self.user;
+
+        response = get_posts(request)
+        self.assertEqual(response.status_code,406)

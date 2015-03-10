@@ -43,8 +43,8 @@ def get_posts(request,author_id=None,page="0"):
     valid_accept = True
 
     # check specificed content
-    if 'ACCEPT' in request.META:
-        accept_type = request.META['ACCEPT']
+    if 'Accept' in request.META:
+        accept_type = request.META['Accept']
         valid_accept = check_accept_type(accept_type)
 
     if valid_accept:
@@ -64,6 +64,16 @@ def get_posts(request,author_id=None,page="0"):
             # author id = same user
             query = Q(author_id=request.user.id)
 
+        # Check if user is valid
+        if author_id is not None:
+            try:
+                User.objects.get(id=author_id)
+            except User.DoesNotExist as e:
+                # return a better error for missing user
+                response = JsonResponse({"message":"Author with id %d does not exist" % author_id})
+                response.status_code = 404
+                return response
+
         posts_query = Post.objects.filter(query)
         posts = list(obj.as_dict() for obj in posts_query)
 
@@ -72,7 +82,9 @@ def get_posts(request,author_id=None,page="0"):
 
         return JsonResponse(data)
     else:
-        return HttpResponse(status_code=406)
+        response = JsonResponse({"message":"Invalid accept type"})
+        response.status_code = 406
+        return response
 
 def get_post(request,post_id=None,page="0"):
     if post_id is not None:
@@ -80,7 +92,7 @@ def get_post(request,post_id=None,page="0"):
     else:
         # TODO: Import these enum visibilities
         # I don't like hardcoding...
-        return Post.objects.filter(visibility=5).order_by('-date')
+        return Post.objects.filter(visibility=Post.public).order_by('-date')
 
 def friend_request(request,page="1"):
     return None
