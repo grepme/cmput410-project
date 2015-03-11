@@ -1,14 +1,23 @@
 {% load posts_extra %}
 {% for post in posts reversed %}
     <div class="col-md-12 well" style="">
+        {% if post.image %}
+            <div class="col-md-12" style="margin-bottom:25px;">
+                <img style="max-width:100%" src="{{ post.image.url }}">
+            </div>
+        {% endif %}
         <span style="font-weight:bold;font-size:125%;">{{ post.title }}</span>
+
         <div style="float: right;">
-            <button type="button" class="btn btn-default btn-xs" style="vertical-align:center; margin-left: 10px;">
-            <span class="glyphicon  glyphicon-comment" aria-hidden="true"></span> Add Comment
+            <button type="button" class="btn btn-default btn-xs"
+                    onclick="$(this).parent().siblings('.new_comment').toggle();"
+                    style="vertical-align:auto; margin-left: 10px;">
+                <span class="glyphicon  glyphicon-comment" aria-hidden="true"></span> Add Comment
             </button>
             <form action="/post/delete/{{ post.guid }}/" method="post" id="delete_post">
                 {% csrf_token %}
-                <input type="submit" name="deleteButton" class="btn btn-default btn-xs" style="vertical-align:center; margin-left: 10px; margin-top: 1em;" value="Delete Post">
+                <input type="submit" name="deleteButton" class="btn btn-default btn-xs"
+                       style="vertical-align:auto; margin-left: 10px; margin-top: 1em;" value="Delete Post">
                 </input>
             </form>
         </div>
@@ -20,10 +29,26 @@
         {% else %}
             <span>{{ post.text }}</span>
         {% endif %}
-    </div>
-    {% if post.image %}
-        <div class="col-md-12" style="">
-            <img style="max-width:100%" src="{{ post.image.url }}">
+        <!-- Include all comments from post -->
+        <!-- Add comment -->
+        <div class="row col-md-10 new_comment" style="margin: 0; padding: 0; display: none;">
+            <h3>New Comment</h3>
+            <!-- Options -->
+            <form method="post" action="/comment/new/" enctype="multipart/form-data">
+                {% csrf_token %}
+                <div style="margin: 0; padding: 0;" class="row col-md-10 form-inline">
+                    <textarea style="width:100%" class="form-control" rows="2"
+                              name="text"></textarea>
+                </div>
+                <div style="margin: 0; padding: 0;" class="row col-md-10 form-inline">
+                    <input style="float:right;" class="btn button" type="submit" value="Add">
+                </div>
+                <input type="hidden" name="post_id" value="{{ post.id }}">
+            </form>
         </div>
-    {% endif %}
+        <!-- Existing comments -->
+        <div class="row col-md-10" style="margin: 0; padding: 0;">
+            {% include 'comments/post.html' %}
+        </div>
+    </div>
 {% endfor %}
