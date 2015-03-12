@@ -62,9 +62,8 @@
   <div class="panel-body">
       <h4>Method: POST</h4>
       <div class="hightlight">
-          <pre>
-          <code>
-{  
+          <h5>Expected Input</h5>
+<pre><code>{  
    "query":"friendrequest",
    "author":{  
       "id":"8d919f29c12e8f97bcbbd34cc908f19ab9496989",
@@ -77,12 +76,252 @@
       "displayname":"Lara",
       "url":"http://127.0.0.1:5454/author/9de17f29c12e8f97bcbbd34cc908f1baba40658e"
    }
-}
-      </code>
-      </pre>
+}</code></pre>
+      </div>
+          <h5>Expected Output</h5>
+      <div class="hightlight">
+          <pre><code>HTTP/1.1 200 OK </code></pre>
       </div>
   </div>
   </div>
+
+<div class="panel panel-default">
+  <div class="panel-heading">
+    <h3 class="panel-title">/api/author/posts</h3>
+  </div>
+  <div class="panel-body">
+      <h4>Method: GET</h4>
+      <div class="hightlight">
+          <h5>Expected Input</h5>
+<pre><code>No input required - User must be authenticated</code></pre>
+      </div>
+      <div class="hightlight">
+          <h5>Expected Output</h5>
+<pre><code>{  
+   "posts":[  
+      {  
+         "title":"A post title about a post about web dev",
+         "source":"http://lastplaceigotthisfrom.com/post/yyyyy",
+         "origin":"http://whereitcamefrom.com/post/zzzzz",
+         "description":"This post discusses stuff -- brief",
+         "content-type":"text/html",
+         "content":"Content of the post",
+         "author":{  
+            "id":"9de17f29c12e8f97bcbbd34cc908f1baba40658e",
+            "host":"http://127.0.0.1:5454/",
+            "displayname":"Lara",
+            "url":"http://127.0.0.1:5454/author/9de17f29c12e8f97bcbbd34cc908f1baba40658e"
+         },
+         "categories":[  
+            "web",
+            "tutorial"
+         ],
+         "comments":[  
+            {  
+               "author":{  
+                  "id":"8d919f29c12e8f97bcbbd34cc908f19ab9496989",
+                  "host":"http://127.0.0.1:5454/",
+                  "displayname":"Greg"
+               },
+               "comment":"Sick Olde English",
+               "pubDate":"Fri Jan  3 15:50:40 MST 2014",
+               "guid":"5471fe89-7697-4625-a06e-b3ad18577b72"
+            }
+         ],
+         "pubDate":"Fri Jan  1 12:12:12 MST 2014",
+         "visibility":"PUBLIC"
+      }
+   ]
+}</code></pre>
+      </div>
+  </div>
+
+</div>
+<div class="panel panel-default">
+  <div class="panel-heading">
+    <h3 class="panel-title">/api/author/:author_guid/posts</h3>
+  </div>
+  <div class="panel-body">
+      <h4>Method: GET</h4>
+      Replace :author_guid with the guid of the author
+      <div class="hightlight">
+          <h5>Expected Input</h5>
+<pre><code>No input required - User must be authenticated</code></pre>
+      </div>
+      <div class="hightlight">
+          <h5>Expected Output</h5>
+<pre><code>{  
+   "posts":[  
+      {  
+         "title":"A post title about a post about web dev",
+         "source":"http://lastplaceigotthisfrom.com/post/yyyyy",
+         "origin":"http://whereitcamefrom.com/post/zzzzz",
+         "description":"This post discusses stuff -- brief",
+         "content-type":"text/html",
+         "content":"Content of the post",
+         "author":{  
+            "id":"9de17f29c12e8f97bcbbd34cc908f1baba40658e",
+            "host":"http://127.0.0.1:5454/",
+            "displayname":"Lara",
+            "url":"http://127.0.0.1:5454/author/9de17f29c12e8f97bcbbd34cc908f1baba40658e"
+         },
+         "categories":[  
+            "web",
+            "tutorial"
+         ],
+         "comments":[  
+            {  
+               "author":{  
+                  "id":"8d919f29c12e8f97bcbbd34cc908f19ab9496989",
+                  "host":"http://127.0.0.1:5454/",
+                  "displayname":"Greg"
+               },
+               "comment":"Sick Olde English",
+               "pubDate":"Fri Jan  3 15:50:40 MST 2014",
+               "guid":"5471fe89-7697-4625-a06e-b3ad18577b72"
+            }
+         ],
+         "pubDate":"Fri Jan  1 12:12:12 MST 2014",
+         "visibility":"PUBLIC"
+      }
+   ]
+}</code></pre>
+      </div>
+  </div>
+  </div>
+
+<div class="panel panel-default">
+  <div class="panel-heading">
+    <h3 class="panel-title">/api/posts</h3>
+  </div>
+  <div class="panel-body">
+      <h4>Method: GET</h4>
+      <div class="hightlight">
+          <h5>Expected Input</h5>
+<pre><code>No input required</code></pre>
+      </div>
+      <div class="hightlight">
+          <h5>Expected Output</h5>
+<pre><code>{  
+   "posts":[  
+      {  
+         "title":"A post title about a post about web dev",
+         "source":"http://lastplaceigotthisfrom.com/post/yyyyy",
+         "origin":"http://whereitcamefrom.com/post/zzzzz",
+         "description":"This post discusses stuff -- brief",
+         "content-type":"text/html",
+         "content":"Content of the post",
+         "author":{  
+            "id":"9de17f29c12e8f97bcbbd34cc908f1baba40658e",
+            "host":"http://127.0.0.1:5454/",
+            "displayname":"Lara",
+            "url":"http://127.0.0.1:5454/author/9de17f29c12e8f97bcbbd34cc908f1baba40658e"
+         },
+         "categories":[  
+            "web",
+            "tutorial"
+         ],
+         "comments":[  
+            {  
+               "author":{  
+                  "id":"8d919f29c12e8f97bcbbd34cc908f19ab9496989",
+                  "host":"http://127.0.0.1:5454/",
+                  "displayname":"Greg"
+               },
+               "comment":"Sick Olde English",
+               "pubDate":"Fri Jan  3 15:50:40 MST 2014",
+               "guid":"5471fe89-7697-4625-a06e-b3ad18577b72"
+            }
+         ],
+         "pubDate":"Fri Jan  1 12:12:12 MST 2014",
+         "visibility":"PUBLIC"
+      }
+   ]
+}</code></pre>
+      </div>
+  </div>
+  </div>
+
+
+  <div class="panel panel-default">
+  <div class="panel-heading">
+    <h3 class="panel-title">/api/posts/:post_guid</h3>
+  </div>
+  <div class="panel-body">
+      <h4>Method: GET</h4>
+      Replace :post_guid with the guid of the post you are trying to get
+      <div class="hightlight">
+          <h5>Expected Input</h5>
+<pre><code>No input required</code></pre>
+      </div>
+      <div class="hightlight">
+          <h5>Expected Output</h5>
+<pre><code>{  
+   "posts":[  
+      {  
+         "title":"A post title about a post about web dev",
+         "source":"http://lastplaceigotthisfrom.com/post/yyyyy",
+         "origin":"http://whereitcamefrom.com/post/zzzzz",
+         "description":"This post discusses stuff -- brief",
+         "content-type":"text/html",
+         "content":"Content of the post",
+         "author":{  
+            "id":"9de17f29c12e8f97bcbbd34cc908f1baba40658e",
+            "host":"http://127.0.0.1:5454/",
+            "displayname":"Lara",
+            "url":"http://127.0.0.1:5454/author/9de17f29c12e8f97bcbbd34cc908f1baba40658e"
+         },
+         "categories":[  
+            "web",
+            "tutorial"
+         ],
+         "comments":[  
+            {  
+               "author":{  
+                  "id":"8d919f29c12e8f97bcbbd34cc908f19ab9496989",
+                  "host":"http://127.0.0.1:5454/",
+                  "displayname":"Greg"
+               },
+               "comment":"Sick Olde English",
+               "pubDate":"Fri Jan  3 15:50:40 MST 2014",
+               "guid":"5471fe89-7697-4625-a06e-b3ad18577b72"
+            }
+         ],
+         "pubDate":"Fri Jan  1 12:12:12 MST 2014",
+         "visibility":"PUBLIC"
+      }
+   ]
+}</code></pre>
+      </div>
+  </div>
+  </div>
+
+
+  <div class="panel panel-default">
+  <div class="panel-heading">
+    <h3 class="panel-title">/api/friends/:friend_guid/:friend2_guid</h3>
+  </div>
+  <div class="panel-body">
+      <h4>Method: GET</h4>
+      Replace :friend_guid and :friend2_guid with the guid of the authors you want to see if they are friends. 
+      <div class="hightlight">
+          <h5>Expected Input</h5>
+<pre><code>No input required</code></pre>
+      </div>
+      <div class="hightlight">
+          <h5>Expected Output</h5>
+<pre><code>{  
+   "query":"friends",
+   "authors":[  
+      "9de17f29c12e8f97bcbbd34cc908f1baba40658e",
+      "8d919f29c12e8f97bcbbd34cc908f19ab9496989"
+   ],
+   "friends":"YES"
+}</code></pre>
+      </div>
+  </div>
+  </div>
+
 </div>
       </div>
 
