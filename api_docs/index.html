@@ -1,0 +1,412 @@
+<!doctype html>
+<!--[if lt IE 7]>      <html class="no-js lt-ie9 lt-ie8 lt-ie7" lang=""> <![endif]-->
+<!--[if IE 7]>         <html class="no-js lt-ie9 lt-ie8" lang=""> <![endif]-->
+<!--[if IE 8]>         <html class="no-js lt-ie9" lang=""> <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang=""> <!--<![endif]-->
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+        <title></title>
+        <meta name="description" content="">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <link rel="apple-touch-icon" href="apple-touch-icon.png">
+
+        <link rel="stylesheet" href="css/bootstrap.min.css">
+        <style>
+            body {
+                padding-top: 50px;
+                padding-bottom: 20px;
+            }
+        </style>
+        <link rel="stylesheet" href="css/bootstrap-theme.min.css">
+        <link rel="stylesheet" href="css/main.css">
+
+        <script src="js/vendor/modernizr-2.8.3-respond-1.4.2.min.js"></script>
+    </head>
+    <body>
+        <!--[if lt IE 8]>
+            <p class="browserupgrade">You are using an <strong>outdated</strong> browser. Please <a href="http://browsehappy.com/">upgrade your browser</a> to improve your experience.</p>
+        <![endif]-->
+    <nav class="navbar navbar-inverse navbar-fixed-top" role="navigation">
+      <div class="container">
+        <div class="navbar-header">
+          <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
+            <span class="sr-only">Toggle navigation</span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+          </button>
+          <a class="navbar-brand" href="#">Social-Network Api Guide</a>
+        </div>
+        <div id="navbar" class="navbar-collapse collapse">
+          </div><!--/.navbar-collapse -->
+      </div>
+    </nav>
+
+    <!-- Main jumbotron for a primary marketing message or call to action -->
+    <div class="jumbotron">
+      <div class="container">
+        <h1>Welcome to the api</h1>
+        <p>Each section is split by URL, look for the approriate url to learn more about it.</p>
+      </div>
+    </div>
+
+    <div class="container">
+      <!-- Example row of columns -->
+      <div class="row">
+          <div class="col-lg-12 col-md-12 col-sm-12">
+
+
+<div class="panel panel-default">
+  <div class="panel-heading">
+    <h3 class="panel-title">/api/author/posts</h3>
+  </div>
+  <div class="panel-body">
+      <h4>Method: GET</h4>
+      Retrive the currently authenticated users visable posts.
+      <div class="hightlight">
+          <h5>Expected Input</h5>
+<pre><code>No input required - User must be authenticated</code></pre>
+      </div>
+      <div class="hightlight">
+          <h5>Expected Output</h5>
+<pre><code>{  
+   "posts":[  
+      {  
+         "title":"A post title about a post about web dev",
+         "source":"http://lastplaceigotthisfrom.com/post/yyyyy",
+         "origin":"http://whereitcamefrom.com/post/zzzzz",
+         "description":"This post discusses stuff -- brief",
+         "content-type":"text/html",
+         "content":"Content of the post",
+         "author":{  
+            "id":"9de17f29c12e8f97bcbbd34cc908f1baba40658e",
+            "host":"http://127.0.0.1:5454/",
+            "displayname":"Lara",
+            "url":"http://127.0.0.1:5454/author/9de17f29c12e8f97bcbbd34cc908f1baba40658e"
+         },
+         "categories":[  
+            "web",
+            "tutorial"
+         ],
+         "comments":[  
+            {  
+               "author":{  
+                  "id":"8d919f29c12e8f97bcbbd34cc908f19ab9496989",
+                  "host":"http://127.0.0.1:5454/",
+                  "displayname":"Greg"
+               },
+               "comment":"Sick Olde English",
+               "pubDate":"Fri Jan  3 15:50:40 MST 2014",
+               "guid":"5471fe89-7697-4625-a06e-b3ad18577b72"
+            }
+         ],
+         "pubDate":"Fri Jan  1 12:12:12 MST 2014",
+         "visibility":"PUBLIC"
+      }
+   ]
+}</code></pre>
+      </div>
+  </div>
+
+</div>
+<div class="panel panel-default">
+  <div class="panel-heading">
+    <h3 class="panel-title">/api/author/:author_guid/posts</h3>
+  </div>
+  <div class="panel-body">
+      <h4>Method: GET</h4>
+      Retrieves posts visable to the currently authenticated user filtered by the specified author.
+      Replace :author_guid with the guid of the author
+      <div class="hightlight">
+          <h5>Expected Input</h5>
+<pre><code>No input required - User must be authenticated</code></pre>
+      </div>
+      <div class="hightlight">
+          <h5>Expected Output</h5>
+<pre><code>{  
+   "posts":[  
+      {  
+         "title":"A post title about a post about web dev",
+         "source":"http://lastplaceigotthisfrom.com/post/yyyyy",
+         "origin":"http://whereitcamefrom.com/post/zzzzz",
+         "description":"This post discusses stuff -- brief",
+         "content-type":"text/html",
+         "content":"Content of the post",
+         "author":{  
+            "id":"9de17f29c12e8f97bcbbd34cc908f1baba40658e",
+            "host":"http://127.0.0.1:5454/",
+            "displayname":"Lara",
+            "url":"http://127.0.0.1:5454/author/9de17f29c12e8f97bcbbd34cc908f1baba40658e"
+         },
+         "categories":[  
+            "web",
+            "tutorial"
+         ],
+         "comments":[  
+            {  
+               "author":{  
+                  "id":"8d919f29c12e8f97bcbbd34cc908f19ab9496989",
+                  "host":"http://127.0.0.1:5454/",
+                  "displayname":"Greg"
+               },
+               "comment":"Sick Olde English",
+               "pubDate":"Fri Jan  3 15:50:40 MST 2014",
+               "guid":"5471fe89-7697-4625-a06e-b3ad18577b72"
+            }
+         ],
+         "pubDate":"Fri Jan  1 12:12:12 MST 2014",
+         "visibility":"PUBLIC"
+      }
+   ]
+}</code></pre>
+      </div>
+  </div>
+  </div>
+
+<div class="panel panel-default">
+  <div class="panel-heading">
+    <h3 class="panel-title">/api/posts</h3>
+  </div>
+  <div class="panel-body">
+      <h4>Method: GET</h4>
+      Retrieves all public posts. 
+      <div class="hightlight">
+          <h5>Expected Input</h5>
+<pre><code>No input required</code></pre>
+      </div>
+      <div class="hightlight">
+          <h5>Expected Output</h5>
+<pre><code>{  
+   "posts":[  
+      {  
+         "title":"A post title about a post about web dev",
+         "source":"http://lastplaceigotthisfrom.com/post/yyyyy",
+         "origin":"http://whereitcamefrom.com/post/zzzzz",
+         "description":"This post discusses stuff -- brief",
+         "content-type":"text/html",
+         "content":"Content of the post",
+         "author":{  
+            "id":"9de17f29c12e8f97bcbbd34cc908f1baba40658e",
+            "host":"http://127.0.0.1:5454/",
+            "displayname":"Lara",
+            "url":"http://127.0.0.1:5454/author/9de17f29c12e8f97bcbbd34cc908f1baba40658e"
+         },
+         "categories":[  
+            "web",
+            "tutorial"
+         ],
+         "comments":[  
+            {  
+               "author":{  
+                  "id":"8d919f29c12e8f97bcbbd34cc908f19ab9496989",
+                  "host":"http://127.0.0.1:5454/",
+                  "displayname":"Greg"
+               },
+               "comment":"Sick Olde English",
+               "pubDate":"Fri Jan  3 15:50:40 MST 2014",
+               "guid":"5471fe89-7697-4625-a06e-b3ad18577b72"
+            }
+         ],
+         "pubDate":"Fri Jan  1 12:12:12 MST 2014",
+         "visibility":"PUBLIC"
+      }
+   ]
+}</code></pre>
+      </div>
+  </div>
+  </div>
+
+
+  <div class="panel panel-default">
+  <div class="panel-heading">
+    <h3 class="panel-title">/api/posts/:post_guid</h3>
+  </div>
+  <div class="panel-body">
+      <h4>Method: GET</h4>
+      Retrieves a specific post with the supplied :post_guid
+      Replace :post_guid with the guid of the post you are trying to get
+      <div class="hightlight">
+          <h5>Expected Input</h5>
+<pre><code>No input required</code></pre>
+      </div>
+      <div class="hightlight">
+          <h5>Expected Output</h5>
+<pre><code>{  
+   "posts":[  
+      {  
+         "title":"A post title about a post about web dev",
+         "source":"http://lastplaceigotthisfrom.com/post/yyyyy",
+         "origin":"http://whereitcamefrom.com/post/zzzzz",
+         "description":"This post discusses stuff -- brief",
+         "content-type":"text/html",
+         "content":"Content of the post",
+         "author":{  
+            "id":"9de17f29c12e8f97bcbbd34cc908f1baba40658e",
+            "host":"http://127.0.0.1:5454/",
+            "displayname":"Lara",
+            "url":"http://127.0.0.1:5454/author/9de17f29c12e8f97bcbbd34cc908f1baba40658e"
+         },
+         "categories":[  
+            "web",
+            "tutorial"
+         ],
+         "comments":[  
+            {  
+               "author":{  
+                  "id":"8d919f29c12e8f97bcbbd34cc908f19ab9496989",
+                  "host":"http://127.0.0.1:5454/",
+                  "displayname":"Greg"
+               },
+               "comment":"Sick Olde English",
+               "pubDate":"Fri Jan  3 15:50:40 MST 2014",
+               "guid":"5471fe89-7697-4625-a06e-b3ad18577b72"
+            }
+         ],
+         "pubDate":"Fri Jan  1 12:12:12 MST 2014",
+         "visibility":"PUBLIC"
+      }
+   ]
+}</code></pre>
+      </div>
+  </div>
+  </div>
+
+
+  <div class="panel panel-default">
+  <div class="panel-heading">
+    <h3 class="panel-title">/api/friends/:friend_guid/:friend2_guid</h3>  </div>
+  <div class="panel-body">
+      <span class="label label-danger">Not Implemented</span>
+      <h4>Method: GET</h4>
+      Returns with :friend_guid is friends with :friend2_guid.
+      Replace :friend_guid and :friend2_guid with the guid of the authors you want to see if they are friends. 
+      <div class="hightlight">
+          <h5>Expected Input</h5>
+<pre><code>No input required</code></pre>
+      </div>
+      <div class="hightlight">
+          <h5>Expected Output</h5>
+<pre><code>{  
+   "query":"friends",
+   "authors":[  
+      "9de17f29c12e8f97bcbbd34cc908f1baba40658e",
+      "8d919f29c12e8f97bcbbd34cc908f19ab9496989"
+   ],
+   "friends":"YES"
+}</code></pre>
+      </div>
+  </div>
+  </div>
+
+
+    <div class="panel panel-default">
+  <div class="panel-heading">
+    <h3 class="panel-title">/api/friends/:friend_guid</h3>  </div>
+  <div class="panel-body">
+      <span class="label label-danger">Not Implemented</span>
+      <h4>Method: POST</h4>
+      Compares a list of authors guids with the :friend_guid and determines if they are friends.
+      Replace :friend_guid with author guid for query. 
+      <div class="hightlight">
+          <h5>Expected Input</h5>
+<pre><code>{  
+   "query":"friends",
+   "author":"9de17f29c12e8f97bcbbd34cc908f1baba40658e",
+   "authors":[  
+      "7deee0684811f22b384ccb5991b2ca7e78abacde",
+      "31cc28a8fbc05787d0470cdbd62ea0474764b0ae",
+      "1af17e947f387a2d8c09a807271bd094e8eff077",
+      "77cb4f546b280ea905a6fdd99977cd090613994a",
+      "11c3783f15f7ade03430303573098f0d4d20797b",
+      "bd9ef9619c7241112d2a2b79505f736fc8d7f43e",
+      "0169a8ebf3cb3bd7f092603564873e12cce9d4c5",
+      "2130905fd0de94c3379e04839cd9f6889ba2b52c",
+      "b32c9e0b5fcf85f46b9ce2ba89b2068b57d4641b",
+      "fe45075b93d06c833bb25d5a6dfe669cfde3f99d",
+      "e28e59a9612c369717f66f53f3e014b341857601",
+      "b36e52d6aaee9285220f94fc321407a44e4dc622",
+      "584a9739ea459ce4aae5a88827d970196fb27769",
+      "96b3b5a70cd9591c73760bd8669aa5bd7cc689c5",
+      "6465678d0a409b96829fd64d0894132966e97eee",
+      "695c780ea2815bc94c54782f5046dfa4e325f875",
+      "8743f7511a1a569e4e9dacbb25e27395629ba5c0",
+      "539b65f2d76d0327dc45bf6354cda535d6f8ed02",
+      "c55670261253c5ce25e22b47a34629dd15e819d4"
+   ]
+}</code></pre>
+      </div>
+      <div class="hightlight">
+          <h5>Expected Output</h5>
+<pre><code>{  
+   "query":"friends",
+   "author":"9de17f29c12e8f97bcbbd34cc908f1baba40658e",
+   "friends":[  
+      "7deee0684811f22b384ccb5991b2ca7e78abacde",
+      "11c3783f15f7ade03430303573098f0d4d20797b"
+   ]
+}</code></pre>
+      </div>
+  </div>
+  </div>
+
+<div class="panel panel-default">
+  <div class="panel-heading">
+    <h3 class="panel-title">/api/friendrequest</h3>
+  </div>
+  <div class="panel-body">
+          <span class="label label-danger">Not Implemented</span>
+      <h4>Method: POST</h4>
+      Sends a friend request from the author to the friend specified.
+      <div class="hightlight">
+          <h5>Expected Input</h5>
+<pre><code>{  
+   "query":"friendrequest",
+   "author":{  
+      "id":"8d919f29c12e8f97bcbbd34cc908f19ab9496989",
+      "host":"http://127.0.0.1:5454/",
+      "displayname":"Greg"
+   },
+   "friend":{  
+      "id":"9de17f29c12e8f97bcbbd34cc908f1baba40658e",
+      "host":"http://127.0.0.1:5454/",
+      "displayname":"Lara",
+      "url":"http://127.0.0.1:5454/author/9de17f29c12e8f97bcbbd34cc908f1baba40658e"
+   }
+}</code></pre>
+      </div>
+          <h5>Expected Output</h5>
+      <div class="hightlight">
+          <pre><code>HTTP/1.1 200 OK </code></pre>
+      </div>
+  </div>
+  </div>
+
+
+
+</div>
+      </div>
+
+      <hr>
+
+      <footer>
+        <p>&copy; Social-Network 2015</p>
+      </footer>
+    </div> <!-- /container -->        <script src="//ajax.googleapis.com/ajax/libs/jquery/1.11.2/jquery.min.js"></script>
+        <script>window.jQuery || document.write('<script src="js/vendor/jquery-1.11.2.min.js"><\/script>')</script>
+
+        <script src="js/vendor/bootstrap.min.js"></script>
+
+        <script src="js/main.js"></script>
+
+        <!-- Google Analytics: change UA-XXXXX-X to be your site's ID. -->
+        <script>
+            (function(b,o,i,l,e,r){b.GoogleAnalyticsObject=l;b[l]||(b[l]=
+            function(){(b[l].q=b[l].q||[]).push(arguments)});b[l].l=+new Date;
+            e=o.createElement(i);r=o.getElementsByTagName(i)[0];
+            e.src='//www.google-analytics.com/analytics.js';
+            r.parentNode.insertBefore(e,r)}(window,document,'script','ga'));
+            ga('create','UA-XXXXX-X','auto');ga('send','pageview');
+        </script>
+    </body>
+</html>

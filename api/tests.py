@@ -7,7 +7,7 @@ import json
 # create an instance of the client for our use
 # Create your tests here.
 
-from api.views import get_posts,get_post
+from api.views import get_posts,get_post,friend_request,is_friend,get_friends
 
 class ApiViewTests(TestCase):
     def setUp(self):
@@ -239,4 +239,24 @@ class ApiViewTests(TestCase):
         self.assertEqual(response.status_code,200)
         self.assertEqual(len(json_obj['posts']),1)
 
+    def test_not_implemented_paths(self):
+        ''' Test all paths not implemented for error code 501 '''
+
+        # Factory for get request
+        request = self.factory.get('/api/friendrequest')
+
+        response = friend_request(request)
+        self.assertEqual(response.status_code,501)
+
+        # Factory for get request
+        request = self.factory.get('/api/friends/%d' % self.user.id)
+
+        response = get_friends(request)
+        self.assertEqual(response.status_code,501)
+
+        # Factory for get request
+        request = self.factory.get('/api/friends/%d/%d' % (self.user.id, self.user2.id))
+
+        response = is_friend(request)
+        self.assertEqual(response.status_code,501)
 
