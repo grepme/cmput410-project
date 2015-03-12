@@ -17,9 +17,9 @@ class Comment(models.Model):
     guid = models.CharField(max_length=55, default=None)
 
     def __unicode__(self):
-        return self.date
+        return self.text[:10]
 
-    def as_dict(self): 
+    def as_dict(self):
         return {
         	"author": Profile.objects.get(author=self.author).as_dict(),
         	"comment": self.text,
@@ -28,4 +28,4 @@ class Comment(models.Model):
             # not in example-article.json... Do we need these?
             "post": Post.objects.get(post=self.post).as_dict(),
             "image": self.image
-            }   
+            }

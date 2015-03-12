@@ -1,0 +1,20 @@
+{% load posts_extra %}
+{% for comment in post.comment_set.all %}
+    <div class="col-md-12" style="background-color: white;">
+        <span style="font-weight:bold;font-size:125%;">{{ comment.author.profile_set.get.display_name }}</span>
+
+        <div style="float: right;">{{ comment.date }}</div>
+
+        <br/>
+        {% if  post.commonmark %}
+            <span>{{ comment.text|commonmark|safe }}</span>
+        {% else %}
+            <span>{{ comment.text }}</span>
+        {% endif %}
+    </div>
+    {% if comment.image %}
+        <div class="col-md-12" style="">
+            <img style="max-width:100%" src="{{ post.image.url }}">
+        </div>
+    {% endif %}
+{% endfor %}
