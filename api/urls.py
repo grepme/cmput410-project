@@ -6,7 +6,7 @@ urlpatterns = patterns('api.views',
                         # can view
                         (r'^author/(?:/(?P<author_id>[^/]+))?/posts(?:/(?P<page>\d+))?/$', 'get_posts'),
 
-                       # Get a specific post
+                       # Get a specific post or all public posts
                        (r'^posts/(?P<post_id>[^/]+)?/$', 'get_post'),
 
                        #See if a author_id is a friend with author_2_id

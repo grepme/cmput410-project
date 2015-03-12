@@ -30,7 +30,7 @@ def new_post(request, source=None):
             text_format = False
 
         # Visibility needs to be set to an int, we can find this out with the function
-        visibility = request.POST.get("visibility", "Private")
+        visibility = request.POST.get("visibility", "PRIVATE").upper()
         visibility = Post.get_visibility(visibility)
 
         text = request.POST.get("text", "")
