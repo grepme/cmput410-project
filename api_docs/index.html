@@ -55,35 +55,7 @@
       <!-- Example row of columns -->
       <div class="row">
           <div class="col-lg-12 col-md-12 col-sm-12">
-<div class="panel panel-default">
-  <div class="panel-heading">
-    <h3 class="panel-title">/api/friends</h3>
-  </div>
-  <div class="panel-body">
-      <h4>Method: POST</h4>
-      <div class="hightlight">
-          <h5>Expected Input</h5>
-<pre><code>{  
-   "query":"friendrequest",
-   "author":{  
-      "id":"8d919f29c12e8f97bcbbd34cc908f19ab9496989",
-      "host":"http://127.0.0.1:5454/",
-      "displayname":"Greg"
-   },
-   "friend":{  
-      "id":"9de17f29c12e8f97bcbbd34cc908f1baba40658e",
-      "host":"http://127.0.0.1:5454/",
-      "displayname":"Lara",
-      "url":"http://127.0.0.1:5454/author/9de17f29c12e8f97bcbbd34cc908f1baba40658e"
-   }
-}</code></pre>
-      </div>
-          <h5>Expected Output</h5>
-      <div class="hightlight">
-          <pre><code>HTTP/1.1 200 OK </code></pre>
-      </div>
-  </div>
-  </div>
+
 
 <div class="panel panel-default">
   <div class="panel-heading">
@@ -91,6 +63,7 @@
   </div>
   <div class="panel-body">
       <h4>Method: GET</h4>
+      Retrive the currently authenticated users visable posts.
       <div class="hightlight">
           <h5>Expected Input</h5>
 <pre><code>No input required - User must be authenticated</code></pre>
@@ -143,6 +116,7 @@
   </div>
   <div class="panel-body">
       <h4>Method: GET</h4>
+      Retrieves posts visable to the currently authenticated user filtered by the specified author.
       Replace :author_guid with the guid of the author
       <div class="hightlight">
           <h5>Expected Input</h5>
@@ -196,6 +170,7 @@
   </div>
   <div class="panel-body">
       <h4>Method: GET</h4>
+      Retrieves all public posts. 
       <div class="hightlight">
           <h5>Expected Input</h5>
 <pre><code>No input required</code></pre>
@@ -249,6 +224,7 @@
   </div>
   <div class="panel-body">
       <h4>Method: GET</h4>
+      Retrieves a specific post with the supplied :post_guid
       Replace :post_guid with the guid of the post you are trying to get
       <div class="hightlight">
           <h5>Expected Input</h5>
@@ -299,10 +275,11 @@
 
   <div class="panel panel-default">
   <div class="panel-heading">
-    <h3 class="panel-title">/api/friends/:friend_guid/:friend2_guid</h3>
-  </div>
+    <h3 class="panel-title">/api/friends/:friend_guid/:friend2_guid</h3>  </div>
   <div class="panel-body">
+      <span class="label label-danger">Not Implemented</span>
       <h4>Method: GET</h4>
+      Returns with :friend_guid is friends with :friend2_guid.
       Replace :friend_guid and :friend2_guid with the guid of the authors you want to see if they are friends. 
       <div class="hightlight">
           <h5>Expected Input</h5>
@@ -322,13 +299,98 @@
   </div>
   </div>
 
+
+    <div class="panel panel-default">
+  <div class="panel-heading">
+    <h3 class="panel-title">/api/friends/:friend_guid</h3>  </div>
+  <div class="panel-body">
+      <span class="label label-danger">Not Implemented</span>
+      <h4>Method: POST</h4>
+      Compares a list of authors guids with the :friend_guid and determines if they are friends.
+      Replace :friend_guid with author guid for query. 
+      <div class="hightlight">
+          <h5>Expected Input</h5>
+<pre><code>{  
+   "query":"friends",
+   "author":"9de17f29c12e8f97bcbbd34cc908f1baba40658e",
+   "authors":[  
+      "7deee0684811f22b384ccb5991b2ca7e78abacde",
+      "31cc28a8fbc05787d0470cdbd62ea0474764b0ae",
+      "1af17e947f387a2d8c09a807271bd094e8eff077",
+      "77cb4f546b280ea905a6fdd99977cd090613994a",
+      "11c3783f15f7ade03430303573098f0d4d20797b",
+      "bd9ef9619c7241112d2a2b79505f736fc8d7f43e",
+      "0169a8ebf3cb3bd7f092603564873e12cce9d4c5",
+      "2130905fd0de94c3379e04839cd9f6889ba2b52c",
+      "b32c9e0b5fcf85f46b9ce2ba89b2068b57d4641b",
+      "fe45075b93d06c833bb25d5a6dfe669cfde3f99d",
+      "e28e59a9612c369717f66f53f3e014b341857601",
+      "b36e52d6aaee9285220f94fc321407a44e4dc622",
+      "584a9739ea459ce4aae5a88827d970196fb27769",
+      "96b3b5a70cd9591c73760bd8669aa5bd7cc689c5",
+      "6465678d0a409b96829fd64d0894132966e97eee",
+      "695c780ea2815bc94c54782f5046dfa4e325f875",
+      "8743f7511a1a569e4e9dacbb25e27395629ba5c0",
+      "539b65f2d76d0327dc45bf6354cda535d6f8ed02",
+      "c55670261253c5ce25e22b47a34629dd15e819d4"
+   ]
+}</code></pre>
+      </div>
+      <div class="hightlight">
+          <h5>Expected Output</h5>
+<pre><code>{  
+   "query":"friends",
+   "author":"9de17f29c12e8f97bcbbd34cc908f1baba40658e",
+   "friends":[  
+      "7deee0684811f22b384ccb5991b2ca7e78abacde",
+      "11c3783f15f7ade03430303573098f0d4d20797b"
+   ]
+}</code></pre>
+      </div>
+  </div>
+  </div>
+
+<div class="panel panel-default">
+  <div class="panel-heading">
+    <h3 class="panel-title">/api/friendrequest</h3>
+  </div>
+  <div class="panel-body">
+          <span class="label label-danger">Not Implemented</span>
+      <h4>Method: POST</h4>
+      Sends a friend request from the author to the friend specified.
+      <div class="hightlight">
+          <h5>Expected Input</h5>
+<pre><code>{  
+   "query":"friendrequest",
+   "author":{  
+      "id":"8d919f29c12e8f97bcbbd34cc908f19ab9496989",
+      "host":"http://127.0.0.1:5454/",
+      "displayname":"Greg"
+   },
+   "friend":{  
+      "id":"9de17f29c12e8f97bcbbd34cc908f1baba40658e",
+      "host":"http://127.0.0.1:5454/",
+      "displayname":"Lara",
+      "url":"http://127.0.0.1:5454/author/9de17f29c12e8f97bcbbd34cc908f1baba40658e"
+   }
+}</code></pre>
+      </div>
+          <h5>Expected Output</h5>
+      <div class="hightlight">
+          <pre><code>HTTP/1.1 200 OK </code></pre>
+      </div>
+  </div>
+  </div>
+
+
+
 </div>
       </div>
 
       <hr>
 
       <footer>
-        <p>&copy; Company 2015</p>
+        <p>&copy; Social-Network 2015</p>
       </footer>
     </div> <!-- /container -->        <script src="//ajax.googleapis.com/ajax/libs/jquery/1.11.2/jquery.min.js"></script>
         <script>window.jQuery || document.write('<script src="js/vendor/jquery-1.11.2.min.js"><\/script>')</script>
