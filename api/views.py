@@ -58,6 +58,31 @@ def require_http_accept(request_accept_list):
         return inner
     return decorator
 
+def http_error_code(code,message):
+    """
+    Decorator to return Not Implemented HTTP error Code usage:
+
+        @http_error_code(501,"Not Implemented")
+        def my_view(request):
+            # I can assume now that only requests with accepts within the list make it this far
+            # ...
+
+    """
+    def decorator(func):
+        @wraps(func, assigned=available_attrs(func))
+        def inner(request, *args, **kwargs):
+            logger.warning("%s : %s",message, request.path,
+                    extra={
+                        'status_code': code,
+                        'request': request
+                    }
+                )
+            response = HttpResponse("%s : %s",message, request.path)
+            response.status_code = code
+            return response
+        return inner
+    return decorator
+
 # Create your views here.
 
 def check_accept_type(content_type):
@@ -146,21 +171,23 @@ def get_post(request,post_id=None,page="0"):
     # TODO Add pagination
     return JsonResponse({"posts":return_data})
 
-@login_required
-@require_http_methods(["POST"])
-@require_http_accept(['application/json'])
+#@login_required
+#@require_http_methods(["POST"])
+#@require_http_accept(['application/json'])
+@http_error_code(501,"Not Implemented")
 def friend_request(request,page="0"):
     return None
 
-
-@login_required
-@require_http_methods(["GET"])
-@require_http_accept(['application/json'])
+#@login_required
+#@require_http_methods(["GET"])
+#@require_http_accept(['application/json'])
+@http_error_code(501,"Not Implemented")
 def get_friends(request,page="0"):
     return None
 
-@login_required
-@require_http_methods(["GET"])
-@require_http_accept(['application/json'])
+#@login_required
+#@require_http_methods(["GET"])
+#@require_http_accept(['application/json'])
+@http_error_code(501,"Not Implemented")
 def is_friend(request,page="0"):
     return None
