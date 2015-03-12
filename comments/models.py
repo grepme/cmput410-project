@@ -13,5 +13,19 @@ class Comment(models.Model):
     post = models.ForeignKey(Post)
     author = models.ForeignKey(User)
 
+    # guid
+    guid = models.CharField(max_length=55, default=None)
+
     def __unicode__(self):
         return self.date
+
+    def as_dict(self): 
+        return {
+        	"author": Profile.objects.get(author=self.author).as_dict(),
+        	"comment": self.text,
+        	"pubDate": self.date,
+        	"guid": self.guid,
+            # not in example-article.json... Do we need these?
+            "post": Post.objects.get(post=self.post).as_dict(),
+            "image": self.image
+            }   
