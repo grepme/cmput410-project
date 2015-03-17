@@ -101,12 +101,12 @@ class SetEncoder(json.JSONEncoder):
 def get_post_query(request):
         return ( Q(visibility=Post.private, author__username=request.user.username) |
         Q(visibility=Post.public) | Q(visibility=Post.server) |
-        Q(visibility=Post.friend, author__accepter=request.user.id) |
-        Q(visibility=Post.friend, author__requester=request.user.id) |
-        Q(visibility=Post.FOAF, author__requester__requester=request.user.id) |
-        Q(visibility=Post.FOAF, author__requester__accepter=request.user.id) |
-        Q(visibility=Post.FOAF, author__accepter__requester=request.user.id) |
-        Q(visibility=Post.FOAF, author__accepter__accepter=request.user.id) )
+        Q(visibility=Post.friend, author__accepter=request.user.id, accepted=True) |
+        Q(visibility=Post.friend, author__requester=request.user.id, accepted=True) |
+        Q(visibility=Post.FOAF, author__requester__requester=request.user.id, accepted=True) |
+        Q(visibility=Post.FOAF, author__requester__accepter=request.user.id, accepted=True) |
+        Q(visibility=Post.FOAF, author__accepter__requester=request.user.id, accepted=True) |
+        Q(visibility=Post.FOAF, author__accepter__accepter=request.user.id, accepted=True) )
 
 def post_list(posts_query):
     return list(obj.as_dict() for obj in posts_query)
