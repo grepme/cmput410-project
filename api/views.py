@@ -176,6 +176,8 @@ def get_post(request,post_id=None,page="0"):
 #@require_http_accept(['application/json'])
 @http_error_code(501,"Not Implemented")
 def friend_request(request,page="0"):
+    data = json.load(request.body)
+
     return None
 
 #@login_required
