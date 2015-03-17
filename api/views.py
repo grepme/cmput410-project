@@ -51,7 +51,7 @@ def require_http_accept(request_accept_list):
                         'request': request
                     }
                 )
-                response = HttpResponse("Accept Not Allowed (%s): %s", request.META.get('Accept'), request.path)
+                response = HttpResponse("Accept Not Allowed ({}): {}".format(request.META.get('Accept'), request.path))
                 response.status_code = 406
                 return response
             return func(request, *args, **kwargs)
@@ -77,7 +77,7 @@ def http_error_code(code,message):
                         'request': request
                     }
                 )
-            response = HttpResponse("%s : %s",message, request.path)
+            response = HttpResponse("{} : {}".format(message, request.path))
             response.status_code = code
             return response
         return inner
@@ -127,7 +127,7 @@ def get_posts(request,author_id=None,page="0"):
         query = ( query ) & Q(author_id=author_id)
     elif author_id is not None:
         # author id = same user
-        query = Q(author_id=request.user.id)
+        query = Q(author_id=request.user.guid)
 
     # Check if user is valid
     # TODO Decorator?
