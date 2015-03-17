@@ -155,7 +155,7 @@ def get_post(request,post_id=None,page="0"):
     return_data = list()
     if post_id is not None:
 
-        query = get_post_query(request) & Q(id=post_id)
+        query = get_post_query(request) & Q(guid=post_id)
         posts_query = Post.objects.filter(query)
         return_data = post_list(posts_query)
 
