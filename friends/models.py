@@ -22,6 +22,8 @@ class Friend(models.Model):
     accepter = models.ForeignKey(User, related_name="accepter")
     # who started following
     requester = models.ForeignKey(User, related_name="requester")
+    #did accepter accept the request
+    accepted = models.BooleanField(default=False)
 
     def __unicode__(self):
         return u"{} -> {}".format(self.requester, self.accepter)
