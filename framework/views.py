@@ -1,8 +1,10 @@
 from django.shortcuts import render, redirect
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth import authenticate, login as django_login, logout as django_logout
+from django.contrib.auth.models import User
 from django.views.decorators.csrf import csrf_protect
 from posts.models import Post
+from user_profile.models import Profile
 
 # Create your views here.
 
@@ -24,6 +26,51 @@ def login(request):
                 return redirect(dashboard)
     return render(request, 'framework/login.html', {'body_class': 'login-page', 'nav_bar': False})
 
+def signup(request):
+    """If user is logged in, redirect to dashboard, else, render login template."""
+    if request.user.is_authenticated():
+        return redirect(dashboard)
+    elif request.method == "POST":
+        firstName = request.POST.get("signupFirstName", "")
+        lastName = request.POST.get("signupLastName", "")
+        email = request.POST.get("signupEmail", "")
+        username = request.POST.get("signupUsername", "")
+        password = request.POST.get("signupPassword", "")
+        print(firstName,lastName,email,username,password)
+
+        if User.objects.filter(username=username).exists():
+            # try to log in as this user
+            user = authenticate(username=username, password=password)
+            if user is not None:
+                # password already matches username
+                if user.is_active:
+                    django_login(request, user)
+                    print("Logging in existing user: %s" % username)
+                    return redirect(dashboard)
+            else:
+                print("Username already in use: %s" % username)
+        # username does not yet exist
+        else:
+            newUser = User.objects.create_user(username, email, password)
+            # newUser.save()  # didn't seem to do anything
+            if newUser:
+                # TODO: Add both names, url, and host (and user.guid?)
+                print("ID: %s" % newUser.id)
+                profile = Profile.objects.create(id=newUser, display_name=username)
+                # profile = Profile.objects.create(id=newUser.id, display_name=username)
+                profile.save()
+
+                # user = authenticate(username=username, password=password)
+                # if user is not None:
+                #     # creation and login successful
+                #     if user.is_active:
+                #         django_login(request, user)
+                #         print("Logging in new user: %s" % username)
+                #         return redirect(dashboard)
+            else:
+                # user creation failed
+                pass
+    return render(request, 'framework/login.html', {'body_class': 'login-page', 'nav_bar': False})
 
 @login_required
 def dashboard(request):

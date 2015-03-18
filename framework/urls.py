@@ -5,4 +5,5 @@ urlpatterns = patterns('framework.views',
                        (r'^login/$', 'login'),
                        (r'^dashboard/$', 'dashboard'),
                        (r'^logout/$', 'logout'),
+                       (r'^signup/$', 'signup'),
 )
