@@ -45,7 +45,6 @@ def signup(request):
                 # password already matches username
                 if user.is_active:
                     django_login(request, user)
-                    print("Logging in existing user: %s" % username)
                     return redirect(dashboard)
             else:
                 print("Username already in use: %s" % username)
@@ -55,18 +54,16 @@ def signup(request):
             # newUser.save()  # didn't seem to do anything
             if newUser:
                 # TODO: Add both names, url, and host (and user.guid?)
-                print("ID: %s" % newUser.id)
                 profile = Profile.objects.create(author=newUser, display_name=username)
                 # profile = Profile.objects.create(id=newUser.id, display_name=username)
                 profile.save()
 
-                # user = authenticate(username=username, password=password)
-                # if user is not None:
-                #     # creation and login successful
-                #     if user.is_active:
-                #         django_login(request, user)
-                #         print("Logging in new user: %s" % username)
-                #         return redirect(dashboard)
+                user = authenticate(username=username, password=password)
+                if user is not None:
+                    # creation and login successful
+                    if user.is_active:
+                        django_login(request, user)
+                        return redirect(dashboard)
             else:
                 # user creation failed
                 pass
