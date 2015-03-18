@@ -51,12 +51,12 @@ def signup(request):
                 print("Username already in use: %s" % username)
         # username does not yet exist
         else:
-            newUser = User.objects.create_user(username, email, password)
+            newUser = User.objects.create_user(username=username, email=email, password=password)
             # newUser.save()  # didn't seem to do anything
             if newUser:
                 # TODO: Add both names, url, and host (and user.guid?)
                 print("ID: %s" % newUser.id)
-                profile = Profile.objects.create(id=newUser, display_name=username)
+                profile = Profile.objects.create(author=newUser, display_name=username)
                 # profile = Profile.objects.create(id=newUser.id, display_name=username)
                 profile.save()
 
