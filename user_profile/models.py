@@ -11,9 +11,6 @@ class Profile(GUIDModel):
     author = models.ForeignKey(User)
     display_name = models.CharField(max_length=55)
 
-    # guid
-    guid = models.CharField(max_length=55, default=None)
-
     def as_dict(self):
         return {
         	"id": self.guid,
