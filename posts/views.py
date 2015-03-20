@@ -50,7 +50,7 @@ def new_post(request, source=None):
         p.save()
 
         # Update the URL since we know the ID of the post
-        p.origin = "{}/{}".format(origin, p.id)
+        p.origin = "{}/{}".format(origin, p.guid)
         p.save()
 
         # Since this is a view, redirect successfully
