@@ -38,13 +38,15 @@ def signup(request):
         print(firstName,lastName,email,username,password)
 
         if User.objects.filter(username=username).exists():
+            #TODO: Alert user that this is wrong... don't just log in anyway
             # try to log in as this user
             user = authenticate(username=username, password=password)
             if user is not None:
-                # password already matches username
-                if user.is_active:
-                    django_login(request, user)
-                    return redirect(dashboard)
+                # # password already matches username
+                print("Would you like to login %s?" % user)
+                # if user.is_active:
+                #     django_login(request, user)
+                #     return redirect(dashboard)
             else:
                 print("Username already in use: %s" % username)
         # username does not yet exist
