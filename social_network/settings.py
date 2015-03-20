@@ -43,7 +43,7 @@ INSTALLED_APPS = (
     'posts',
     'comments',
     'tags',
-    'api'
+    'api',
 )
 
 MIDDLEWARE_CLASSES = (

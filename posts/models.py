@@ -5,18 +5,15 @@ from user_profile.models import Profile
 import uuid
 from json import JSONEncoder, dumps
 
+# using the guid model
+from framework.models import GUIDModel
+
 # Create your models here.
 class PostEncoder(JSONEncoder):
         def default(self, o):
-            return o.as_dict() 
+            return o.as_dict()
 
-class Post(models.Model):
-    def __init__(self, *args, **kwargs):
-        super(Post, self).__init__(*args, **kwargs)
-        if not self.guid:
-            self.guid = uuid.uuid1().__str__()
-        #self.guid = self.guid.replace("-", "_")
-
+class Post(GUIDModel):
     private = 1
     friend = 2
     FOAF = 3
@@ -46,13 +43,10 @@ class Post(models.Model):
     tags = models.ManyToManyField(Tag, blank=True)
     visibility = models.IntegerField(choices=visibilityChoices)
 
-    # guid
-    guid = models.CharField(max_length=55, default=None)
-
     def visibility_string(self):
         return Post.visibilityChoices[self.visibility-1][1]
 
-    def as_dict(self): 
+    def as_dict(self):
         return {
             "title": self.title,
             "source": self.source,
@@ -63,11 +57,11 @@ class Post(models.Model):
             "content": self.text,
             "author": Profile.objects.get(author=self.author).as_dict(),
             "categories": list(self.tags.all()),
-            "comments": list(), 
+            "comments": list(),
             "pubDate": self.date,
-            "guid": self.guid, 
+            "guid": self.guid,
             "visibility": self.visibility_string()
-            }   
+            }
 
     def to_json(self):
         return json.dumps(self,cls=PostEncoder)
@@ -75,7 +69,7 @@ class Post(models.Model):
     def get_content_type(self):
         if self.commonmark:
             return "text/x-markdown"
-        else: 
+        else:
             return "text/plain"
 
 

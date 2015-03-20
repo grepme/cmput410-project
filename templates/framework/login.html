@@ -2,22 +2,69 @@
 
 {% block content %}
     <div class="container">
-        <form class="form-signin" action="/login/" method="post">
-            {% csrf_token %}
-            <h2 class="form-signin-heading">Please sign in</h2>
-            <label for="inputEmail" class="sr-only">Username</label>
-            <input type="text" id="inputUsername" name="username" class="form-control" placeholder="Username"
-                   required autofocus>
-            <label for="inputPassword" class="sr-only">Password</label>
-            <input type="password" id="inputPassword" name="password" class="form-control" placeholder="Password"
-                   required>
+        <div id="logindiv">
+            <form class="form-signin" action="/login/" method="post">
+                {% csrf_token %}
+                <h2 class="form-signin-heading">Please sign in</h2>
+                <label for="inputUsername" class="sr-only">Username</label>
+                <input type="text" id="inputUsername" name="username" class="form-control" placeholder="Username"
+                       required autofocus>
+                <label for="inputPassword" class="sr-only">Password</label>
+                <input type="password" id="inputPassword" name="password" class="form-control" placeholder="Password"
+                       required>
 
-            <div class="checkbox">
-                <label>
-                    <input type="checkbox" name="remember-me" value="remember-me"> Remember me
-                </label>
-            </div>
-            <button class="btn btn-lg btn-primary btn-block" type="submit">Sign in</button>
-        </form>
+                <div class="checkbox">
+                    <label>
+                        <input type="checkbox" name="remember-me" value="remember-me"> Remember me
+                    </label>
+                </div>
+
+                <button class="btn btn-lg btn-primary btn-block" type="submit">Sign in</button>
+
+                <div style="padding-top:15px; font-size:85%" >
+                    Don't have an account?
+                <a href="#" onClick="$('#logindiv').hide(); $('#signupdiv').show()">
+                    Sign Up Here
+                </a>
+                </div>
+            </form>
+        </div>
+
+        <div id="signupdiv" style="display:none;" >
+            <form class="form-signin" action="/signup/" method="post">
+                {% csrf_token %}
+                <h2 class="form-signin-heading">Sign Up</h2>
+
+                <label for="signupFirstName" class="sr-only">First Name</label>
+                <input type="text" id="signupFirstName" name="signupFirstName" class="form-control" placeholder="First Name"
+                       required>
+
+                <label for="signupLastName" class="sr-only">Last Name</label>
+                <input type="text" id="signupLastName" name="signupLastName" class="form-control" placeholder="Last Name"
+                       required>
+
+                <label for="signupEmail" class="sr-only">Email</label>
+                <input type="text" id="signupEmail" name="signupEmail" class="form-control" placeholder="Email"
+                       required autofocus>
+
+                <label for="signupUsername" class="sr-only">Username</label>
+                <input type="text" id="signupUsername" name="signupUsername" class="form-control" placeholder="User Name"
+                       required>
+
+                <label for="signupPassword" class="sr-only">Password</label>
+                <input type="password" id="signupPassword" name="signupPassword" class="form-control" placeholder="Password"
+                       required>
+
+                <button class="btn btn-lg btn-primary btn-block" type="submit">Sign Up</button>
+
+                <div style="padding-top:15px; font-size:85%" >
+                    Have an account?
+                    <a href="#" onClick="$('#logindiv').show(); $('#signupdiv').hide()">
+                        Sign In Here
+                    </a>
+                </div>
+            </form>
+         </div>
     </div>
+
 {% endblock %}
