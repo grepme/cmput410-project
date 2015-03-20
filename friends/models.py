@@ -2,7 +2,6 @@ from django.db import models
 from django.contrib.auth.models import User
 # Create your models here.
 
-
 class Follow(models.Model):
     # when started following
     date = models.DateTimeField()
@@ -33,9 +32,6 @@ class Friend(models.Model):
     requester = models.ForeignKey(User, related_name="requester")
     #did accepter accept the request
     accepted = models.BooleanField(default=False)
-
-    # guid
-    guid = models.CharField(max_length=55, default=None)
 
     def __unicode__(self):
         return u"{} -> {}".format(self.requester, self.accepter)
