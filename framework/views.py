@@ -8,7 +8,6 @@ from user_profile.models import Profile
 
 # Create your views here.
 
-
 def login(request):
     """If user is logged in, redirect to dashboard, else, render login template."""
     if request.user.is_authenticated():
@@ -67,7 +66,7 @@ def signup(request):
             else:
                 # user creation failed
                 pass
-    return render(request, 'framework/login.html', {'body_class': 'login-page', 'nav_bar': False})
+    return render(request, 'framework/signup.html', {'body_class': 'login-page', 'nav_bar': False})
 
 @login_required
 def dashboard(request):
