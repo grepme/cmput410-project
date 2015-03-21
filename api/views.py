@@ -11,6 +11,7 @@ import json
 
 
 from comments.models import Comment
+from user_profile.models import Profile
 from friends.models import Friend, Follow
 from posts.models import Post, PostEncoder
 from tags.models import Tag
@@ -108,8 +109,8 @@ def get_post_query(request):
         Q(visibility=Post.FOAF, author__accepter__requester=request.user.id, author__accepter__accepted=True) |
         Q(visibility=Post.FOAF, author__accepter__accepter=request.user.id, author__accepter__accepted=True) )
 
-def post_list(posts_query):
-    return list(obj.as_dict() for obj in posts_query)
+def model_list(model_query):
+    return list(obj.as_dict() for obj in model_query)
 
 
 
@@ -143,7 +144,7 @@ def get_posts(request,author_id=None,page="0"):
 
     posts_query = Post.objects.filter(query)
     print(posts_query.query)
-    posts = post_list(posts_query)
+    posts = model_list(posts_query)
 
     #TODO Add Pagination
     data = {"posts":posts};
@@ -159,7 +160,7 @@ def get_post(request,post_id=None,page="0"):
 
         query = get_post_query(request) & Q(guid=post_id)
         posts_query = Post.objects.filter(query)
-        return_data = post_list(posts_query)
+        return_data = model_list(posts_query)
 
         if len(posts_query) == 0:
             response = JsonResponse({"message":"Post with id %d does not exist" % post_id})
@@ -168,7 +169,7 @@ def get_post(request,post_id=None,page="0"):
 
     else:
         posts_query = Post.objects.filter(visibility=Post.public).order_by('-date')
-        return_data = post_list(posts_query)
+        return_data = model_list(posts_query)
 
     # TODO Add pagination
     return JsonResponse({"posts":return_data})
@@ -183,11 +184,16 @@ def friend_request(request,page="0"):
     return None
 
 #@login_required
-#@require_http_methods(["GET"])
-#@require_http_accept(['application/json'])
-@http_error_code(501,"Not Implemented")
+@require_http_methods(["POST"])
+@require_http_accept(['application/json'])
+#@http_error_code(501,"Not Implemented")
 def get_friends(request,page="0"):
-    return None
+
+    # get all accepted friends
+    friends = Friend.objects.filter(Q(requester=user,accept=True) | Q(accepter=user,accept=True))
+    return_data = model_list(friends)
+    return JsonResponse({"posts":return_data})
+
 
 #@login_required
 #@require_http_methods(["GET"])
@@ -195,3 +201,11 @@ def get_friends(request,page="0"):
 @http_error_code(501,"Not Implemented")
 def is_friend(request,page="0"):
     return None
+
+@require_http_methods(["GET"])
+@require_http_accept(['application/json'])
+def search_users(request,name=""):
+    profile_query = Profile.objects.filter(display_name__icontains=name)
+    return JsonResponse({"users":model_list(profile_query)})
+
+

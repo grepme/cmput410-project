@@ -1,0 +1,70 @@
+{% extends 'framework/base.html' %}
+
+{% block content %}
+    <div class="container navbar-padding">
+                <div class="row">
+            <div class="col-lg-offset-3 col-md-offset-3 col-sm-offset-3 col-lg-6 col-md-6 col-sm-6">
+                <h1>Search for a Friend</h1>
+        </div>
+        </div>
+        <div class="row">
+  <div class="col-lg-offset-3 col-md-offset-3 col-sm-offset-3 col-lg-6 col-md-6 col-sm-6">
+    <div class="input-group">
+        <i class="input-group-addon glyphicon glyphicon-search" id="sizing-addon1"></i>
+        <input type="text" class="form-control" placeholder="Search for..." id="search-friend">
+    </div><!-- /input-group -->
+  </div><!-- /.col-lg-6 -->
+</div><!-- /.row -->
+        <div class="row">
+            <div class="col-lg-offset-3 col-md-offset-3 col-sm-offset-3 col-lg-6 col-md-6 col-sm-6" id="search-list">
+        </div>
+        </div>
+          </div>
+
+<script type="text/javascript">
+    $(function() {
+
+            $("body").append("<div class=\"debug\"></div>");
+            function debug(input) {
+                $(".debug").text(input);
+            }
+            
+            var maxTimer = 600;
+            var minLength = 3;
+
+            function debounce(func, wait, immediate) {
+	var timeout;
+	return function() {
+		var context = this, args = arguments;
+		var later = function() {
+			timeout = null;
+			if (!immediate) func.apply(context, args);
+		};
+		var callNow = immediate && !timeout;
+		clearTimeout(timeout);
+		timeout = setTimeout(later, wait);
+		if (callNow) func.apply(context, args);
+	};
+};
+
+            function search() {
+               if(this.value.length >= minLength) {
+
+                   $.getJSON("http://" + location.host + "/api/search/" + encodeURIComponent(this.value),function(data){
+                           $("#search-list").empty();
+                           $.each(data.users,function(index,object){
+                               $("#search-list").append('<div class="search-user col-lg-12 col-md-12 col-sm-12"><span class="search-user-displayname"><a href="http://' + location.host + '/profile/' + object.displayname +'">' + object.displayname + '</span><div class="btn-group pull-right" role="group" aria-label="...">\
+                                   <button type="button" class="btn btn-warning"><i class="glyphicon glyphicon-plus"></i>&nbsp;Follow</button>\
+  <button type="button" class="btn btn-primary"><i class="glyphicon glyphicon-user"></i>&nbsp;Add Friend</button>\
+</div></div>')
+                               })
+                           });
+               }
+            }
+
+            $("#search-friend").keyup(
+                debounce(search,maxTimer)
+                );
+    })
+</script>
+{% endblock %}

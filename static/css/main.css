@@ -81,6 +81,29 @@ textarea {
 }
 
 /* ==========================================================================
+   Searching for user page styles 
+   ========================================================================== */
+.search-user {
+    margin-top: 20px;
+    padding: 20px;
+    border-radius: 0.5em;
+}
+
+#search-list .search-user:nth-child(odd) {
+    background-color: #F8F8F8;
+}
+
+#search-list .search-user:nth-child(even) {
+    background-color: #FCFCFC;
+}
+
+.search-user-displayname {
+    font-size: 1.2em;
+    font-weight: 700;
+    display: inline-block;
+}
+
+/* ==========================================================================
    Browser Upgrade Prompt
    ========================================================================== */
 
