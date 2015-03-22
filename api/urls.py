@@ -25,5 +25,5 @@ urlpatterns = patterns('api.views',
                        (r'^friendrequest$', 'friend_request'),
 
                         # search for a user
-                       (r'^search/(?P<name>([a-zA-Z0-9-._~:?#]+))/?$', 'search_users'),
+                       #(r'search/(?P<name>([a-zA-Z0-9 -._~:?#%]+))/?$', 'search_users'),
 )

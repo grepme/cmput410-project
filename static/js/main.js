@@ -84,6 +84,8 @@ function confirmEditProfileField(that, field_name) {
     })
 }
 
+
+
 $("#myposts_nav").click(function () {
     //Hide other streams
     $("#stream").hide();
