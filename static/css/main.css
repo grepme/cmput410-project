@@ -80,11 +80,13 @@ textarea {
     resize: vertical;
 }
 
+
+
 /* ==========================================================================
    Searching for user page styles 
    ========================================================================== */
 .search-user {
-    margin-top: 20px;
+    margin-bottom: 20px;
     padding: 20px;
     border-radius: 0.5em;
 }
@@ -100,7 +102,21 @@ textarea {
 .search-user-displayname {
     font-size: 1.2em;
     font-weight: 700;
+    height: 100%;
+}
+
+.vcenter {
     display: inline-block;
+    vertical-align: middle;
+    float: none;
+}
+
+.loading {
+    width: 32px;
+    height: 32px;
+    margin-right: auto;
+    margin-left: auto;
+    background-image: url('/static/loading.gif');
 }
 
 /* ==========================================================================
