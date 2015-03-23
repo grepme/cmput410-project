@@ -13,6 +13,14 @@ def friends(request):
     return render(request, "friends/index.html", {'friends': friends_query, "user":request.user,"profile":profile})
 
 @login_required
+def sent_friends(request):
+    friends_query = Friend.objects.filter(requester=request.user,accepted=False)
+    sent_query = Profile.objects.filter(author__in=friends_query)
+    return render(request, "friends/sent.html", {'sent': sent_query, "user":request.user})
+
+
+
+@login_required
 def search_friends(request,name):
     search = Profile.objects.filter(display_name__icontains=name)
     return render(request, "friends/search.html",{"profiles":search})

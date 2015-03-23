@@ -14,7 +14,7 @@
                     <li id="following_nav"><a href="#"><span class="glyphicon glyphicon-eye-open" aria-hidden="true"></span> Following</a></li>
                     <li id="incoming_nav"><a href="#"><span class="glyphicon glyphicon-bell" aria-hidden="true"></span>
                         Incoming Requests</a></li>
-                    <li id="sent_nav"><a href="#"><span class="glyphicon glyphicon-plane" aria-hidden="true"></span>
+                    <li id="sent_nav" data-url="/friends/sent"><a href="#"><span class="glyphicon glyphicon-plane" aria-hidden="true"></span>
                         Sent Requests</a></li>
                 </ul>
 <div class="col-sm-12 col-lg-12 col-md-12">
@@ -50,7 +50,7 @@
             </div>
                         <div id="sent" class="col-sm-9 col-sm-offset-3 col-md-9 col-md-offset-3 col-lg-offset-3 main">
                 <h1 class="page-header">Sent Requests</h1>
-                Put list of people we are following...
+                <div class="content"></div>
             </div>
 <script type="text/javascript">
     $(function() {
@@ -114,6 +114,16 @@ $(".nav-sidebar > li[id$='_nav']").click(function (item) {
     currentBlock.find(".loading-main").show();
     //loading.show(); 
     
+    $.get("http://" + location.host + currentObject.attr('data-url'), function(data) {
+            var content= $(".content");
+    content.empty();
+    currentBlock.find(".loading-main").hide();
+    if(data.length <= 2) {
+        content.append('<span>No results.</span>');
+        } else {
+        content.append(data);
+        }
+        });
 
     });
 
