@@ -189,15 +189,38 @@ def friend_request(request,page="0"):
     keys = ['id','host','url','displayname']
 
     if has_keys(keys,data,'author') and has_keys(keys,data,'friend'):
-        author_profile = Profile.objects.get(guid=data["author[id]"])
-        friend_profile = Profile.objects.get(guid=data["friend[id]"])
+        author = Profile.objects.get(guid=data["author[id]"])
+        friend = Profile.objects.get(guid=data["friend[id]"])
 
-        # Check that profile is in the system
-        #TODO FOR EXTERNAL HOSTS WE WILL HAVE TO MAKE NEW PROFILES
+        if author == None:
+            author = data["author[id]"]
+        else:
+            author = author.author
 
-        Friend.objects.create(requester=author_profile.author,accepter=friend_profile.author)
+        if friend == None:
+            friend = data["friend[id]"]
+        else:
+            friend = friend.author
 
-        return HttpResponse(200)
+        if author == friend:
+            return HttpResponse(400)
+
+        found = Friend.objects.filter(Q(requester_id=author,accepter_id=friend) | Q(requester_id=friend,accepter_id=author))
+
+        if found is not None:
+
+            if len(found) == 1:
+                print "FOUND ITEM"
+                found = found[0]
+                found.accepted = True
+                found.save()
+            else:
+                print Friend.objects.create(requester=author,accepter=friend)
+                print Follow.objects.create(follower=author,following=friend)
+
+            return HttpResponse(200)
+
+        return HttpResponse(400)
 
 
 #@login_required

@@ -4,7 +4,7 @@ from django.contrib.auth.models import User
 
 class Follow(models.Model):
     # when started following
-    date = models.DateTimeField()
+    date = models.DateTimeField(auto_now_add=True)
     # who started following
     follower = models.ForeignKey(User, related_name="follower")
     # who was followed
