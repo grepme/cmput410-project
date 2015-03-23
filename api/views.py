@@ -112,6 +112,11 @@ def get_post_query(request):
 def model_list(model_query):
     return list(obj.as_dict() for obj in model_query)
 
+def has_keys(keys,dictionary,main_key):
+    if all ("{}[{}]".format(main_key,key) in dictionary for key in keys):
+        return True
+    return False
+
 
 
 @login_required
@@ -175,13 +180,25 @@ def get_post(request,post_id=None,page="0"):
     return JsonResponse({"posts":return_data})
 
 #@login_required
-#@require_http_methods(["POST"])
-#@require_http_accept(['application/json'])
-@http_error_code(501,"Not Implemented")
+@require_http_methods(["POST"])
+@require_http_accept(['application/json'])
+#@http_error_code(501,"Not Implemented")
 def friend_request(request,page="0"):
-    data = json.load(request.body)
+    # get data from request
+    data = request.POST.dict()
+    keys = ['id','host','url','displayname']
 
-    return None
+    if has_keys(keys,data,'author') and has_keys(keys,data,'friend'):
+        author_profile = Profile.objects.get(guid=data["author[id]"])
+        friend_profile = Profile.objects.get(guid=data["friend[id]"])
+
+        # Check that profile is in the system
+        #TODO FOR EXTERNAL HOSTS WE WILL HAVE TO MAKE NEW PROFILES
+
+        Friend.objects.create(requester=author_profile.author,accepter=friend_profile.author)
+
+        return HttpResponse(200)
+
 
 #@login_required
 @require_http_methods(["POST"])
@@ -192,7 +209,7 @@ def get_friends(request,page="0"):
     # get all accepted friends
     friends = Friend.objects.filter(Q(requester=user,accept=True) | Q(accepter=user,accept=True))
     return_data = model_list(friends)
-    return JsonResponse({"posts":return_data})
+    return JsonResponse({"":return_data})
 
 
 #@login_required

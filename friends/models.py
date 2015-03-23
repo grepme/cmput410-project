@@ -25,7 +25,7 @@ class Follow(models.Model):
 
 class Friend(models.Model):
     # when request was accepted
-    date = models.DateTimeField()
+    date = models.DateTimeField(auto_now_add=True)
     # who followed back
     accepter = models.ForeignKey(User, related_name="accepter")
     # who started following
