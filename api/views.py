@@ -45,7 +45,7 @@ def require_http_accept(request_accept_list):
             accept = request.META.get('Accept')
 
             # none condition we assume */*
-            if accept not in request_accept_list and accept is not None:
+            if accept not in list_extra and accept is not None:
                 logger.warning('Accept Not Allowed (%s): %s', request.META.get('Accept'), request.path,
                     extra={
                         'status_code': 406,
@@ -128,14 +128,13 @@ def get_posts(request,author_id=None,page="0"):
     #author/author_id/posts
 
     query = get_post_query(request)
-    print query
 
     # user specified a specific user id they want to find
     if author_id is not None and author_id != request.profile.guid:
-        query = ( query ) & Q(guid=author_id)
+        query = ( query ) & Q(author__guid=author_id)
     elif author_id is not None:
         # author id = same user
-        query = Q(guid=request.profile.guid)
+        query = Q(author__guid=request.profile.guid)
 
     # Check if user is valid
     # TODO Decorator?
@@ -217,25 +216,54 @@ def friend_request(request,page="0"):
 
         return HttpResponse(400)
 
+#TODO PUT THIS IN COMMON PLACE THIS IS FROM
+# THE FRIENDS APP
+def get_other_profiles(profile,query):
+    profiles = list()
+
+    for query_item in query:
+        if query_item.accepter == profile:
+            profiles.append(query_item.requester.guid)
+        else:
+            profiles.append(query_item.accepter.guid)
+    return profiles
 
 #@login_required
 @require_http_methods(["POST"])
 @require_http_accept(['application/json'])
 #@http_error_code(501,"Not Implemented")
-def get_friends(request,page="0"):
+def get_friends(request,author_id=None,page="0"):
+
+    data = request.POST.dict()
+
+    if data['author'] is not None and data['authors'] is not None:
+        # List of authors
+        friends_list = data['authors']
+        author = Profile(guid=data['author'])
+
+        if author.guid != author_id:
+            return HttpResponse(400)
 
     # get all accepted friends
-    friends = Friend.objects.filter(Q(requester=user,accept=True) | Q(accepter=user,accept=True))
-    return_data = model_list(friends)
-    return JsonResponse({"":return_data})
+    friends = Friend.objects.filter(Q(requester__in=friends_list,accepted=True,accepter=author) | Q(accepter__in=friends_list,accepted=True,requester=author))
+    return_friends = get_other_profiles(author,friends)
+
+    return JsonResponse({"query":"friends","author":author.guid,"friends":return_data})
 
 
 #@login_required
-#@require_http_methods(["GET"])
-#@require_http_accept(['application/json'])
-@http_error_code(501,"Not Implemented")
-def is_friend(request,page="0"):
-    return None
+@require_http_methods(["GET"])
+@require_http_accept(['application/json'])
+def is_friend(request,author_id=None,author_2_id=None,page="0"):
+    response_data = {"query":"friends","authors":[author_id,author_2_id]}
+    friend = Friend.objects.filter(Q(requester=author_id,accepted=True,accepter=author_2_id) | Q(accepter=author_id,accepted=True,requester=author_2_id)).first()
+    if friend is not None:
+        response_data["friends"] = "YES"
+    else:
+        response_data["friends"] = "NO"
+    return JsonResponse(response_data)
+
+
 
 @require_http_methods(["GET"])
 @require_http_accept(['application/json'])

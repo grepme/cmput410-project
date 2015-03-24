@@ -71,7 +71,7 @@ class ApiViewTests(TestCase):
         request.user = self.user;
         request.profile = self.user_profile;
 
-        response = get_posts(request,self.user_profile2)
+        response = get_posts(request,self.user_profile2.guid)
         json_obj = json.loads(response.content)
         self.assertEqual(json_obj['posts'],[])
 
@@ -82,7 +82,7 @@ class ApiViewTests(TestCase):
                                  visibility=Post.friend, commonmark=False, author=self.user_profile, origin="localhost", source="localhost")
 
         # Factory for get request
-        request = self.factory.get('/api/author/{}/posts'.format(self.user_profile))
+        request = self.factory.get('/api/author/{}/posts'.format(self.user_profile.guid))
 
         # Set the user
         request.user = self.user;
@@ -184,16 +184,17 @@ class ApiViewTests(TestCase):
         self.assertEqual(response.status_code,406)
 
     def test_invalid_accept_api_posts_id(self):
-        post_id = 200
+        post_id = uuid.uuid1().__str__()
         ''' try to get with invalid accept /api/posts/200'''
 
         # Factory for get request
         request = self.factory.get('/api/posts/{}'.format(post_id,Accept='html/text'))
 
         # Set the user
-        request.user = self.user;
-        request.profile = self.user_profile;
+        request.user = self.user
+        request.profile = self.user_profile
         response = get_post(request,post_id)
+        print response
         self.assertEqual(response.status_code,406)
 
 
@@ -244,8 +245,6 @@ class ApiViewTests(TestCase):
 
         post = Post.objects.create(title='randomtitlepublic', date=timezone.now(), text='sometext', image=None,
                                  visibility=Post.public, commonmark=False, author=self.user_profile2, origin="localhost", source="localhost")
-
-        print post
 
         # Factory for get request
         request = self.factory.get('/api/posts/{}/'.format(post.guid))
