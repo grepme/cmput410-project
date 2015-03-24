@@ -15,7 +15,6 @@ def friends(request):
 def friends_friends(request):
     # find all of our friends
     friends_query = Friend.objects.filter(Q(accepter=request.user,accepted=True) | Q(requester=request.user,accepted=True))
-    print friends_query
 
     # Get all profiles for accepter and requester
     # Don't include ourselves

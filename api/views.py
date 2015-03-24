@@ -189,34 +189,36 @@ def friend_request(request,page="0"):
     keys = ['id','host','url','displayname']
 
     if has_keys(keys,data,'author') and has_keys(keys,data,'friend'):
-        author = Profile.objects.get(guid=data["author[id]"])
-        friend = Profile.objects.get(guid=data["friend[id]"])
+        author = Profile.objects.filter(guid=data["author[id]"]).first()
+        friend = Profile.objects.filter(guid=data["friend[id]"]).first()
+
+        print "find itesm {} {}".format(author,friend)
 
         if author == None:
             author = data["author[id]"]
         else:
-            author = author.author
+            author = author.author.id
 
         if friend == None:
             friend = data["friend[id]"]
         else:
-            friend = friend.author
+            friend = friend.author.id
 
         if author == friend:
             return HttpResponse(400)
 
-        found = Friend.objects.filter(Q(requester_id=author,accepter_id=friend) | Q(requester_id=friend,accepter_id=author))
+        found = Friend.objects.filter(Q(requester_id=author,accepter_id=friend) | Q(requester_id=friend,accepter_id=author)).first()
 
         if found is not None:
+            found.accepted = True
+            found.save()
 
-            if len(found) == 1:
-                print "FOUND ITEM"
-                found = found[0]
-                found.accepted = True
-                found.save()
-            else:
-                print Friend.objects.create(requester=author,accepter=friend)
-                print Follow.objects.create(follower=author,following=friend)
+            return HttpResponse(200)
+
+        else:
+            print "adding"
+            Friend.objects.create(requester_id=author,accepter_id=friend)
+            Follow.objects.create(follower_id=author,following_id=friend)
 
             return HttpResponse(200)
 

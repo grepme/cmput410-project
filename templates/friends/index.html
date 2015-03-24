@@ -87,7 +87,9 @@ function getNavItem(currentBlock,navItem) {
         } else {
         content.append(data);
         }
-        });
+        }).fail(function(error) {
+    alert( "error " + error);
+  });
 };
 
 getNavItem($(navItemBlocks[0]),$(allNavItems[0]));

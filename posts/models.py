@@ -35,7 +35,7 @@ class Post(GUIDModel):
     image  = models.ImageField(blank=True, upload_to='images/%Y/%m/%d')
     origin = models.GenericIPAddressField()
     source = models.GenericIPAddressField()
-    author = models.ForeignKey(User)
+    author = models.ForeignKey(Profile)
     # whether or not they used commonmark
     commonmark = models.BooleanField(default=False)
 
@@ -55,7 +55,7 @@ class Post(GUIDModel):
             "description": "",
             "content-type": self.get_content_type(),
             "content": self.text,
-            "author": Profile.objects.get(author=self.author).as_dict(),
+            "author": self.author.as_dict(),
             "categories": list(self.tags.all()),
             "comments": list(),
             "pubDate": self.date,
