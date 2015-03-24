@@ -15,9 +15,13 @@ class Profile(GUIDModel):
 
     # Set to yes is profile is hosted else where
     is_external = models.BooleanField(default=False)
+    # Last time profile was updated with external server
+    last_updated = models.DateTimeField(null=True)
 
     # TODO don't use hardcoded host, should be of running instance
     host = models.CharField(max_length=55)
+
+
 
     def as_dict(self):
         return {

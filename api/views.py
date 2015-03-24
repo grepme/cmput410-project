@@ -100,14 +100,14 @@ class SetEncoder(json.JSONEncoder):
        return json.JSONEncoder.default(self, obj)
 
 def get_post_query(request):
-        return ( Q(visibility=Post.private, author__username=request.user.username) |
+        return ( Q(visibility=Post.private, author=request.profile) |
         Q(visibility=Post.public) | Q(visibility=Post.server) |
-        Q(visibility=Post.friend, author__accepter=request.user.id, author__accepter__accepted=True) |
-        Q(visibility=Post.friend, author__requester=request.user.id, author__accepter__accepted=True) |
-        Q(visibility=Post.FOAF, author__requester__requester=request.user.id, author__accepter__accepted=True) |
-        Q(visibility=Post.FOAF, author__requester__accepter=request.user.id, author__accepter__accepted=True) |
-        Q(visibility=Post.FOAF, author__accepter__requester=request.user.id, author__accepter__accepted=True) |
-        Q(visibility=Post.FOAF, author__accepter__accepter=request.user.id, author__accepter__accepted=True) )
+        Q(visibility=Post.friend, author__accepter=request.profile, author__accepter__accepted=True) |
+        Q(visibility=Post.friend, author__requester=request.profile, author__accepter__accepted=True) |
+        Q(visibility=Post.FOAF, author__requester__requester=request.profile, author__accepter__accepted=True) |
+        Q(visibility=Post.FOAF, author__requester__accepter=request.profile, author__accepter__accepted=True) |
+        Q(visibility=Post.FOAF, author__accepter__requester=request.profile, author__accepter__accepted=True) |
+        Q(visibility=Post.FOAF, author__accepter__accepter=request.profile, author__accepter__accepted=True) )
 
 def model_list(model_query):
     return list(obj.as_dict() for obj in model_query)
@@ -130,18 +130,18 @@ def get_posts(request,author_id=None,page="0"):
     query = get_post_query(request)
 
     # user specified a specific user id they want to find
-    if author_id is not None and author_id != request.user.id:
+    if author_id is not None and author_id != request.profile:
         query = ( query ) & Q(author_id=author_id)
     elif author_id is not None:
         # author id = same user
-        query = Q(author_id=request.user.guid)
+        query = Q(author_id=request.profile.guid)
 
     # Check if user is valid
     # TODO Decorator?
     if author_id is not None:
         try:
-            User.objects.get(id=author_id)
-        except User.DoesNotExist as e:
+            Profile.objects.get(id=author_id)
+        except Profile.DoesNotExist as e:
             # return a better error for missing user
             response = JsonResponse({"message":"Author with id %d does not exist" % author_id})
             response.status_code = 404
@@ -195,19 +195,15 @@ def friend_request(request,page="0"):
         print "find itesm {} {}".format(author,friend)
 
         if author == None:
-            author = data["author[id]"]
-        else:
-            author = author.author.id
+            author = Profile.create(is_external=True,display_name=data["author[displayname]"],host=data["author[host]"])
 
         if friend == None:
-            friend = data["friend[id]"]
-        else:
-            friend = friend.author.id
+            friend = Profile.create(is_external=True,display_name=data["friend[displayname]"],host=data["friend[host]"])
 
         if author == friend:
             return HttpResponse(400)
 
-        found = Friend.objects.filter(Q(requester_id=author,accepter_id=friend) | Q(requester_id=friend,accepter_id=author)).first()
+        found = Friend.objects.filter(Q(requester=author,accepter=friend) | Q(requester=friend,accepter=author)).first()
 
         if found is not None:
             found.accepted = True
@@ -216,9 +212,8 @@ def friend_request(request,page="0"):
             return HttpResponse(200)
 
         else:
-            print "adding"
-            Friend.objects.create(requester_id=author,accepter_id=friend)
-            Follow.objects.create(follower_id=author,following_id=friend)
+            Friend.objects.create(requester=author,accepter=friend)
+            Follow.objects.create(follower=author,following=friend)
 
             return HttpResponse(200)
 

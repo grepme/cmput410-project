@@ -25,7 +25,7 @@ def new_comment(request, source=None):
         p = Post.objects.get(id=post_id)
 
         # Fetch the user that uploaded this
-        a = User.objects.get(username=request.user.username)
+        a = request.profile
 
         # Make the comment object
         c = Comment.objects.create(date=timezone.now(), text=text, image=image, post=p, author=a)

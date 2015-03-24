@@ -42,7 +42,7 @@ def new_post(request, source=None):
             image = None
 
         # Fetch the user that uploaded this
-        a = User.objects.get(username=request.user.username)
+        a = request.profile
 
         # Make the post object
         p = Post.objects.create(title=title, date=timezone.now(), text=text, image=image, origin=origin,
@@ -64,7 +64,7 @@ def new_post(request, source=None):
 def delete_post(request, guid):
         try:
             # Try to find the user the post belongs to
-            post = Post.objects.get(guid=guid, author__username=request.user.username)
+            post = Post.objects.get(guid=guid, author=request.profile)
             post.delete()
         except Post.DoesNotExist:
             # Post doesn't exist or they don't have permission to delete it
@@ -81,14 +81,14 @@ def all_posts(request):
     # Any posts that are private and owned, public, are on this server, or are friends, or friends of friends.
     # TODO: Friends of friends improvement. OH GOD MY EYES!
     # TODO: DAMMIT DJANGO! ALLOW MORE NESTED JOINS!
-    p = Post.objects.filter(Q(visibility=Post.private, author__username=request.user.username) |
+    p = Post.objects.filter(Q(visibility=Post.private, author=request.profile) |
                             Q(visibility=Post.public) | Q(visibility=Post.server) |
-                            Q(visibility=Post.friend, author__accepter=request.user.id) |
-                            Q(visibility=Post.friend, author__requester=request.user.id) |
-                            Q(visibility=Post.FOAF, author__requester__requester=request.user.id) |
-                            Q(visibility=Post.FOAF, author__requester__accepter=request.user.id) |
-                            Q(visibility=Post.FOAF, author__accepter__requester=request.user.id) |
-                            Q(visibility=Post.FOAF, author__accepter__accepter=request.user.id)
+                            Q(visibility=Post.friend, author__accepter=request.profile) |
+                            Q(visibility=Post.friend, author__requester=request.profile) |
+                            Q(visibility=Post.FOAF, author__requester__requester=request.profile) |
+                            Q(visibility=Post.FOAF, author__requester__accepter=request.profile) |
+                            Q(visibility=Post.FOAF, author__accepter__requester=request.profile) |
+                            Q(visibility=Post.FOAF, author__accepter__accepter=request.profile)
     )
 
     # Nested query lookups aren't supported, so we need to make multiple queries :(
@@ -99,5 +99,5 @@ def all_posts(request):
 @login_required
 def my_posts(request):
     """AJAX call that returns the user's posts"""
-    p = Post.objects.filter(author__username=request.user.username)
+    p = Post.objects.filter(author=request.profile)
     return render(request, 'posts/all.html', {'posts': p})

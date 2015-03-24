@@ -31,7 +31,7 @@ def update_profile(request):
     allowed_field = ['display_name']
 
     # Profile object to save
-    user = Profile.objects.get(author__username=request.user.username)
+    user = Profile.objects.get(author=request.profile)
 
     # Iterate over all posted fields in profile update
     for key, value in request.POST.items():
