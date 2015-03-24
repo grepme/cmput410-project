@@ -13,7 +13,7 @@ def profile(request, author):
 
     # Get the user's profile. Get is useful for one object.
     # https://docs.djangoproject.com/en/1.7/topics/db/queries/#lookups-that-span-relationships
-    p = Profile.objects.get(author__username=author)
+    p = Profile.objects.get(author__username__iexact=author)
     return render(request, "profile/author.html", {'profile': p})
 
 
