@@ -5,6 +5,8 @@ from django.contrib.auth.models import User
 from django.views.decorators.csrf import csrf_protect
 from posts.models import Post
 from user_profile.models import Profile
+from django.core.validators import validate_email
+from django import forms
 
 # Create your views here.
 
@@ -32,10 +34,26 @@ def signup(request):
     elif request.method == "POST":
         firstName = request.POST.get("signupFirstName", "")
         lastName = request.POST.get("signupLastName", "")
-        email = request.POST.get("signupEmail", "")
         username = request.POST.get("signupUsername", "")
         password = request.POST.get("signupPassword", "")
+        retypedPass = request.POST.get("signupDuplicatePassword", "")
+        email = request.POST.get("signupEmail", "")
         print(firstName,lastName,email,username,password)
+
+        if password != retypedPass:
+            print("Passwords did not match")
+            #TODO: Return validation failed
+
+        if (not firstName) or (not lastName) or (not username) or (not password) or (not retypedPass) or (not email):
+            print("Blank field detected")
+            #TODO: Return validation failed
+
+        try:
+            validate_email(email)
+        except forms.ValidationError:
+            print("Validation failed")
+            #TODO: Return validation failed
+
 
         if User.objects.filter(username=username).exists():
             #TODO: Alert user that this is wrong... don't just log in anyway
@@ -76,6 +94,7 @@ def dashboard(request):
     # Grab the user's stream (needs to be updated)
     # TODO: Is the stream only their posts?
     posts = Post.objects.filter(author__username=request.user.username)
+    # posts = Post.objects.filter(author=request.profile)
     return render(request, 'framework/dashboard.html', {'posts': posts})
 
 
