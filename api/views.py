@@ -192,8 +192,6 @@ def friend_request(request,page="0"):
         author = Profile.objects.filter(guid=data["author[id]"]).first()
         friend = Profile.objects.filter(guid=data["friend[id]"]).first()
 
-        print "find itesm {} {}".format(author,friend)
-
         if author == None:
             author = Profile.create(is_external=True,display_name=data["author[displayname]"],host=data["author[host]"])
 
