@@ -100,7 +100,7 @@ class SetEncoder(json.JSONEncoder):
        return json.JSONEncoder.default(self, obj)
 
 def get_post_query(request):
-        return ( Q(visibility=Post.private, author=request.profile) |
+        return ( Q(visibility=Post.private, author=request.profile.guid) |
         Q(visibility=Post.public) | Q(visibility=Post.server) |
         Q(visibility=Post.friend, author__accepter=request.profile, author__accepter__accepted=True) |
         Q(visibility=Post.friend, author__requester=request.profile, author__accepter__accepted=True) |
@@ -128,27 +128,27 @@ def get_posts(request,author_id=None,page="0"):
     #author/author_id/posts
 
     query = get_post_query(request)
+    print query
 
     # user specified a specific user id they want to find
-    if author_id is not None and author_id != request.profile:
-        query = ( query ) & Q(author_id=author_id)
+    if author_id is not None and author_id != request.profile.guid:
+        query = ( query ) & Q(guid=author_id)
     elif author_id is not None:
         # author id = same user
-        query = Q(author_id=request.profile.guid)
+        query = Q(guid=request.profile.guid)
 
     # Check if user is valid
     # TODO Decorator?
     if author_id is not None:
         try:
-            Profile.objects.get(id=author_id)
+            Profile.objects.get(guid=author_id)
         except Profile.DoesNotExist as e:
             # return a better error for missing user
-            response = JsonResponse({"message":"Author with id %d does not exist" % author_id})
+            response = JsonResponse({"message":"Author with id {} does not exist".format(author_id)})
             response.status_code = 404
             return response
 
     posts_query = Post.objects.filter(query)
-    print(posts_query.query)
     posts = model_list(posts_query)
 
     #TODO Add Pagination
@@ -168,7 +168,7 @@ def get_post(request,post_id=None,page="0"):
         return_data = model_list(posts_query)
 
         if len(posts_query) == 0:
-            response = JsonResponse({"message":"Post with id %d does not exist" % post_id})
+            response = JsonResponse({"message":"Post with id {} does not exist".format(post_id)})
             response.status_code = 404
             return response
 
