@@ -3,6 +3,7 @@ python:
   - "2.7"
 # command to install dependencies, e.g. pip install -r requirements.txt --use-mirrors
 install:
+  - "apt-get update"
   - "pip install django"
   - "curl -L https://www.opscode.com/chef/install.sh | sudo bash"
 # command to run before the tests, setup chef.
