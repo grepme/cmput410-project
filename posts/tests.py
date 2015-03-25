@@ -9,6 +9,7 @@ from uuid import UUID
 from posts.views import new_post, delete_post, all_posts, my_posts
 from posts.models import Post
 
+
 class PostsViewTests(TestCase):
     def setUp(self):
         self.factory = RequestFactory()
@@ -20,7 +21,6 @@ class PostsViewTests(TestCase):
                                  visibility=Post.friend, commonmark=False, author=self.profile, origin="localhost", source="localhost")
         self.post2 = Post.objects.create(title='randomtitle2', date=timezone.now(), text='sometext', image=None,
                                  visibility=Post.friend, commonmark=False, author=self.profile2, origin="localhost", source="localhost")
-
 
     def test_new_post(self):
         ''' Tests if we can add a new post using the endpoint '''
