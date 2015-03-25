@@ -22,10 +22,10 @@ def new_comment(request, source=None):
         else:
             image = None
         post_id = request.POST.get("post_id", "")
-        p = Post.objects.get(id=post_id)
+        p = Post.objects.get(guid=post_id)
 
         # Fetch the user that uploaded this
-        a = User.objects.get(username=request.user.username)
+        a = request.profile
 
         # Make the comment object
         c = Comment.objects.create(date=timezone.now(), text=text, image=image, post=p, author=a)
@@ -40,10 +40,8 @@ def new_comment(request, source=None):
 
 @login_required
 def posts_comments(request):
-    print("You Got To Me")
     # if request.method == 'GET':
     """AJAX call that will grab all comments belonging to a post."""
-    print(request)
     # TODO: Add all filters
     # c = Comment.objects.filter(Q(text="justAtest"))
     c = Comment.objects.all()

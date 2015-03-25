@@ -1,0 +1,231 @@
+{% extends 'framework/base.html' %}
+
+{% block content %}
+    <div class="container navbar-padding">
+        <div class="row">
+
+            <!-- Sticky Left Sidebar -->
+            <div class="col-sm-3 col-md-3 col-lg-3 sidebar">
+                <ul class="nav nav-sidebar">
+                    <li id="friends_nav" data-url="/friends/friends" class="active">
+                        <a href="#"><span class="glyphicon glyphicon-user" aria-hidden="true"></span>
+                            Friends</a>
+                    </li>
+                    <li id="following_nav"  data-url="/friends/following"><a href="#"><span class="glyphicon glyphicon-eye-open" aria-hidden="true"></span> Following</a></li>
+                    <li id="incoming_nav"  data-url="/friends/incoming"><a href="#"><span class="glyphicon glyphicon-bell" aria-hidden="true"></span>
+                        Incoming Requests</a></li>
+                    <li id="sent_nav" data-url="/friends/sent"><a href="#"><span class="glyphicon glyphicon-plane" aria-hidden="true"></span>
+                        Sent Requests</a></li>
+                </ul>
+<div class="col-sm-12 col-lg-12 col-md-12">
+    <div class="input-group">
+        <span class="input-group-addon" id="sizing-addon1"><span class="glyphicon glyphicon-search"></span></span>
+        <input type="text" class="form-control" placeholder="Search for new friends..." id="search-friend">
+    </div><!-- /input-group -->
+  </div><!-- /.col-lg-6 -->
+        <div class="col-sm-12 col-md-12 col-lg-12 search-user">
+            <div class="loading"></div>
+            <div id="search-list">
+        </div>
+
+            </div>
+            </div>
+
+            <!-- Main content -->
+
+            <!-- Stream -->
+            <div id="friends" class="col-sm-9 col-sm-offset-3 col-md-9 col-md-offset-3 col-lg-offset-3 main">
+                <h1 class="page-header">Friends</h1>
+                <div class="content"></div> 
+            </div>
+
+            <div id="following" class="col-sm-9 col-sm-offset-3 col-md-9 col-md-offset-3 col-lg-offset-3 main">
+                <h1 class="page-header">Following</h1>
+                <div class="content"></div>
+            </div>
+
+                        <div id="incoming" class="col-sm-9 col-sm-offset-3 col-md-9 col-md-offset-3 col-lg-offset-3 main">
+                <h1 class="page-header">Incoming Requests</h1>
+                <div class="content"></div>
+            </div>
+                        <div id="sent" class="col-sm-9 col-sm-offset-3 col-md-9 col-md-offset-3 col-lg-offset-3 main">
+                <h1 class="page-header">Sent Requests</h1>
+                <div class="content"></div>
+            </div>
+<script type="text/javascript">
+    $(function() {
+        $("body").append("<div class=\"debug\"></div>");
+
+        function debug(input) {
+            $(".debug").text(input);
+        }
+// Friends Pages
+var allNavItems = $(".nav-sidebar > li[id$='_nav']");
+
+var navItemBlocks = [];
+
+// Add all the classes into the buttons
+for (var i = 0; i < allNavItems.length; i++) {
+    var object = $(allNavItems[i]);
+    var id = $(allNavItems[i]).attr('id').replace("_nav","");
+
+    navItemBlocks.push("#" + id);
+    var block = $("#" + id);
+    if(i > 0) {
+        block.hide();
+    }
+    block.find("h1").after('<div class="loading-main" style="display:none;"></div>');
+}
+
+function getNavItem(currentBlock,navItem) {
+    $.get("http://" + location.host + navItem.attr('data-url'), function(data) {
+            var content= currentBlock.find(".content");
+    content.empty();
+    currentBlock.find(".loading-main").hide();
+    if(data.length <= 2) {
+        content.append('<span>No results.</span>');
+        } else {
+        content.append(data);
+        }
+        }).fail(function(error) {
+    alert( "error " + error);
+  });
+};
+
+getNavItem($(navItemBlocks[0]),$(allNavItems[0]));
+
+// When we click a nav item..
+$(".nav-sidebar > li[id$='_nav']").click(function (item) {
+    //Hide other streams
+    // Make clicked item active
+    // Make the others not
+    var currentObject = $(this);
+    var currentId = currentObject.attr('id');
+    var currentBlock = null;
+    for(var i = 0; i < allNavItems.length; i++) {
+        console.log(currentId)
+        // Get the object
+        var object = $(allNavItems[i]);
+        var objectId = object.attr('id');
+
+        var blockId = navItemBlocks[i];
+
+        // Check if it's the item we clicked
+        if(objectId !== currentId) {
+            // Set all others as inactive
+            object.removeClass("active");
+            // Hide their content
+            $(blockId).hide();
+        } else if(objectId === currentId) {
+
+                // Show clicked content
+                currentBlock = $(blockId);
+                currentBlock.show();
+
+                // Add active class to nav item
+                currentObject.addClass("active");
+        }
+    }
+
+    currentBlock.find(".loading-main").show();
+    //loading.show(); 
+    
+    $.get("http://" + location.host + currentObject.attr('data-url'), function(data) {
+            var content= currentBlock.find(".content");
+    content.empty();
+    currentBlock.find(".loading-main").hide();
+    if(data.length <= 2) {
+        content.append('<span>No results.</span>');
+        } else {
+        content.append(data);
+        }
+        });
+
+    });
+
+
+function requestUser() {
+    var button = $(this);
+    var isFollow = button.attr('class').indexOf("follow");
+    button.attr('disabled',true);
+
+    if(isFollow > -1) {
+        // We clicked follow button
+        $.post( "/api/follow", {  
+   "query":"friendrequest",
+   "author":{  
+   "id":"{{profile.guid}}",
+      "host":"http://127.0.0.1:8000/",
+      "displayname":"{{user.profile.display_name}}",
+      "url": "http://" + location.host + "/author/{{user.profile.display_name}}"},
+   "friend":{  
+      "id":$(this).attr('value'),
+      "host":"http://" + location.host,
+      "displayname": $(this).attr('data-displayname'),
+      "url":"http://" + location.host + "/author/" + $(this).attr('value')
+   }
+} , function( data ) {});
+    } else {
+        $.post( "/api/friendrequest", {  
+   "query":"friendrequest",
+   "author":{  
+   "id":"{{profile.guid}}",
+      "host":"http://127.0.0.1:8000/",
+      "displayname":"{{user.profile.display_name}}",
+      "url": "http://" + location.host + "/author/{{user.profile.display_name}}"},
+   "friend":{  
+      "id":$(this).attr('value'),
+      "host":"http://" + location.host,
+      "displayname": $(this).attr('data-displayname'),
+      "url":"http://" + location.host + "/author/" + $(this).attr('value')
+   }
+} , function( data ) {});
+    }
+}
+        
+var loading = $(".loading");
+        loading.hide();
+
+        var maxTimer = 600;
+        var minLength = 3;
+
+        function debounce(func, wait, immediate) {
+            var timeout;
+            return function() {
+                var context = this,
+                    args = arguments;
+                var later = function() {
+                    timeout = null;
+                    if (!immediate) func.apply(context, args);
+                };
+                var callNow = immediate && !timeout;
+                clearTimeout(timeout);
+                timeout = setTimeout(later, wait);
+                if (callNow) func.apply(context, args);
+            };
+        };
+
+        function search() {
+            if (this.value.length >= minLength) {
+                $("#search-list").empty();
+                loading.show();
+                $.get("http://" + location.host + "/friends/search/" + encodeURIComponent(this.value), function(data) {
+                    $("#search-list").empty();
+                    loading.hide();
+                    if(data.length <= 2) {
+                        $("#search-list").append('<span>No results.</span>');
+                        } else {
+                        $("#search-list").append(data);
+                        $("button[class$='-button']").click(requestUser);
+                        }
+                    });
+                };
+            }
+        
+
+        $("#search-friend").keyup(
+            debounce(search, maxTimer)
+        );
+    })
+</script>
+{% endblock %}

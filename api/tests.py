@@ -4,6 +4,7 @@ from user_profile.models import Profile
 from django.test import TestCase, RequestFactory
 from django.utils import timezone
 import json
+import uuid
 # create an instance of the client for our use
 # Create your tests here.
 
@@ -18,7 +19,7 @@ class ApiViewTests(TestCase):
         self.user_profile = Profile.objects.create(author=self.user,display_name="Chris")
         self.user2 = User.objects.create_user(
             username='ffff', email='chris@email.com', password='top_secret')
-        self.user2_profile = Profile.objects.create(author=self.user2,display_name="FFFF")
+        self.user_profile2 = Profile.objects.create(author=self.user2,display_name="FFFF")
 
     def test_author_posts(self):
         ''' get the current logged in users visible posts '''
@@ -28,6 +29,7 @@ class ApiViewTests(TestCase):
 
         # Set the user
         request.user = self.user;
+        request.profile = self.user_profile;
 
         response = get_posts(request)
         json_obj = json.loads(response.content)
@@ -39,16 +41,19 @@ class ApiViewTests(TestCase):
         # Factory for get request
         request = self.factory.post('/api/author/posts')
         request.user = self.user;
+        request.profile = self.user_profile;
         response = get_posts(request)
         self.assertEqual(response.status_code,405)
 
         request = self.factory.delete('/api/author/posts')
         request.user = self.user;
+        request.profile = self.user_profile;
         response = get_posts(request)
         self.assertEqual(response.status_code,405)
 
         request = self.factory.put('/api/author/posts')
         request.user = self.user;
+        request.profile = self.user_profile;
         response = get_posts(request)
         self.assertEqual(response.status_code,405)
 
@@ -57,15 +62,16 @@ class ApiViewTests(TestCase):
         ''' get the current logged in users visible posts '''
 
         Post.objects.create(title='randomtitle', date=timezone.now(), text='sometext', image=None,
-                                 visibility=Post.friend, commonmark=False, author=self.user, origin="localhost", source="localhost")
+                                 visibility=Post.friend, commonmark=False, author=self.user_profile, origin="localhost", source="localhost")
 
         # Factory for get request
-        request = self.factory.get('/api/author/%d/posts' % self.user2.id)
+        request = self.factory.get('/api/author/{}/posts'.format(self.user2.id))
 
         # Set the user
         request.user = self.user;
+        request.profile = self.user_profile;
 
-        response = get_posts(request,self.user2.id)
+        response = get_posts(request,self.user_profile2.guid)
         json_obj = json.loads(response.content)
         self.assertEqual(json_obj['posts'],[])
 
@@ -73,15 +79,16 @@ class ApiViewTests(TestCase):
         ''' get specific authors posts '''
 
         Post.objects.create(title='randomtitle', date=timezone.now(), text='sometext', image=None,
-                                 visibility=Post.friend, commonmark=False, author=self.user, origin="localhost", source="localhost")
+                                 visibility=Post.friend, commonmark=False, author=self.user_profile, origin="localhost", source="localhost")
 
         # Factory for get request
-        request = self.factory.get('/api/author/%d/posts' % self.user.id)
+        request = self.factory.get('/api/author/{}/posts'.format(self.user_profile.guid))
 
         # Set the user
         request.user = self.user;
+        request.profile = self.user_profile;
 
-        response = get_posts(request,self.user.id)
+        response = get_posts(request,self.user_profile.guid)
         json_obj = json.loads(response.content)
         self.assertEqual(len(json_obj['posts']),1)
 
@@ -89,22 +96,23 @@ class ApiViewTests(TestCase):
         ''' get another users posts'''
 
         Post.objects.create(title='randomtitlepublic', date=timezone.now(), text='sometext', image=None,
-                                 visibility=Post.public, commonmark=False, author=self.user2, origin="localhost", source="localhost")
+                                 visibility=Post.public, commonmark=False, author=self.user_profile2, origin="localhost", source="localhost")
 
         Post.objects.create(title='randomtitle', date=timezone.now(), text='sometext', image=None,
-                                 visibility=Post.friend, commonmark=False, author=self.user2, origin="localhost", source="localhost")
+                                 visibility=Post.friend, commonmark=False, author=self.user_profile2, origin="localhost", source="localhost")
         Post.objects.create(title='randomtitle', date=timezone.now(), text='sometext', image=None,
-                                 visibility=Post.private, commonmark=False, author=self.user2, origin="localhost", source="localhost")
+                                 visibility=Post.private, commonmark=False, author=self.user_profile2, origin="localhost", source="localhost")
         Post.objects.create(title='randomtitle', date=timezone.now(), text='sometext', image=None,
-                                 visibility=Post.FOAF, commonmark=False, author=self.user2, origin="localhost", source="localhost")
+                                 visibility=Post.FOAF, commonmark=False, author=self.user_profile2, origin="localhost", source="localhost")
 
         # Factory for get request
-        request = self.factory.get('/api/author/%d/posts' % self.user2.id)
+        request = self.factory.get('/api/author/{}/posts'.format(self.user_profile2.guid))
 
         # Set the user
         request.user = self.user;
+        request.profile = self.user_profile;
 
-        response = get_posts(request,self.user2.id)
+        response = get_posts(request,self.user_profile2.guid)
         json_obj = json.loads(response.content)
         self.assertEqual(len(json_obj['posts']),1)
         self.assertEqual(json_obj['posts'][0]['title'],'randomtitlepublic')
@@ -115,36 +123,38 @@ class ApiViewTests(TestCase):
         author_id = 20000
 
         Post.objects.create(title='randomtitlepublic', date=timezone.now(), text='sometext', image=None,
-                                 visibility=Post.public, commonmark=False, author=self.user2, origin="localhost", source="localhost")
+                                 visibility=Post.public, commonmark=False, author=self.user_profile2, origin="localhost", source="localhost")
 
         Post.objects.create(title='randomtitle', date=timezone.now(), text='sometext', image=None,
-                                 visibility=Post.friend, commonmark=False, author=self.user2, origin="localhost", source="localhost")
+                                 visibility=Post.friend, commonmark=False, author=self.user_profile2, origin="localhost", source="localhost")
         Post.objects.create(title='randomtitle', date=timezone.now(), text='sometext', image=None,
-                                 visibility=Post.private, commonmark=False, author=self.user2, origin="localhost", source="localhost")
+                                 visibility=Post.private, commonmark=False, author=self.user_profile2, origin="localhost", source="localhost")
         Post.objects.create(title='randomtitle', date=timezone.now(), text='sometext', image=None,
-                                 visibility=Post.FOAF, commonmark=False, author=self.user2, origin="localhost", source="localhost")
+                                 visibility=Post.FOAF, commonmark=False, author=self.user_profile2, origin="localhost", source="localhost")
 
         # Factory for get request
-        request = self.factory.get('/api/author/%d/posts' % author_id)
+        request = self.factory.get('/api/author/{}/posts'.format(author_id))
 
         # Set the user
         request.user = self.user;
+        request.profile = self.user_profile;
 
         response = get_posts(request,author_id)
         json_obj = json.loads(response.content)
         self.assertEqual(response.status_code,404)
-        self.assertEqual(json_obj['message'],"Author with id %d does not exist" % author_id)
+        self.assertEqual(json_obj['message'],"Author with id {} does not exist".format(author_id))
 
     def test_invalid_accept(self):
         ''' try to get with invalid accept '''
 
         # Factory for get request
-        request = self.factory.get('/api/author/%d/posts' % self.user2.id,Accept='html/text')
+        request = self.factory.get('/api/author/%s/posts' % self.user_profile2.guid,Accept='html/text')
 
         # Set the user
         request.user = self.user;
+        request.profile = self.user_profile;
 
-        response = get_posts(request,self.user2.id)
+        response = get_posts(request,self.user_profile2.guid)
         self.assertEqual(response.status_code,406)
 
 
@@ -156,6 +166,7 @@ class ApiViewTests(TestCase):
 
         # Set the user
         request.user = self.user;
+        request.profile = self.user_profile;
 
         response = get_posts(request)
         self.assertEqual(response.status_code,406)
@@ -168,19 +179,22 @@ class ApiViewTests(TestCase):
 
         # Set the user
         request.user = self.user;
+        request.profile = self.user_profile;
         response = get_post(request)
         self.assertEqual(response.status_code,406)
 
     def test_invalid_accept_api_posts_id(self):
-        post_id = 200
+        post_id = uuid.uuid1().__str__()
         ''' try to get with invalid accept /api/posts/200'''
 
         # Factory for get request
-        request = self.factory.get('/api/posts/%d' % post_id,Accept='html/text')
+        request = self.factory.get('/api/posts/{}'.format(post_id,Accept='html/text'))
 
         # Set the user
-        request.user = self.user;
+        request.user = self.user
+        request.profile = self.user_profile
         response = get_post(request,post_id)
+        print response
         self.assertEqual(response.status_code,406)
 
 
@@ -190,51 +204,56 @@ class ApiViewTests(TestCase):
         # Factory for get request
         request = self.factory.post('/api/posts')
         request.user = self.user;
+        request.profile = self.user_profile;
         response = get_posts(request)
         self.assertEqual(response.status_code,405)
 
         request = self.factory.delete('/api/posts')
         request.user = self.user;
+        request.profile = self.user_profile;
         response = get_posts(request)
         self.assertEqual(response.status_code,405)
 
         request = self.factory.put('/api/posts')
         request.user = self.user;
+        request.profile = self.user_profile;
         response = get_posts(request)
         self.assertEqual(response.status_code,405)
 
     def test_post_id_doesnot_exist(self):
         ''' try to get a invalid post'''
 
-        post_id = 20000
+        post_id = uuid.uuid1().__str__()
 
         Post.objects.create(title='randomtitlepublic', date=timezone.now(), text='sometext', image=None,
-                                 visibility=Post.public, commonmark=False, author=self.user2, origin="localhost", source="localhost")
+                                 visibility=Post.public, commonmark=False, author=self.user_profile2, origin="localhost", source="localhost")
 
         # Factory for get request
-        request = self.factory.get('/api/posts/%d/' % post_id )
+        request = self.factory.get('/api/posts/%s/' % post_id )
 
         # Set the user
         request.user = self.user;
+        request.profile = self.user_profile;
 
         response = get_post(request,post_id)
         json_obj = json.loads(response.content)
         self.assertEqual(response.status_code,404)
-        self.assertEqual(json_obj['message'],"Post with id %d does not exist" % post_id)
+        self.assertEqual(json_obj['message'],"Post with id {} does not exist".format(post_id))
 
     def test_post_id_exist(self):
         ''' try to get a post'''
 
         post = Post.objects.create(title='randomtitlepublic', date=timezone.now(), text='sometext', image=None,
-                                 visibility=Post.public, commonmark=False, author=self.user2, origin="localhost", source="localhost")
+                                 visibility=Post.public, commonmark=False, author=self.user_profile2, origin="localhost", source="localhost")
 
         # Factory for get request
-        request = self.factory.get('/api/posts/%d/' % post.id )
+        request = self.factory.get('/api/posts/{}/'.format(post.guid))
 
         # Set the user
         request.user = self.user;
+        request.profile = self.user_profile;
 
-        response = get_post(request,post.id)
+        response = get_post(request,post.guid)
         json_obj = json.loads(response.content)
         self.assertEqual(response.status_code,200)
         self.assertEqual(len(json_obj['posts']),1)
@@ -249,13 +268,13 @@ class ApiViewTests(TestCase):
         self.assertEqual(response.status_code,501)
 
         # Factory for get request
-        request = self.factory.get('/api/friends/%d' % self.user.id)
+        request = self.factory.get('/api/friends/{}'.format(self.user_profile.guid))
 
         response = get_friends(request)
         self.assertEqual(response.status_code,501)
 
         # Factory for get request
-        request = self.factory.get('/api/friends/%d/%d' % (self.user.id, self.user2.id))
+        request = self.factory.get('/api/friends/{}/{}'.format(self.user_profile.guid, self.user_profile2.guid))
 
         response = is_friend(request)
         self.assertEqual(response.status_code,501)

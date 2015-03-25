@@ -80,6 +80,53 @@ textarea {
     resize: vertical;
 }
 
+
+
+/* ==========================================================================
+   Searching for user page styles 
+   ========================================================================== */
+.search-user {
+    margin-bottom: 10px;
+    padding: 10px;
+    border-radius: 0.5em;
+}
+
+#search-list .search-user:nth-child(odd) {
+    background-color: #FFFFFF;
+}
+
+#search-list .search-user:nth-child(even) {
+    background-color: #E6E6E6;
+}
+
+.search-user-displayname {
+    font-size: 1.2em;
+    font-weight: 700;
+    height: 100%;
+}
+
+.vcenter {
+    display: inline-block;
+    vertical-align: middle;
+    float: none;
+}
+
+.loading {
+    width: 31px;
+    height: 31px;
+    margin-right: auto;
+    margin-left: auto;
+    background-image: url('/static/loading-grey.gif');
+}
+
+.loading-main {
+    width: 31px;
+    height: 31px;
+    margin-right: auto;
+    margin-left: auto;
+    background-image: url('/static/loading.gif');
+}
+
 /* ==========================================================================
    Browser Upgrade Prompt
    ========================================================================== */

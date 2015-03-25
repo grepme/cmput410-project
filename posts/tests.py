@@ -13,16 +13,19 @@ class PostsViewTests(TestCase):
         self.factory = RequestFactory()
         self.user = User.objects.create_user(username='test',email='test@test.com',password='test')
         self.user2 = User.objects.create_user(username='test2',email='test@test.com',password='test2')
+        self.profile = Profile.create(author=self.user,display_name="USER")
+        self.profile2 = Profile.create(author=self.user2,display_name="USER2")
         self.post = Post.objects.create(title='randomtitle', date=timezone.now(), text='sometext', image=None,
-                                 visibility=Post.friend, commonmark=False, author=self.user, origin="localhost", source="localhost")
+                                 visibility=Post.friend, commonmark=False, author=self.profile, origin="localhost", source="localhost")
         self.post2 = Post.objects.create(title='randomtitle2', date=timezone.now(), text='sometext', image=None,
-                                 visibility=Post.friend, commonmark=False, author=self.user2, origin="localhost", source="localhost")
+                                 visibility=Post.friend, commonmark=False, author=self.profile2, origin="localhost", source="localhost")
 
 
     def test_new_post(self):
         ''' Tests if we can add a new post using the endpoint '''
         request = self.factory.post('/post/new',{'title':'my new title', 'content_type':'text','visibility':'Public'})
         request.user = self.user
+        request.profile = self.profile
 
         response = new_post(request)
 
@@ -38,6 +41,7 @@ class PostsViewTests(TestCase):
         request = self.factory.post('/post/new',{'title':'valid title', 'content_type':'text',
                                                  'visibility':invalid_field})
         request.user = self.user
+        request.profile = self.profile
         response = new_post(request)
         self.assertEqual(response.status_code, 400)
         # try:
@@ -62,6 +66,7 @@ class PostsViewTests(TestCase):
         ''' tests if we can do a get to create a new post we should not'''
         request = self.factory.get('/post/new')
         request.user = self.user
+        request.profile = self.profile
         response = new_post(request)
         self.assertEqual(response.status_code, 405)
 
@@ -71,6 +76,7 @@ class PostsViewTests(TestCase):
 
         request = self.factory.delete('/post/new')
         request.user = self.user
+        request.profile = self.profile
         response = new_post(request)
         self.assertEqual(response.status_code, 405)
 
@@ -80,6 +86,7 @@ class PostsViewTests(TestCase):
 
         request = self.factory.put('/post/new')
         request.user = self.user
+        request.profile = self.profile
         response = new_post(request)
         self.assertEqual(response.status_code, 405)
 
@@ -91,6 +98,7 @@ class PostsViewTests(TestCase):
         ''' Test deleting a post that the user has access to '''
         request = self.factory.delete('/post/delete/')
         request.user = self.user
+        request.profile = self.profile
 
         response = delete_post(request,self.post.guid)
 
@@ -104,6 +112,7 @@ class PostsViewTests(TestCase):
         ''' Test deleting a post that does not exist '''
         request = self.factory.delete('/post/delete/')
         request.user = self.user
+        request.profile = self.profile
         self.post.guid = UUID('{12345678-1234-5678-1234-567812345678}')
 
         response = delete_post(request,self.post.guid)
@@ -124,6 +133,7 @@ class PostsViewTests(TestCase):
         ''' Test deleting a post that the user does not have access to '''
         request = self.factory.delete('/post/delete/')
         request.user = self.user
+        request.profile = self.profile
 
         response = delete_post(request,self.post2.guid)
 
@@ -133,6 +143,7 @@ class PostsViewTests(TestCase):
     def test_delete_wrong_methods(self):
         request = self.factory.post('/post/delete/')
         request.user = self.user
+        request.profile = self.profile
         response = delete_post(request,self.post.guid)
         self.assertEqual(response.status_code, 405)
 
@@ -142,6 +153,7 @@ class PostsViewTests(TestCase):
 
         request = self.factory.get('/post/delete/')
         request.user = self.user
+        request.profile = self.profile
         response = delete_post(request,self.post.guid)
         self.assertEqual(response.status_code, 405)
 
@@ -151,6 +163,7 @@ class PostsViewTests(TestCase):
 
         request = self.factory.put('/post/delete/')
         request.user = self.user
+        request.profile = self.profile
         response = delete_post(request,self.post.guid)
         self.assertEqual(response.status_code, 405)
 
@@ -164,6 +177,7 @@ class PostsViewTests(TestCase):
         ''' Test getting all of the users posts '''
         request = self.factory.get('/post/all/')
         request.user = self.user
+        request.profile = self.profile
 
         response = all_posts(request)
 
@@ -194,6 +208,7 @@ class PostsViewTests(TestCase):
         ''' Test getting all of the users posts with wrong methods '''
         request = self.factory.post('/post/all/')
         request.user = self.user
+        request.profile = self.profile
         response = all_posts(request)
         self.assertEqual(response.status_code, 405)
 
@@ -203,6 +218,7 @@ class PostsViewTests(TestCase):
 
         request = self.factory.delete('/post/all/')
         request.user = self.user
+        request.profile = self.profile
         response = all_posts(request)
         self.assertEqual(response.status_code, 405)
 
@@ -212,6 +228,7 @@ class PostsViewTests(TestCase):
 
         request = self.factory.put('/post/all/')
         request.user = self.user
+        request.profile = self.profile
         response = all_posts(request)
         self.assertEqual(response.status_code, 405)
 
@@ -223,6 +240,7 @@ class PostsViewTests(TestCase):
         ''' Test getting my posts for the current user '''
         request = self.factory.get('/post/all/')
         request.user = self.user
+        request.profile = self.profile
 
         response = my_posts(request)
 
@@ -235,6 +253,7 @@ class PostsViewTests(TestCase):
         ''' Test getting my users posts with wrong methods '''
         request = self.factory.post('/post/my/')
         request.user = self.user
+        request.profile = self.profile
         response = my_posts(request)
         self.assertEqual(response.status_code, 405)
 
@@ -244,6 +263,7 @@ class PostsViewTests(TestCase):
 
         request = self.factory.delete('/post/my/')
         request.user = self.user
+        request.profile = self.profile
         response = my_posts(request)
         self.assertEqual(response.status_code, 405)
 
@@ -253,6 +273,7 @@ class PostsViewTests(TestCase):
 
         request = self.factory.put('/post/my/')
         request.user = self.user
+        request.profile = self.profile
         response = my_posts(request)
         self.assertEqual(response.status_code, 405)
 
