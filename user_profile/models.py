@@ -10,7 +10,7 @@ import time
 from framework.models import GUIDModel
 
 class Profile(GUIDModel):
-    author = models.ForeignKey(User)
+    author = models.ForeignKey(User,null=True)
     display_name = models.CharField(max_length=55)
 
     # Set to yes is profile is hosted else where
