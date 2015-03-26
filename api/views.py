@@ -119,7 +119,7 @@ def has_keys(keys,dictionary,main_key):
 
 
 
-@login_required
+#@login_required
 @require_http_methods(["GET"])
 @require_http_accept(['application/json'])
 def get_posts(request,author_id=None,page="0"):
@@ -155,14 +155,14 @@ def get_posts(request,author_id=None,page="0"):
 
     return JsonResponse(data)
 
-@login_required
+#@login_required
 @require_http_methods(["GET"])
 @require_http_accept(['application/json'])
 def get_post(request,post_id=None,page="0"):
     return_data = list()
     if post_id is not None:
 
-        query = get_post_query(request) & Q(guid=post_id)
+        query = (get_post_query(request) & Q(guid=post_id))
         posts_query = Post.objects.filter(query)
         return_data = model_list(posts_query)
 
@@ -185,6 +185,7 @@ def get_post(request,post_id=None,page="0"):
 def friend_request(request,page="0"):
     # get data from request
     data = request.POST.dict()
+    print (data,"POST")
     keys = ['id','host','url','displayname']
 
     if has_keys(keys,data,'author') and has_keys(keys,data,'friend'):
@@ -248,7 +249,7 @@ def get_friends(request,author_id=None,page="0"):
     friends = Friend.objects.filter(Q(requester__in=friends_list,accepted=True,accepter=author) | Q(accepter__in=friends_list,accepted=True,requester=author))
     return_friends = get_other_profiles(author,friends)
 
-    return JsonResponse({"query":"friends","author":author.guid,"friends":return_data})
+    return JsonResponse({"query":"friends","author":author.guid,"friends":return_friends})
 
 
 #@login_required
