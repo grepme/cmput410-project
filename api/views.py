@@ -289,7 +289,11 @@ def get_other_profiles(profile,query):
 #@http_error_code(501,"Not Implemented")
 def get_friends(request,author_id=None,page="0"):
 
-    data = json.loads(request.body)
+    data = None
+    try:
+        data = json.loads(request.body)
+    except ValueError as e:
+        return  HttpResponseBadRequest()
 
     if data['author'] is not None and data['authors'] is not None:
         # List of authors
