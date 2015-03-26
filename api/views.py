@@ -2,7 +2,6 @@ from django.shortcuts import render, redirect
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth import authenticate, login as django_login, logout as django_logout
 from django.views.decorators.csrf import csrf_protect
-from django.views.decorators.csrf import csrf_exempt
 from django.contrib.auth.models import User
 from django.db.models import Q
 from django.http import HttpResponse
@@ -183,12 +182,9 @@ def get_post(request,post_id=None,page="0"):
 @require_http_methods(["POST"])
 @require_http_accept(['application/json'])
 #@http_error_code(501,"Not Implemented")
-# @csrf_exempt
 def friend_request(request,page="0"):
-    # print("DATA")
     # get data from request
     data = request.POST.dict()
-    # print(data)
     #TODO: Why is url required here if it is not used?
     keys = ['id','host','url','displayname']
 
@@ -197,11 +193,9 @@ def friend_request(request,page="0"):
         friend = Profile.objects.filter(guid=data["friend[id]"]).first()
 
         if author == None:
-            print("author was none")
             author = Profile.create(is_external=True,display_name=data["author[displayname]"],host=data["author[host]"])
 
         if friend == None:
-            print("friend was none")
             friend = Profile.create(is_external=True,display_name=data["friend[displayname]"],host=data["friend[host]"])
 
         if author == friend:
@@ -210,14 +204,12 @@ def friend_request(request,page="0"):
         found = Friend.objects.filter(Q(requester=author,accepter=friend) | Q(requester=friend,accepter=author)).first()
 
         if found is not None:
-            print("found friend")
             found.accepted = True
             found.save()
 
             return HttpResponse(200)
 
         else:
-            print("created friend and follow")
             Friend.objects.create(requester=author,accepter=friend)
             Follow.objects.create(follower=author,following=friend)
 

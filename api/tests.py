@@ -260,109 +260,176 @@ class ApiViewTests(TestCase):
         self.assertEqual(response.status_code,200)
         self.assertEqual(len(json_obj['posts']),1)
 
-    # def test_send_friendrequest(self):
-    #     ''' try to make a friend request '''
-    #
-    #     # Factory for get request
-    #     authorId = self.user_profile.guid
-    #     authorName = self.user_profile.display_name
-    #     friendId = self.user_profile2.guid
-    #     friendName = self.user_profile2.display_name
-    #
-    #     # self.user_profile.host = "http://127.0.0.1:8000/"
-    #     authorHost = self.user_profile.host
-    #     friendHost = self.user_profile2.host
-    #     # user_profile doesn't have a url...
-    #     authorUrl = "http://localhost:8000/author/"
-    #     friendUrl = "http://localhost:8000/author/"+friendId
-    #
-    #     request_dict = {"author[id]":authorId,"author[displayname]":authorName, "author[host]":authorHost, "author[url]":authorUrl,
-    #                    "friend[id]":friendId,"friend[displayname]":friendName, "friend[host]":friendHost, "friend[url]":friendUrl}
-    #     request = self.factory.post('/api/friendrequest/', request_dict)
-    #
-    #     # make sure it doesn't already exist
-    #     found = Friend.objects.filter(requester_id=authorId).first()
-    #     self.assertIsNone(found)
-    #
-    #     response = friend_request(request)
-    #     found = Friend.objects.filter(Q(requester_id=authorId,accepter_id=friendId) | Q(requester_id=friendId,accepter_id=authorId)).first()
-    #     if not found:
-    #         found = Friend.objects.filter(accepter_id=authorId)
-    #     self.assertEqual(response.status_code,201)
-    #     self.assertIsNotNone(found)
+    def test_send_friendrequest(self):
+        ''' try to make a friend request '''
 
-    # def test_send_duplicate_friendrequest(self):
-    #     ''' make a duplicate friend request '''
-    #
-    #     # Factory for get request
-    #     authorId = self.user_profile.guid
-    #     authorName = self.user_profile.display_name
-    #     friendId = self.user_profile2.guid
-    #     friendName = self.user_profile2.display_name
-    #
-    #     # self.user_profile.host = "http://127.0.0.1:8000/"
-    #     authorHost = self.user_profile.host
-    #     friendHost = self.user_profile2.host
-    #     # user_profile doesn't have a url...
-    #     authorUrl = "http://localhost:8000/author/"
-    #     friendUrl = "http://localhost:8000/author/"+friendId
-    #
-    #     request_dict = {"author[id]":authorId,"author[displayname]":authorName, "author[host]":authorHost, "author[url]":authorUrl,
-    #                    "friend[id]":friendId,"friend[displayname]":friendName, "friend[host]":friendHost, "friend[url]":friendUrl}
-    #     request = self.factory.post('/api/friendrequest/', request_dict)
-    #
-    #     # make sure it doesn't already exist
-    #     found = Friend.objects.filter(requester_id=authorId).first()
-    #     self.assertIsNone(found)
-    #
-    #     response = friend_request(request)
-    #     response = friend_request(request)
-    #     # check that duplicate didn't accept wrongfully
-    #     found = Friend.objects.filter(Q(requester_id=authorId,accepter_id=friendId, accepted=False) |
-    #                                   Q(requester_id=friendId,accepter_id=authorId, accepted=False)).first()
-    #     self.assertEqual(response.status_code, 200)
-    #     self.assertNotEqual(response.status_code, 205)
-    #     # TODO: Find a better status code check
-    #     self.assertIsNotNone(found)
+        authorId = self.user_profile.guid
+        authorName = self.user_profile.display_name
+        friendId = self.user_profile2.guid
+        friendName = self.user_profile2.display_name
 
-    # def test_complete_friendrequest(self):
-    #     ''' make a duplicate friend request '''
-    #
-    #     # Factory for get request
-    #     authorId = self.user_profile.guid
-    #     authorName = self.user_profile.display_name
-    #     friendId = self.user_profile2.guid
-    #     friendName = self.user_profile2.display_name
-    #
-    #     # self.user_profile.host = "http://127.0.0.1:8000/"
-    #     authorHost = self.user_profile.host
-    #     friendHost = self.user_profile2.host
-    #     # user_profile doesn't have a url...
-    #     authorUrl = "http://localhost:8000/author/"
-    #     friendUrl = "http://localhost:8000/author/"+friendId
-    #
-    #     request_dict = {"author[id]":authorId,"author[displayname]":authorName, "author[host]":authorHost, "author[url]":authorUrl,
-    #                    "friend[id]":friendId,"friend[displayname]":friendName, "friend[host]":friendHost, "friend[url]":friendUrl}
-    #     request = self.factory.post('/api/friendrequest/', request_dict)
-    #
-    #     response = friend_request(request)
-    #
-    #     # make sure it is not already accepted
-    #     found = Friend.objects.filter(Q(requester_id=authorId,accepter_id=friendId, accepted=True) |
-    #                                   Q(requester_id=friendId,accepter_id=authorId, accepted=True)).first()
-    #     self.assertEqual(response.status_code, 200)
-    #     self.assertIsNone(found)
-    #
-    #     request_dict = {"author[id]":friendId,"author[displayname]":friendName, "author[host]":friendHost, "author[url]":friendUrl,
-    #                    "friend[id]":authorId,"friend[displayname]":authorName, "friend[host]":authorHost, "friend[url]":authorUrl}
-    #     request = self.factory.post('/api/friendrequest/', request_dict)
-    #     response = friend_request(request)
-    #     # check that it was accepted and status indicates refresh page required (because now friends)
-    #     found = Friend.objects.filter(Q(requester_id=authorId,accepter_id=friendId, accepted=True) |
-    #                                   Q(requester_id=friendId,accepter_id=authorId, accepted=True)).first()
-    #     self.assertEqual(response.status_code, 205)
-    #     self.assertIsNotNone(found)
+        # self.user_profile.host = "http://127.0.0.1:8000/"
+        authorHost = self.user_profile.host
+        friendHost = self.user_profile2.host
+        # user_profile doesn't have a url...
+        authorUrl = "http://localhost:8000/author/"
+        friendUrl = "http://localhost:8000/author/"+friendId
 
+        request_dict = {"author[id]":authorId,"author[displayname]":authorName, "author[host]":authorHost, "author[url]":authorUrl,
+                       "friend[id]":friendId,"friend[displayname]":friendName, "friend[host]":friendHost, "friend[url]":friendUrl}
+        request = self.factory.post('/api/friendrequest/', request_dict)
+
+        # make sure it doesn't already exist
+        found = Friend.objects.filter(requester_id=authorId).first()
+        self.assertIsNone(found)
+
+        response = friend_request(request)
+        found = Friend.objects.filter(Q(requester_id=authorId,accepter_id=friendId) | Q(requester_id=friendId,accepter_id=authorId)).first()
+        self.assertEqual(response.status_code,201)
+        self.assertIsNotNone(found)
+
+    def test_autofollow_friendrequest(self):
+        ''' ensure friend request autofollows '''
+
+        authorId = self.user_profile.guid
+        authorName = self.user_profile.display_name
+        friendId = self.user_profile2.guid
+        friendName = self.user_profile2.display_name
+
+        # self.user_profile.host = "http://127.0.0.1:8000/"
+        authorHost = self.user_profile.host
+        friendHost = self.user_profile2.host
+        # user_profile doesn't have a url...
+        authorUrl = "http://localhost:8000/author/"
+        friendUrl = "http://localhost:8000/author/"+friendId
+
+        request_dict = {"author[id]":authorId,"author[displayname]":authorName, "author[host]":authorHost, "author[url]":authorUrl,
+                       "friend[id]":friendId,"friend[displayname]":friendName, "friend[host]":friendHost, "friend[url]":friendUrl}
+        request = self.factory.post('/api/friendrequest/', request_dict)
+
+        # make sure it doesn't already exist
+        follower = Follow.objects.filter(follower_id=authorId).first()
+        self.assertIsNone(follower)
+
+        response = friend_request(request)
+        follower = Follow.objects.filter(Q(follower_id=authorId, following_id=friendId)).first()
+        self.assertEqual(response.status_code,201)
+        self.assertIsNotNone(follower)
+
+    def test_send_duplicate_friendrequest(self):
+        ''' make a duplicate friend request '''
+
+        authorId = self.user_profile.guid
+        authorName = self.user_profile.display_name
+        friendId = self.user_profile2.guid
+        friendName = self.user_profile2.display_name
+
+        # self.user_profile.host = "http://127.0.0.1:8000/"
+        authorHost = self.user_profile.host
+        friendHost = self.user_profile2.host
+        # user_profile doesn't have a url...
+        authorUrl = "http://localhost:8000/author/"
+        friendUrl = "http://localhost:8000/author/"+friendId
+
+        request_dict = {"author[id]":authorId,"author[displayname]":authorName, "author[host]":authorHost, "author[url]":authorUrl,
+                       "friend[id]":friendId,"friend[displayname]":friendName, "friend[host]":friendHost, "friend[url]":friendUrl}
+        request = self.factory.post('/api/friendrequest/', request_dict)
+
+        # make sure it doesn't already exist
+        found = Friend.objects.filter(requester_id=authorId).first()
+        self.assertIsNone(found)
+
+        response = friend_request(request)
+        response = friend_request(request)
+        # check that duplicate didn't accept wrongfully
+        found = Friend.objects.filter(Q(requester_id=authorId,accepter_id=friendId, accepted=False) |
+                                      Q(requester_id=friendId,accepter_id=authorId, accepted=False)).first()
+        self.assertEqual(response.status_code, 200)
+        self.assertNotEqual(response.status_code, 200)
+        # TODO: Find a better status code check
+        self.assertIsNotNone(found)
+
+    def test_complete_friendrequest(self):
+        ''' make a duplicate friend request '''
+
+        authorId = self.user_profile.guid
+        authorName = self.user_profile.display_name
+        friendId = self.user_profile2.guid
+        friendName = self.user_profile2.display_name
+
+        # self.user_profile.host = "http://127.0.0.1:8000/"
+        authorHost = self.user_profile.host
+        friendHost = self.user_profile2.host
+        # user_profile doesn't have a url...
+        authorUrl = "http://localhost:8000/author/"
+        friendUrl = "http://localhost:8000/author/"+friendId
+
+        request_dict = {"author[id]":authorId,"author[displayname]":authorName, "author[host]":authorHost, "author[url]":authorUrl,
+                       "friend[id]":friendId,"friend[displayname]":friendName, "friend[host]":friendHost, "friend[url]":friendUrl}
+        request = self.factory.post('/api/friendrequest/', request_dict)
+
+        response = friend_request(request)
+
+        # make sure it is not already accepted
+        found = Friend.objects.filter(Q(requester_id=authorId,accepter_id=friendId, accepted=True) |
+                                      Q(requester_id=friendId,accepter_id=authorId, accepted=True)).first()
+        self.assertEqual(response.status_code, 200)
+        self.assertIsNone(found)
+
+        request_dict = {"author[id]":friendId,"author[displayname]":friendName, "author[host]":friendHost, "author[url]":friendUrl,
+                       "friend[id]":authorId,"friend[displayname]":authorName, "friend[host]":authorHost, "friend[url]":authorUrl}
+        request = self.factory.post('/api/friendrequest/', request_dict)
+        response = friend_request(request)
+        # check that it was accepted and status indicates refresh page required (because now friends)
+        found = Friend.objects.filter(Q(requester_id=authorId,accepter_id=friendId, accepted=True) |
+                                      Q(requester_id=friendId,accepter_id=authorId, accepted=True)).first()
+        self.assertEqual(response.status_code, 200)
+        self.assertIsNotNone(found)
+
+    def test_autofollow_complete_friendrequest(self):
+        ''' make a duplicate friend request '''
+
+        authorId = self.user_profile.guid
+        authorName = self.user_profile.display_name
+        friendId = self.user_profile2.guid
+        friendName = self.user_profile2.display_name
+
+        # self.user_profile.host = "http://127.0.0.1:8000/"
+        authorHost = self.user_profile.host
+        friendHost = self.user_profile2.host
+        # user_profile doesn't have a url...
+        authorUrl = "http://localhost:8000/author/"
+        friendUrl = "http://localhost:8000/author/"+friendId
+
+        request_dict = {"author[id]":authorId,"author[displayname]":authorName, "author[host]":authorHost, "author[url]":authorUrl,
+                       "friend[id]":friendId,"friend[displayname]":friendName, "friend[host]":friendHost, "friend[url]":friendUrl}
+        request = self.factory.post('/api/friendrequest/', request_dict)
+
+        # make sure no one is already following
+        follower = Follow.objects.filter(Q(follower_id=authorId, following_id=friendId)).first()
+        following = Follow.objects.filter(Q(follower_id=friendId, following_id=authorId)).first()
+        self.assertIsNone(follower)
+        self.assertIsNone(following)
+
+        # check that author is not following friend
+        response = friend_request(request)
+        follower = Follow.objects.filter(Q(follower_id=authorId, following_id=friendId)).first()
+        following = Follow.objects.filter(Q(follower_id=friendId, following_id=authorId)).first()
+        self.assertIsNotNone(follower)
+        self.assertIsNone(following)
+        self.assertEqual(response.status_code, 200)
+
+        request_dict = {"author[id]":friendId,"author[displayname]":friendName, "author[host]":friendHost, "author[url]":friendUrl,
+                       "friend[id]":authorId,"friend[displayname]":authorName, "friend[host]":authorHost, "friend[url]":authorUrl}
+        request = self.factory.post('/api/friendrequest/', request_dict)
+        response = friend_request(request)
+
+        # check that friend is now following author
+        follower = Follow.objects.filter(Q(follower_id=friendId, following_id=authorId)).first()
+        following = Follow.objects.filter(Q(follower_id=authorId, following_id=friendId)).first()
+        self.assertIsNotNone(follower)
+        self.assertIsNotNone(following)
+        self.assertEqual(response.status_code, 200)
 
     def test_not_implemented_paths(self):
         ''' Test all paths not implemented for error code 501 '''
