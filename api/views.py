@@ -185,10 +185,11 @@ def get_post(request,post_id=None,page="0"):
 #@http_error_code(501,"Not Implemented")
 # @csrf_exempt
 def friend_request(request,page="0"):
-    print("DATA")
+    # print("DATA")
     # get data from request
     data = request.POST.dict()
-    print(data)
+    # print(data)
+    #TODO: Why is url required here if it is not used?
     keys = ['id','host','url','displayname']
 
     if has_keys(keys,data,'author') and has_keys(keys,data,'friend'):
