@@ -135,7 +135,7 @@ class SetEncoder(json.JSONEncoder):
 
 def get_post_query(request):
         return ( Q(visibility=Post.private, author=request.profile.guid) |
-        Q(visibility=Post.public) | Q(visibility=Post.server) |
+        Q(visibility=Post.public) |
         Q(visibility=Post.friend, author__accepter=request.profile, author__accepter__accepted=True) |
         Q(visibility=Post.friend, author__requester=request.profile, author__accepter__accepted=True) |
         Q(visibility=Post.FOAF, author__requester__requester=request.profile, author__accepter__accepted=True) |
@@ -150,6 +150,22 @@ def has_keys(keys,dictionary,main_key):
     if all (key in dictionary[main_key] for key in keys):
         return True
     return False
+
+def get_foaf_servers(profile,friends) {
+    servers = Servers.objects.all()
+
+    # Get a specific users friends
+    friends_query = Friends.objects.filter(Q(accepter=profile,requester__in=friends) | Q(requester=profile,accepter__in=friends))
+    friends = [for f in friends_query]
+    print friends
+
+    if len(friends) > 0:
+        for server in servers:
+            for friend in friends:
+                server.get_friends_list(friend.guid,friends)
+    else:
+        return [];
+}
 
 
 
@@ -191,10 +207,23 @@ def get_posts(request,author_id=None,page="0"):
     return JsonResponse(data)
 
 #@login_required
-@require_http_methods(["GET"])
+@require_http_methods(["GET","POST"])
 @require_http_accept(['application/json'])
 @require_http_content_type(['application/json'])
 def get_post(request,post_id=None,page="0"):
+
+    if request.method == "POST":
+        data = None
+        try:
+            data = json.loads(request.body)
+        except ValueError as e:
+            return  HttpResponseBadRequest()
+
+        keys = ['id','host','url','displayname']
+        if has_keys(keys,data,'author') and key in data["friends"]:
+            author = data["author"]
+
+
     return_data = list()
     if post_id is not None:
 
