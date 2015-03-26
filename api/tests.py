@@ -280,50 +280,6 @@ class ApiViewTests(TestCase):
         response = is_friend(request)
         self.assertEqual(response.status_code,501)
 
-    def test_server_posts(self):
 
-        server = Server.objects.create(host="localhost:8000/api",
-            user_header="User",
-            auth_type="Basic",
-            auth_user="node",
-            auth_password="api",
-            realm="Realm")
-
-        print server.get_posts()
-
-    def test_server_posts_id(self):
-
-        server = Server.objects.create(host="localhost:8000/api",
-            user_header="User",
-            auth_type="Basic",
-            auth_user="node",
-            auth_password="api",
-            realm="Realm")
-
-        print server.get_posts_id(post_guid="290da6fd-d3d3-11e4-a23b-b8f6b116b2b7")
-
-    def test_server_friends_id_id(self):
-
-        server = Server.objects.create(host="localhost:8000/api",
-            user_header="User",
-            auth_type="Basic",
-            auth_user="node",
-            auth_password="api",
-            realm="Realm")
-
-        print server.get_friends_id_id(friend_guid="7a1c7226-d1e4-11e4-aa4c-b8f6b116b2b7",friend_2_guid="290da6fd-d3d3-11e4-a23b-b8f6b116b2b7")
-
-    def test_server_friends_list(self):
-
-        server = Server.objects.create(host="localhost:8000/api",
-            user_header="User",
-            auth_type="Basic",
-            auth_user="node",
-            auth_password="api",
-            realm="Realm")
-
-        my_list = ['7a1c7226-d1e4-11e4-aa4c-b8f6b116b2b7','e725d1c2-d3d6-11e4-97dc-b8f6b116b2b7','f0e2aec2-d3d6-11e4-8af3-b8f6b116b2b7','0471f261-d3d7-11e4-9922-b8f6b116b2b7']
-
-        print server.get_friends_list(friend_guid="7a1c7226-d1e4-11e4-aa4c-b8f6b116b2b7",friends_list=my_list)
 
 

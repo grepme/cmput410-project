@@ -59,7 +59,6 @@ class Server(models.Model):
 
     def get_posts_id(self,post_guid):
 
-        print "http://{host}{path}".format(host=self.host,path=self.posts).format(post_guid=post_guid)
         request = urllib2.Request("http://{host}{path}".format(host=self.host,path=self.posts).format(post_guid=post_guid))
         # Assume basic Auth
         base64string = base64.encodestring('%s:%s' % (self.auth_user, self.auth_password)).replace('\n', '')
@@ -95,7 +94,6 @@ class Server(models.Model):
             }
 
         path = "http://{host}{path}".format(host=self.host,path=self.friends_list).format(friend_guid=friend_guid)
-        print path
         request = urllib2.Request(path,json.dumps(post_data))
         # Assume basic Auth
         base64string = base64.encodestring('%s:%s' % (self.auth_user, self.auth_password)).replace('\n', '')

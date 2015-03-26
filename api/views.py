@@ -18,6 +18,7 @@ from tags.models import Tag
 from django.contrib.auth.models import User
 from django.http import JsonResponse
 from django.views.decorators.http import require_http_methods
+from django.views.decorators.csrf import csrf_exempt
 
 
 #TODO Move to another file...
@@ -179,13 +180,13 @@ def get_post(request,post_id=None,page="0"):
     return JsonResponse({"posts":return_data})
 
 #@login_required
+@csrf_exempt
 @require_http_methods(["POST"])
 @require_http_accept(['application/json'])
 #@http_error_code(501,"Not Implemented")
 def friend_request(request,page="0"):
     # get data from request
-    data = request.POST.dict()
-    print (data,"POST")
+    data = json.loads(request.body)
     keys = ['id','host','url','displayname']
 
     if has_keys(keys,data,'author') and has_keys(keys,data,'friend'):
@@ -201,17 +202,24 @@ def friend_request(request,page="0"):
         if author == friend:
             return HttpResponse(400)
 
-        found = Friend.objects.filter(Q(requester=author,accepter=friend) | Q(requester=friend,accepter=author)).first()
+        found = Friend.objects.filter(Q(requester=friend,accepter=author)).first()
 
         if found is not None:
             found.accepted = True
+            try:
+                Follow.objects.create(follower=author,following=friend)
+            except Follow.IntegrityError as e:
+                pass
             found.save()
 
             return HttpResponse(200)
 
         else:
             Friend.objects.create(requester=author,accepter=friend)
-            Follow.objects.create(follower=author,following=friend)
+            try:
+                Follow.objects.create(follower=author,following=friend)
+            except Follow.IntegrityError as e:
+                pass
 
             return HttpResponse(200)
 
@@ -230,12 +238,13 @@ def get_other_profiles(profile,query):
     return profiles
 
 #@login_required
+@csrf_exempt
 @require_http_methods(["POST"])
 @require_http_accept(['application/json'])
 #@http_error_code(501,"Not Implemented")
 def get_friends(request,author_id=None,page="0"):
 
-    data = request.POST.dict()
+    data = json.loads(request.body)
 
     if data['author'] is not None and data['authors'] is not None:
         # List of authors
@@ -244,6 +253,8 @@ def get_friends(request,author_id=None,page="0"):
 
         if author.guid != author_id:
             return HttpResponse(400)
+    else:
+        return HttpResponse(400)
 
     # get all accepted friends
     friends = Friend.objects.filter(Q(requester__in=friends_list,accepted=True,accepter=author) | Q(accepter__in=friends_list,accepted=True,requester=author))
