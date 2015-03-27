@@ -3,9 +3,11 @@ from django.contrib.auth.decorators import login_required
 from django.http import HttpResponseNotAllowed
 from django.utils import timezone
 from posts.models import Post
+from api.models import Server
 from django.contrib.auth.models import User
 from django.db.models import Q
 from friends.models import Friend
+import json
 
 # Create your views here
 
@@ -91,9 +93,12 @@ def all_posts(request):
                             Q(visibility=Post.FOAF, author__accepter__accepter=request.profile)
     )
 
-    # Nested query lookups aren't supported, so we need to make multiple queries :(
+    # Get all remote posts
+    for remote_server in Server.objects.all():
+        remote_posts = json.loads(remote_server.get_posts())
 
-    return render(request, 'posts/all.html', {'posts': p})
+    # Nested query lookups aren't supported, so we need to make multiple queries :(
+    return render(request, 'posts/all.html', {'posts': p, 'remote': remote_posts})
 
 
 @login_required
