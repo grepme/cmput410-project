@@ -84,6 +84,17 @@ def all_posts(request):
     # TODO: Friends of friends improvement. OH GOD MY EYES!
     # TODO: FOAF not working
     # TODO: DAMMIT DJANGO! ALLOW MORE NESTED JOINS!
+    # p = Post.objects.filter(Q(visibility=Post.private, author=request.profile) |
+    # Q(visibility=Post.public) | Q(visibility=Post.server) |
+    #                         Q(visibility=Post.friend, author__accepter=request.profile) |
+    #                         Q(visibility=Post.friend, author__requester=request.profile) |
+    #                         Q(visibility=Post.FOAF, author__requester__requester=request.profile) |
+    #                         Q(visibility=Post.FOAF, author__requester__accepter=request.profile) |
+    #                         Q(visibility=Post.FOAF, author__accepter__requester=request.profile) |
+    #                         Q(visibility=Post.FOAF, author__accepter__accepter=request.profile)
+    #
+    # )
+    print request.profile.guid
     p = Post.objects.filter(Q(visibility=Post.private, author=request.profile) |
                             Q(visibility=Post.public) | Q(visibility=Post.server) |
                             Q(visibility=Post.friend, author__accepter=request.profile) |

@@ -219,7 +219,7 @@ def get_foaf_servers(profile, author, friends):
 @require_http_accept(['application/json'])
 @require_http_content_type(['application/json'])
 def get_posts(request, author_id=None, page="0"):
-    #author/posts
+    # author/posts
     #author/author_id/posts
 
     query = get_post_query(request)
@@ -248,11 +248,10 @@ def get_posts(request, author_id=None, page="0"):
     # TODO Add Pagination
     data = {"posts": posts}
 
-
     return JsonResponse(data)
 
 
-#@login_required
+# @login_required
 @csrf_exempt
 @require_http_methods(["GET", "POST"])
 @require_http_accept(['application/json'])
@@ -411,6 +410,43 @@ def get_friends(request, author_id=None, page="0"):
     return_friends = get_other_profiles(author, friends)
 
     return JsonResponse({"query": "friends", "author": author.guid, "friends": return_friends})
+
+
+@login_required
+@require_http_methods(["POST"])
+@require_http_accept(['application/json'])
+@require_http_content_type(['application/json'])
+def follow_user(request):
+    try:
+        data = None
+        try:
+            data = json.loads(request.body)
+        except ValueError as e:
+            return HttpResponseBadRequest()
+
+        following_guid = data["follow"]["id"]
+
+        # Valid Profile?
+        following = None
+        try:
+            following = Profile.objects.get(guid=following_guid)
+        except Profile.DoesNotExist as e:
+            res = HttpResponse("Profile with id {} does not exist".format(following_guid))
+            res.status_code = 404
+            return res
+
+        # Create follow if does not exist
+        try:
+            Follow.objects.get(follower=request.profile, following=following)
+        except Follow.DoesNotExist as e:
+            Follow.objects.create(follower=request.profile, following=following)
+
+        # Return 201
+        res = HttpResponse()
+        res.status_code = 201
+        return res
+    except Exception as e:
+        print e.message
 
 
 #@login_required
