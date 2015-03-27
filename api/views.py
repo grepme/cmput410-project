@@ -137,12 +137,12 @@ class SetEncoder(json.JSONEncoder):
 def get_post_query(request):
         return ( Q(visibility=Post.private, author=request.profile.guid) |
         Q(visibility=Post.public) |
-        Q(visibility=Post.friend, author__accepter=request.profile, author__accepter__accepted=True) |
-        Q(visibility=Post.friend, author__requester=request.profile, author__accepter__accepted=True) |
-        Q(visibility=Post.FOAF, author__requester__requester=request.profile, author__accepter__accepted=True) |
-        Q(visibility=Post.FOAF, author__requester__accepter=request.profile, author__accepter__accepted=True) |
-        Q(visibility=Post.FOAF, author__accepter__requester=request.profile, author__accepter__accepted=True) |
-        Q(visibility=Post.FOAF, author__accepter__accepter=request.profile, author__accepter__accepted=True) )
+        Q(visibility=Post.friend, author__accepter=request.profile) |
+        Q(visibility=Post.friend, author__requester=request.profile) |
+        Q(visibility=Post.FOAF, author__requester__requester=request.profil) |
+        Q(visibility=Post.FOAF, author__requester__accepter=request.profile) |
+        Q(visibility=Post.FOAF, author__accepter__requester=request.profile) |
+        Q(visibility=Post.FOAF, author__accepter__accepter=request.profile) )
 
 def model_list(model_query):
     return list(obj.as_dict() for obj in model_query)
@@ -158,11 +158,10 @@ def compare(s, t):
 # Profile = User Who is trying to get post
 # Author = Author of the Post we are trying to get
 # Friends list of Friends, for that profile
-def get_foaf_servers(profile,author,friends) :
+def get_foaf_servers(profile,author,friends):
 
     # Find the server we defined as host, check for contains to be safe...
     current_server = Server.objects.filter(host__icontains=profile["host"]).first()
-
 
     if current_server is not None:
         result = current_server.get_friends_list(profile,friends)
@@ -170,7 +169,6 @@ def get_foaf_servers(profile,author,friends) :
         # Ok to Proceed
         if not compare(result["friends"],friends):
             return False
-
 
     # Check if the Author is
     try:
@@ -237,35 +235,37 @@ def get_posts(request,author_id=None,page="0"):
 @require_http_accept(['application/json'])
 @require_http_content_type(['application/json'])
 def get_post(request,post_id=None,page="0"):
+    try:
+        if request.method == "POST":
+            data = None
+            post = None
 
-    if request.method == "POST":
-        data = None
-        post = None
-        try:
-            data = json.loads(request.body)
-        except ValueError as e:
-            return  HttpResponseBadRequest()
+            try:
+                data = json.loads(request.body)
+            except ValueError as e:
+                return  HttpResponseBadRequest()
 
-        try:
-            post = Post.objects.get(guid=post_id)
-        except Exception as e:
-            return HttpResponseNotFound()
+            try:
+                post = Post.objects.get(guid=post_id)
+            except Exception as e:
+                return HttpResponseNotFound()
 
-        post_author = post.author
+            post_author = post.author
 
-        keys = ['id','host','displayname']
-        if has_keys(keys,data,'author') and 'friends' in data:
-            author = data["author"]
+            keys = ['id','host','displayname']
+            if has_keys(keys,data,'author') and 'friends' in data:
+                author = data["author"]
 
-            if not get_foaf_servers(author,post_author,data["friends"]):
-                res = HttpResponse("Unauthorized")
-                res.status_code = 401
-                return res
+                if not get_foaf_servers(author,post_author,data["friends"]):
+                    res = HttpResponse("Unauthorized")
+                    res.status_code = 401
+                    return res
 
-            else:
-
-                return_data = model_list(post)
-                return JsonResponse({"posts":return_data})
+                else:
+                    return_data = [post.as_dict()]
+                    return JsonResponse({"posts":return_data})
+    except Exception as e:
+        print e
 
 
     return_data = list()
