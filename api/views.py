@@ -139,10 +139,7 @@ def get_post_query(request):
         Q(visibility=Post.public) |
         Q(visibility=Post.friend, author__accepter=request.profile) |
         Q(visibility=Post.friend, author__requester=request.profile) |
-        Q(visibility=Post.FOAF, author__requester__requester=request.profil) |
-        Q(visibility=Post.FOAF, author__requester__accepter=request.profile) |
-        Q(visibility=Post.FOAF, author__accepter__requester=request.profile) |
-        Q(visibility=Post.FOAF, author__accepter__accepter=request.profile) )
+        Q(visibility=Post.FOAF, author__friend=request.profile))
 
 def model_list(model_query):
     return list(obj.as_dict() for obj in model_query)
@@ -341,6 +338,44 @@ def friend_request(request,page="0"):
             return HttpResponse(200)
 
         return HttpResponseBadRequest()
+
+@login_required
+@require_http_methods(["POST"])
+@require_http_accept(['application/json'])
+@require_http_content_type(['application/json'])
+def follow_user(request):
+
+    try:
+        data = None
+        try:
+            data = json.loads(request.body)
+        except ValueError as e:
+            return  HttpResponseBadRequest()
+
+        following_guid = data["follow"]["id"]
+
+        # Valid Profile?
+        following = None
+        try:
+            following = Profile.objects.get(guid=following_guid)
+        except Profile.DoesNotExist as e:
+            res = HttpResponse("Profile with id {} does not exist".format(following_guid))
+            res.status_code = 404
+            return res
+
+        # Create follow if does not exist
+        try:
+            Follow.objects.get(follower=request.profile,following=following)
+        except Follow.DoesNotExist as e:
+            Follow.objects.create(follower=request.profile,following=following)
+
+        # Return 201
+        res = HttpResponse()
+        res.status_code = 201
+        return res
+    except Exception as e:
+        print e.message
+
 
 #TODO PUT THIS IN COMMON PLACE THIS IS FROM
 # THE FRIENDS APP
