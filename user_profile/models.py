@@ -20,8 +20,8 @@ class Profile(GUIDModel):
 
     # TODO don't use hardcoded host, should be of running instance
     host = models.CharField(max_length=55)
-
-
+    
+    github_name = "morganpatz"
 
     def as_dict(self):
         return {
@@ -29,5 +29,6 @@ class Profile(GUIDModel):
         	# TODO implement host
             "host": "",
             "displayname" : self.display_name,
-            "url": self.host + "/author/" + self.guid
+            "url": self.host + "/author/" + self.guid,
+            "github_name": self.github_name
         }

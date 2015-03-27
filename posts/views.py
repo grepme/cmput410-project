@@ -6,6 +6,8 @@ from posts.models import Post
 from django.contrib.auth.models import User
 from django.db.models import Q
 from friends.models import Friend
+import feedparser
+from bs4 import BeautifulSoup
 
 # Create your views here
 
@@ -101,3 +103,44 @@ def my_posts(request):
     """AJAX call that returns the user's posts"""
     p = Post.objects.filter(author=request.profile)
     return render(request, 'posts/all.html', {'posts': p})
+
+@login_required
+def new_github_post(request, source=None):
+    origin = request.build_absolute_uri().strip("new/")
+    
+    # Profile object to save
+    user = request.profile
+    github = user.github_name
+    
+    d = feedparser.parse("http://github.com/" + github + ".atom")
+    
+    title = d.entries[0].title
+    link = d.entries[0].link
+    
+    summary = d.entries[0].summary
+    parsed_html = BeautifulSoup(summary)
+    if (str(parsed_html.blockquote)=="None"):
+        text = "None"
+    else:
+        text = str(parsed_html.blockquote.string).strip()
+    
+    text_format = False
+    
+    visibility = Post.get_visibility('PUBLIC')
+    
+    image = None
+    
+    source = origin
+    
+    
+    # Make the post object
+    p = Post.objects.create(title=title, date=timezone.now(), text=text, image=image, origin=origin,
+                            source=source, visibility=visibility, commonmark=text_format, author=user)
+    p.save()
+
+    # Update the URL since we know the ID of the post
+    p.origin = "{}/{}".format(origin, p.guid)
+    p.save()
+
+    # Since this is a view, redirect successfully
+    return redirect('/dashboard/')
