@@ -4,6 +4,7 @@ from tags.models import Tag
 from user_profile.models import Profile
 import uuid
 from json import JSONEncoder, dumps
+from comments.models import Comment
 
 # using the guid model
 from framework.models import GUIDModel
@@ -47,6 +48,9 @@ class Post(GUIDModel):
         return Post.visibilityChoices[self.visibility-1][1]
 
     def as_dict(self):
+
+        comments = [comment.as_dict() for comment in Comment.objects.filter(post=self)]
+
         return {
             "title": self.title,
             "source": self.source,
@@ -57,7 +61,7 @@ class Post(GUIDModel):
             "content": self.text,
             "author": self.author.as_dict(),
             "categories": list(self.tags.all()),
-            "comments": list(),
+            "comments": comments,
             "pubDate": self.date,
             "guid": self.guid,
             "visibility": self.visibility_string()
