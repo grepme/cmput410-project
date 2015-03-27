@@ -272,6 +272,73 @@
   </div>
   </div>
 
+    <div class="panel panel-default">
+  <div class="panel-heading">
+    <h3 class="panel-title">/api/posts/:post_guid</h3>
+  </div>
+  <div class="panel-body">
+      <h4>Method: POST</h4>
+      Retrieves a specific post with the supplied :post_guid
+      Replace :post_guid with the post you want to retrieve. Passing friends and post will
+      allow you to get a post that is FOAF
+      <div class="hightlight">
+          <h5>Expected Input</h5>
+<pre><code>{  
+   "query":"getpost",
+   "id":"9de17f29c12e8f97bcbbd34cc908f1baba40658e",
+   "author":{  
+      "id":"8d919f29c12e8f97bcbbd34cc908f19ab9496989",
+      "host":"http://127.0.0.1:5454/",
+      "displayname":"Greg"
+   },
+   "friends":[  
+      "7deee0684811f22b384ccb5991b2ca7e78abacde",
+      "11c3783f15f7ade03430303573098f0d4d20797b"
+   ]
+}</code></pre>
+      </div>
+      <div class="hightlight">
+          <h5>Expected Output</h5>
+<pre><code>{  
+   "posts":[  
+      {  
+         "title":"A post title about a post about web dev",
+         "source":"http://lastplaceigotthisfrom.com/post/yyyyy",
+         "origin":"http://whereitcamefrom.com/post/zzzzz",
+         "description":"This post discusses stuff -- brief",
+         "content-type":"text/html",
+         "content":"Content of the post",
+         "author":{  
+            "id":"9de17f29c12e8f97bcbbd34cc908f1baba40658e",
+            "host":"http://127.0.0.1:5454/",
+            "displayname":"Lara",
+            "url":"http://127.0.0.1:5454/author/9de17f29c12e8f97bcbbd34cc908f1baba40658e"
+         },
+         "categories":[  
+            "web",
+            "tutorial"
+         ],
+         "comments":[  
+            {  
+               "author":{  
+                  "id":"8d919f29c12e8f97bcbbd34cc908f19ab9496989",
+                  "host":"http://127.0.0.1:5454/",
+                  "displayname":"Greg"
+               },
+               "comment":"Sick Olde English",
+               "pubDate":"Fri Jan  3 15:50:40 MST 2014",
+               "guid":"5471fe89-7697-4625-a06e-b3ad18577b72"
+            }
+         ],
+         "pubDate":"Fri Jan  1 12:12:12 MST 2014",
+         "visibility":"FOAF"
+      }
+   ]
+}</code></pre>
+      </div>
+  </div>
+  </div>
+
 
   <div class="panel panel-default">
   <div class="panel-heading">
