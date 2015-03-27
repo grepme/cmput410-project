@@ -151,14 +151,14 @@ class SetEncoder(json.JSONEncoder):
 
 
 def get_post_query(request):
-    return ( Q(visibility=Post.private, author=request.profile.guid) |
-             Q(visibility=Post.public) |
-             Q(visibility=Post.friend, author__accepter=request.profile, author__accepter__accepted=True) |
-             Q(visibility=Post.friend, author__requester=request.profile, author__accepter__accepted=True) |
-             Q(visibility=Post.FOAF, author__requester__requester=request.profile, author__accepter__accepted=True) |
-             Q(visibility=Post.FOAF, author__requester__accepter=request.profile, author__accepter__accepted=True) |
-             Q(visibility=Post.FOAF, author__accepter__requester=request.profile, author__accepter__accepted=True) |
-             Q(visibility=Post.FOAF, author__accepter__accepter=request.profile, author__accepter__accepted=True) )
+    return  (Q(visibility=Post.private, author=request.profile) |
+                            Q(visibility=Post.public) |
+                            Q(visibility=Post.friend, author__accepter=request.profile) |
+                            Q(visibility=Post.friend, author__requester=request.profile) |
+                            Q(visibility=Post.FOAF, author__requester__requester=request.profile) |
+                            Q(visibility=Post.FOAF, author__requester__accepter=request.profile) |
+                            Q(visibility=Post.FOAF, author__accepter__requester=request.profile) |
+                            Q(visibility=Post.FOAF, author__accepter__accepter=request.profile))
 
 
 def model_list(model_query):
@@ -285,9 +285,12 @@ def get_post(request, post_id=None, page="0"):
                 return JsonResponse({"posts": return_data})
 
     return_data = list()
-    if post_id is not None:
+    if post_id is not None and request.user.is_authenticated():
 
         query = (get_post_query(request) & Q(guid=post_id))
+
+        print query
+
         posts_query = Post.objects.filter(query)
         return_data = model_list(posts_query)
 
