@@ -235,37 +235,34 @@ def get_posts(request,author_id=None,page="0"):
 @require_http_accept(['application/json'])
 @require_http_content_type(['application/json'])
 def get_post(request,post_id=None,page="0"):
-    try:
-        if request.method == "POST":
-            data = None
-            post = None
+    if request.method == "POST":
+        data = None
+        post = None
 
-            try:
-                data = json.loads(request.body)
-            except ValueError as e:
-                return  HttpResponseBadRequest()
+        try:
+            data = json.loads(request.body)
+        except ValueError as e:
+            return  HttpResponseBadRequest()
 
-            try:
-                post = Post.objects.get(guid=post_id)
-            except Exception as e:
-                return HttpResponseNotFound()
+        try:
+            post = Post.objects.get(guid=post_id)
+        except Exception as e:
+            return HttpResponseNotFound()
 
-            post_author = post.author
+        post_author = post.author
 
-            keys = ['id','host','displayname']
-            if has_keys(keys,data,'author') and 'friends' in data:
-                author = data["author"]
+        keys = ['id','host','displayname']
+        if has_keys(keys,data,'author') and 'friends' in data:
+            author = data["author"]
 
-                if not get_foaf_servers(author,post_author,data["friends"]):
-                    res = HttpResponse("Unauthorized")
-                    res.status_code = 401
-                    return res
+            if not get_foaf_servers(author,post_author,data["friends"]):
+                res = HttpResponse("Unauthorized")
+                res.status_code = 401
+                return res
 
-                else:
-                    return_data = [post.as_dict()]
-                    return JsonResponse({"posts":return_data})
-    except Exception as e:
-        print e
+            else:
+                return_data = [post.as_dict()]
+                return JsonResponse({"posts":return_data})
 
 
     return_data = list()
