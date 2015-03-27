@@ -4,11 +4,12 @@ from django.contrib.auth import authenticate, login as django_login, logout as d
 from django.views.decorators.csrf import csrf_protect
 from django.contrib.auth.models import User
 from django.db.models import Q
-from django.http import HttpResponse,HttpResponseBadRequest
+from django.http import HttpResponse,HttpResponseBadRequest, HttpResponseNotFound
 from django.core import serializers
 import logging
 import json
 
+from api.models import Server
 
 from comments.models import Comment
 from django.db import IntegrityError
@@ -151,22 +152,46 @@ def has_keys(keys,dictionary,main_key):
         return True
     return False
 
-def get_foaf_servers(profile,friends) {
-    servers = Servers.objects.all()
+def compare(s, t):
+    return Counter(s) == Counter(t)
 
-    # Get a specific users friends
-    friends_query = Friends.objects.filter(Q(accepter=profile,requester__in=friends) | Q(requester=profile,accepter__in=friends))
-    friends = [for f in friends_query]
-    print friends
+# Profile = User Who is trying to get post
+# Author = Author of the Post we are trying to get
+# Friends list of Friends, for that profile
+def get_foaf_servers(profile,author,friends) :
 
+    # Find the server we defined as host, check for contains to be safe...
+    current_server = Server.objects.filter(host__icontains=profile["host"]).first()
+
+
+    if current_server is not None:
+        result = current_server.get_friends_list(profile,friends)
+
+        # Ok to Proceed
+        if not compare(result["friends"],friends):
+            return False
+
+
+    # Check if the Author is
+    try:
+        friends_query = Friend.objects.filter(Q(accepter=author,requester__in=friends,accepted=True) | Q(requester=author,accepter__in=friends,accepted=True))
+    except Exception as e:
+        print e
+
+    # Extract just the guids
+    friends = get_other_profiles(author,friends_query)
+
+    servers = Server.objects.all()
     if len(friends) > 0:
         for server in servers:
             for friend in friends:
-                server.get_friends_list(friend.guid,friends)
+                if len(server.get_friends_list(profile.guid,friends)["friends"]) > 0:
+                    return True
     else:
-        return [];
-}
+        return False
 
+    if len(servers) == 0:
+        return True
 
 
 #@login_required
@@ -207,6 +232,7 @@ def get_posts(request,author_id=None,page="0"):
     return JsonResponse(data)
 
 #@login_required
+@csrf_exempt
 @require_http_methods(["GET","POST"])
 @require_http_accept(['application/json'])
 @require_http_content_type(['application/json'])
@@ -214,14 +240,32 @@ def get_post(request,post_id=None,page="0"):
 
     if request.method == "POST":
         data = None
+        post = None
         try:
             data = json.loads(request.body)
         except ValueError as e:
             return  HttpResponseBadRequest()
 
-        keys = ['id','host','url','displayname']
-        if has_keys(keys,data,'author') and key in data["friends"]:
+        try:
+            post = Post.objects.get(guid=post_id)
+        except Exception as e:
+            return HttpResponseNotFound()
+
+        post_author = post.author
+
+        keys = ['id','host','displayname']
+        if has_keys(keys,data,'author') and 'friends' in data:
             author = data["author"]
+
+            if not get_foaf_servers(author,post_author,data["friends"]):
+                res = HttpResponse("Unauthorized")
+                res.status_code = 401
+                return res
+
+            else:
+
+                return_data = model_list(post)
+                return JsonResponse({"posts":return_data})
 
 
     return_data = list()
@@ -252,12 +296,15 @@ def get_post(request,post_id=None,page="0"):
 def friend_request(request,page="0"):
     # get data from request
     data = None
+
+    print request.body
     try:
         data = json.loads(request.body)
     except ValueError as e:
         return  HttpResponseBadRequest()
 
     keys = ['id','host','url','displayname']
+
 
     if has_keys(keys,data,'author') and has_keys(keys,data,'friend'):
         author = Profile.objects.filter(guid=data["author"]["id"]).first()

@@ -89,6 +89,7 @@ def all_posts(request):
                             Q(visibility=Post.FOAF, author__requester__accepter=request.profile) |
                             Q(visibility=Post.FOAF, author__accepter__requester=request.profile) |
                             Q(visibility=Post.FOAF, author__accepter__accepter=request.profile)
+
     )
 
     # Nested query lookups aren't supported, so we need to make multiple queries :(

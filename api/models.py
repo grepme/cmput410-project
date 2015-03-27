@@ -23,6 +23,7 @@ class Server(models.Model):
     author_id_posts = models.CharField(max_length=60,default="/author/{author_guid}/posts")
     posts = models.CharField(max_length=60,default="/posts")
     posts_id = models.CharField(max_length=60,default="/posts/{post_guid}")
+    posts_id_post = models.CharField(max_length=60,default="/posts/{post_guid}")
     friends_id_id = models.CharField(max_length=60,default="/friends/{friend_guid}/{friend_2_guid}")
     friends_list = models.CharField(max_length=60,default="/friends/{friend_guid}")
     friend_request = models.CharField(max_length=60,default="/friendrequest")
@@ -55,11 +56,12 @@ class Server(models.Model):
             print e.reason
             return e.code
 
-        return result.read()
+        return json.loads(result.read())
+
 
     def get_posts_id(self,post_guid):
 
-        request = urllib2.Request("http://{host}{path}".format(host=self.host,path=self.posts).format(post_guid=post_guid))
+        request = urllib2.Request("http://{host}{path}".format(host=self.host,path=self.posts_id).format(post_guid=post_guid))
         # Assume basic Auth
         base64string = base64.encodestring('%s:%s' % (self.auth_user, self.auth_password)).replace('\n', '')
         request.add_header("Authorization", "Basic %s" % base64string)
@@ -68,8 +70,20 @@ class Server(models.Model):
         except (urllib2.HTTPError, urllib2.URLError) as e:
             print e.reason
             return e.code
+        return json.loads(result.read())
 
-        return result.read()
+    def post_posts_id(self,post_guid):
+
+        request = urllib2.Request("http://{host}{path}".format(host=self.host,path=self.posts_id_post).format(post_guid=post_guid))
+        # Assume basic Auth
+        base64string = base64.encodestring('%s:%s' % (self.auth_user, self.auth_password)).replace('\n', '')
+        request.add_header("Authorization", "Basic %s" % base64string)
+        try:
+            result = urllib2.urlopen(request)
+        except (urllib2.HTTPError, urllib2.URLError) as e:
+            print e.reason
+            return e.code
+        return json.loads(result.read())
 
     def get_friends_id_id(self,friend_guid,friend_2_guid):
 
@@ -83,7 +97,8 @@ class Server(models.Model):
             print e.reason
             return e.code
 
-        return result.read()
+        return json.loads(result.read())
+
 
     def get_friends_list(self,friend_guid,friends_list):
 
@@ -104,7 +119,7 @@ class Server(models.Model):
             print e.reason
             return e.code
 
-        return result.read()
+        return json.loads(result.read())
 
 
     def __unicode__(self):
