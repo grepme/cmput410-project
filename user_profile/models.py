@@ -9,8 +9,9 @@ import time
 # using the guid model
 from framework.models import GUIDModel
 
+
 class Profile(GUIDModel):
-    author = models.ForeignKey(User,null=True)
+    author = models.ForeignKey(User, null=True)
     display_name = models.CharField(max_length=55)
 
     # Set to yes is profile is hosted else where
@@ -22,12 +23,10 @@ class Profile(GUIDModel):
     host = models.CharField(max_length=55)
 
 
-
     def as_dict(self):
         return {
-            "id": self.guid,
-        	# TODO implement host
+            "id": self.guid,  # TODO implement host
             "host": "",
-            "displayname" : self.display_name,
+            "displayname": self.display_name,
             "url": self.host + "/author/" + self.guid
         }

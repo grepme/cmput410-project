@@ -3,15 +3,16 @@ from django.contrib.auth.models import User
 from tags.models import Tag
 from user_profile.models import Profile
 import uuid
-from json import JSONEncoder, dumps
+import json
 
 # using the guid model
 from framework.models import GUIDModel
 
 # Create your models here.
-class PostEncoder(JSONEncoder):
-        def default(self, o):
-            return o.as_dict()
+class PostEncoder(json.JSONEncoder):
+    def default(self, o):
+        return o.as_dict()
+
 
 class Post(GUIDModel):
     private = 1
@@ -32,7 +33,7 @@ class Post(GUIDModel):
     date = models.DateTimeField()
     # Not sure how to make a "content" field either text or image
     text = models.CharField(max_length=63206, blank=True)
-    image  = models.ImageField(blank=True, upload_to='images/%Y/%m/%d')
+    image = models.ImageField(blank=True, upload_to='images/%Y/%m/%d')
     origin = models.GenericIPAddressField()
     source = models.GenericIPAddressField()
     author = models.ForeignKey(Profile)
@@ -44,9 +45,21 @@ class Post(GUIDModel):
     visibility = models.IntegerField(choices=visibilityChoices)
 
     def visibility_string(self):
-        return Post.visibilityChoices[self.visibility-1][1]
+        return Post.visibilityChoices[self.visibility - 1][1]
+
+    def comments_to_list(self):
+        from comments.models import Comment
+
+        comments = Comment.objects.filter(post=self)
+        comment_list = []
+        for comment in comments:
+            comment_list.append(comment.as_dict())
+
+        return comment_list
 
     def as_dict(self):
+
+        comments = self.comments_to_list()
         return {
             "title": self.title,
             "source": self.source,
@@ -57,14 +70,14 @@ class Post(GUIDModel):
             "content": self.text,
             "author": self.author.as_dict(),
             "categories": list(self.tags.all()),
-            "comments": list(),
+            "comments": comments,
             "pubDate": self.date,
             "guid": self.guid,
             "visibility": self.visibility_string()
-            }
+        }
 
     def to_json(self):
-        return json.dumps(self,cls=PostEncoder)
+        return json.dumps(self, cls=PostEncoder)
 
     def get_content_type(self):
         if self.commonmark:

@@ -80,6 +80,7 @@ def all_posts(request):
     # https://docs.djangoproject.com/en/1.7/topics/db/queries/#complex-lookups-with-q-objects
     # Any posts that are private and owned, public, are on this server, or are friends, or friends of friends.
     # TODO: Friends of friends improvement. OH GOD MY EYES!
+    # TODO: FOAF not working
     # TODO: DAMMIT DJANGO! ALLOW MORE NESTED JOINS!
     p = Post.objects.filter(Q(visibility=Post.private, author=request.profile) |
                             Q(visibility=Post.public) | Q(visibility=Post.server) |

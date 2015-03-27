@@ -18,13 +18,18 @@ class Comment(GUIDModel):
     def __unicode__(self):
         return self.text[:10]
 
+    def get_image_url(self):
+        try:
+            return self.image.url
+        except ValueError:
+            return ""
+
     def as_dict(self):
         return {
-        	"author": self.author.as_dict(),
-        	"comment": self.text,
-        	"pubDate": self.date,
-        	"guid": self.guid,
+            "author": self.author.as_dict(),
+            "comment": self.text,
+            "pubDate": self.date,
+            "guid": self.guid,
             # not in example-article.json... Do we need these?
-            "post": Post.objects.get(post=self.post).as_dict(),
-            "image": self.image
-            }
+            "image": self.get_image_url()
+        }
