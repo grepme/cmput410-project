@@ -21,7 +21,7 @@
                 </input>
             </form>
         </div>
-        <div style="float: right;">{{ post.date }}</div>
+        <div style="float: right;">{{ post.author.display_name }} on {{ post.date }}</div>
 
         <br/>
         {% if  post.commonmark %}
@@ -52,3 +52,33 @@
         </div>
     </div>
 {% endfor %}
+
+<!-- Ashley's group server -->
+{% for post in remote.posts reversed %}
+    <div class="col-md-12 well" style="">
+        {% if post.origin %}
+            <span class="label label-primary">{{ post.origin }}</span>
+        {% else %}
+            <span class="label label-primary">Unknown</span>
+        {% endif %}
+        <span style="font-weight:bold;font-size:125%;">{{ post.title }}</span>
+
+        <div style="float: right;">
+            <button type="button" class="btn btn-default btn-xs"
+                    onclick="$(this).parent().siblings('.new_comment').toggle();"
+                    style="vertical-align:auto; margin-left: 10px;">
+                <span class="glyphicon  glyphicon-comment" aria-hidden="true"></span> Add Comment
+            </button>
+        </div>
+        <div style="float: right;">{{ post.author.displayname }} on {{ post.pubdate }}</div>
+
+        <br/>
+        {% if  post.commonmark %}
+            <span>{{ post.content|commonmark|safe }}</span>
+        {% else %}
+            <span>{{ post.content }}</span>
+        {% endif %}
+        <!-- Include all comments from post -->
+    </div>
+{% endfor %}
+

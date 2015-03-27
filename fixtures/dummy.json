@@ -24,5 +24,17 @@
     },
     "model": "user_profile.profile",
     "pk": "7a1c7226-d1e4-11e4-aa4c-b8f6b116b2b7"
+  },
+  {
+    "fields": {
+      "host": "cmput410project15.herokuapp.com",
+      "auth_type": "Basic",
+      "auth_user": "user",
+      "auth_password": "pass",
+      "realm": "hi",
+      "posts": "/main/getposts/"
+    },
+    "model": "api.server",
+    "pk": 1
   }
 ]
