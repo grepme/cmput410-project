@@ -94,7 +94,6 @@ def all_posts(request):
     #                         Q(visibility=Post.FOAF, author__accepter__accepter=request.profile)
     #
     # )
-    print request.profile.guid
     p = Post.objects.filter(Q(visibility=Post.private, author=request.profile) |
                             Q(visibility=Post.public) | Q(visibility=Post.server) |
                             Q(visibility=Post.friend, author__accepter=request.profile) |
@@ -108,7 +107,7 @@ def all_posts(request):
 
     # Get all remote posts
     for remote_server in Server.objects.all():
-        remote_posts = json.loads(remote_server.get_posts())
+        remote_posts = remote_server.get_posts()
 
     # Nested query lookups aren't supported, so we need to make multiple queries :(
     return render(request, 'posts/all.html', {'posts': p, 'remote': remote_posts})
