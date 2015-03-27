@@ -15,6 +15,14 @@ def get_other_profiles(profile,query):
             profiles.append(query_item.accepter)
     return profiles
 
+def get_other_following(profile,query):
+    profiles = list()
+
+    for query_item in query:
+            profiles.append(query_item.requester)
+
+    return profiles
+
 @login_required
 def friends(request):
     return render(request, "friends/index.html", {"user":request.user,"profile":request.profile})
@@ -39,6 +47,8 @@ def following_friends(request):
 
     return render(request, "friends/accepted.html", {'profiles': profiles, "user":request.user,"profile":request.profile})
 
+
+
 @login_required
 def incoming_friends(request):
     # get current friends
@@ -52,8 +62,6 @@ def sent_friends(request):
     sent_query = Friend.objects.filter(requester=request.profile,accepted=False)
     profiles = [item.accepter for item in sent_query]
     return render(request, "friends/request.html", {'profiles': profiles, "user":request.user})
-
-
 
 @login_required
 def search_friends(request,name):
