@@ -30,7 +30,7 @@
       "host": "cmput410project15.herokuapp.com",
       "auth_type": "Basic",
       "auth_user": "user",
-      "auth_pass": "pass",
+      "auth_password": "pass",
       "realm": "hi",
       "posts": "/main/getposts/"
     },
