@@ -37,6 +37,10 @@ def run_server():
 def kill_server(server_process):
     os.killpg(server_process.pid, signal.SIGTERM)  # Send the signal to all the process groups
 
+def check_keys(self,keys,item):
+    for key in keys:
+        self.assertEqual(key in item,True,"Key: '{}' not found in item".format(key))
+
 class ApiTestClass(unittest.TestCase):
 
     @classmethod
@@ -77,10 +81,13 @@ class ApiTestClass(unittest.TestCase):
         print "getting server posts"
         posts = self.server.get_posts()
         self.assertEqual(len(posts),1)
-        self.assertEqual('posts' in posts,True)
 
         # Get first post
         post = posts['posts'][0]
+        check_keys(self,['visibility','source','origin','description','content-type','content','author','categories','comments','pubDate','id'],post)
+
+        author = post["author"]
+        check_keys(self,['id','host','displayname','url'],author)
         self.assertEqual(post["visibility"],"PUBLIC")
         self.assertEqual(post["title"],self.post.title)
 '''
