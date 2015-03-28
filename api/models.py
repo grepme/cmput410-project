@@ -54,8 +54,7 @@ class Server(models.Model):
         try:
             result = urllib2.urlopen(request)
         except (urllib2.HTTPError, urllib2.URLError) as e:
-            print e.reason
-            return e.code
+            return e.reason
 
         return json.loads(result.read())
 
@@ -70,8 +69,7 @@ class Server(models.Model):
         try:
             result = urllib2.urlopen(request)
         except (urllib2.HTTPError, urllib2.URLError) as e:
-            print e.reason
-            return e.code
+            return e
         return json.loads(result.read())
 
     def post_posts_id(self, post_guid):
