@@ -31,15 +31,53 @@ BASE_DIR = os.path.dirname(os.path.dirname(__file__))
 server_process = None
 path = os.path.join(BASE_DIR, 'manage.py')
 
-def run_server():
-    return
-
-def kill_server(server_process):
-    os.killpg(server_process.pid, signal.SIGTERM)  # Send the signal to all the process groups
+visibilities = ["PUBLIC","FOAF","FRIENDS","PRIVATE","SERVERONLY"]
 
 def check_keys(self,keys,item):
     for key in keys:
+        # Check if has key
         self.assertEqual(key in item,True,"Key: '{}' not found in item".format(key))
+
+        if type(item[key]) is str:
+            # Make sure key is not empty
+            self.assertNotEqual(len(item[key]),0,"Key: '{}' has length 0".format(key))
+
+        # Check for valid visibilities
+        check_visibility(self,key,item)
+
+def check_visibility(self,key,item):
+    if key == "visibility":
+        self.assertEqual(item[key].upper() in visibilities,True,"Visibility is not valid")
+
+def check_author(self,author,check_url=False):
+    check_keys(self,['id','host','displayname'],author)
+    # If we want to check for url
+    if check_url:
+        check_keys(self,['url'],author)
+
+def check_comment(self,comment):
+    check_keys(self,['author','comment','pubDate','guid'],comment)
+    check_author(self,comment["author"])
+
+
+def check_post(self,post):
+    # Check that we have all the main keys
+    check_keys(self,['title','source','origin','description','content-type'
+        ,'content','author','categories','comments','pubDate','guid','visibility'],post)
+
+    # Check if author is valid
+    check_author(self,post["author"],True)
+
+    for comment in post["comments"]:
+        check_comment(self,comment)
+
+def check_friends(self,query):
+    check_keys(self,['query','author','friends'],query)
+
+def check_profile(self,profile):
+    check_keys(self,['id','host','displayname','url','friends'],profile)
+    for friend in profile["friends"]:
+        check_author(self,friend,True)
 
 class ApiTestClass(unittest.TestCase):
 
@@ -82,14 +120,10 @@ class ApiTestClass(unittest.TestCase):
         posts = self.server.get_posts()
         self.assertEqual(len(posts),1)
 
-        # Get first post
-        post = posts['posts'][0]
-        check_keys(self,['visibility','source','origin','description','content-type','content','author','categories','comments','pubDate','id'],post)
+        for post in posts["posts"]:
+            check_post(self,post)
+            self.assertEqual(post["visibility"].upper(),"PUBLIC")
 
-        author = post["author"]
-        check_keys(self,['id','host','displayname','url'],author)
-        self.assertEqual(post["visibility"],"PUBLIC")
-        self.assertEqual(post["title"],self.post.title)
 '''
     def test_server_posts_id(self):
         print server.get_posts_id(post_guid="290da6fd-d3d3-11e4-a23b-b8f6b116b2b7")
