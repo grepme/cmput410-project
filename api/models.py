@@ -28,9 +28,40 @@ class Server(models.Model):
     friends_list = models.CharField(max_length=60, default="/friends/{friend_guid}")
     friend_request = models.CharField(max_length=60, default="/friendrequest")
 
+    def get_auth_author_posts(self, user_request):
+        request = urllib2.Request("http://{host}{path}".format(host=self.host, path=self.author_posts))
+        # Assume basic Auth
+        base64string = base64.encodestring('%s:%s' % (self.auth_user, self.auth_password)).replace('\n', '')
+        request.add_header("Authorization", "Basic %s" % base64string)
+
+        # Add User header for current auth user
+        request.add_header("Profile", "%s" % user_request.profile.guid)
+        try:
+            result = urllib2.urlopen(request)
+        except (urllib2.HTTPError, urllib2.URLError) as e:
+            return e
+
+        return json.loads(result.read())
+
+    def get_author_posts(self,user_request, author):
+        request = urllib2.Request("http://{host}{path}".format(host=self.host, path=self.author_id_posts).format(author_guid=author.guid))
+        # Assume basic Auth
+        base64string = base64.encodestring('%s:%s' % (self.auth_user, self.auth_password)).replace('\n', '')
+        request.add_header("Authorization", "Basic %s" % base64string)
+
+        # Add User header for current auth user
+        request.add_header("User", "%s" % user_request.profile.guid)
+
+        try:
+            result = urllib2.urlopen(request)
+        except (urllib2.HTTPError, urllib2.URLError) as e:
+            return e
+
+        return json.loads(result.read())
+
     def post_friend_request(self, requester, accepter):
 
-        request = urllib2.Request("{host}{path}".format(host=self.host, path=self.friend_request),
+        request = urllib2.Request("http://{host}{path}".format(host=self.host, path=self.friend_request),
                                   json.dumps({"query": "friendrequest", "author": requester.as_dict(),
                                               "friend": accepter.as_dict()}))
         # Assume basic Auth
@@ -54,42 +85,41 @@ class Server(models.Model):
         try:
             result = urllib2.urlopen(request)
         except (urllib2.HTTPError, urllib2.URLError) as e:
-            return e.reason
+            print e
+            return e
 
         return json.loads(result.read())
 
 
     def get_posts_id(self, post_guid):
 
-        request = urllib2.Request(
-            "http://{host}{path}".format(host=self.host, path=self.posts_id).format(post_guid=post_guid))
+        request = urllib2.Request("http://{host}{path}".format(host=self.host, path=self.posts_id).format(post_guid=post_guid))
         # Assume basic Auth
         base64string = base64.encodestring('%s:%s' % (self.auth_user, self.auth_password)).replace('\n', '')
         request.add_header("Authorization", "Basic %s" % base64string)
         try:
             result = urllib2.urlopen(request)
         except (urllib2.HTTPError, urllib2.URLError) as e:
+            print e
             return e
         return json.loads(result.read())
 
     def post_posts_id(self, post_guid):
 
-        request = urllib2.Request(
-            "http://{host}{path}".format(host=self.host, path=self.posts_id_post).format(post_guid=post_guid))
+        request = urllib2.Request("http://{host}{path}".format(host=self.host, path=self.posts_id_post).format(post_guid=post_guid))
         # Assume basic Auth
         base64string = base64.encodestring('%s:%s' % (self.auth_user, self.auth_password)).replace('\n', '')
         request.add_header("Authorization", "Basic %s" % base64string)
         try:
             result = urllib2.urlopen(request)
         except (urllib2.HTTPError, urllib2.URLError) as e:
-            print e.reason
-            return e.code
+            print e
+            return e
         return json.loads(result.read())
 
     def get_friends_id_id(self, friend_guid, friend_2_guid):
 
-        request = urllib2.Request(
-            "http://{host}{path}".format(host=self.host, path=self.friends_id_id).format(friend_guid=friend_guid,
+        request = urllib2.Request("http://{host}{path}".format(host=self.host, path=self.friends_id_id).format(friend_guid=friend_guid,
                                                                                          friend_2_guid=friend_2_guid))
         # Assume basic Auth
         base64string = base64.encodestring('%s:%s' % (self.auth_user, self.auth_password)).replace('\n', '')

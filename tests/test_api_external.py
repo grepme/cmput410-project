@@ -21,6 +21,7 @@ from user_profile.models import Profile
 from posts.models import Post
 from django.utils import timezone
 from django.core import management
+from django.http import HttpRequest
 
 import signal
 import subprocess
@@ -79,6 +80,11 @@ def check_profile(self,profile):
     for friend in profile["friends"]:
         check_author(self,friend,True)
 
+def create_user(name):
+    user = User.objects.create_user(name,"{}@{}.com".format(name,name),'password')
+    profile = Profile.objects.create(author=user,display_name=name)
+    return (user,profile)
+
 class ApiTestClass(unittest.TestCase):
 
     @classmethod
@@ -93,10 +99,16 @@ class ApiTestClass(unittest.TestCase):
                        shell=True, preexec_fn=os.setsid,stderr=subprocess.PIPE)
 
         #call_command("runserver",addr='0.0.0.0', port='8080', use_reloader=False)
-        self.test = User.objects.create_user('Test','myemail@email.com','password')
-        self.test_profile = Profile.objects.create(author=self.test,display_name="Test User")
+        user_tuple = create_user("test")
+        self.test = user_tuple[0]
+        self.test_profile = user_tuple[1]
+
         self.post = Post.objects.create(title='randomtitle', date=timezone.now(), text='sometext', image=None,
                                  visibility=Post.public, commonmark=False, author=self.test_profile, origin="localhost", source="localhost")
+
+        Post.objects.create(title='title', date=timezone.now(), text='text', image=None,
+                                 visibility=Post.private, commonmark=False, author=self.test_profile, origin="localhost", source="localhost")
+
 
 
         # Setup our own server as a "server"
@@ -116,13 +128,25 @@ class ApiTestClass(unittest.TestCase):
 
 
     def test_server_posts(self):
-        print "getting server posts"
         posts = self.server.get_posts()
-        self.assertEqual(len(posts),1)
-
+        self.assertEqual(len(posts),len(Post.objects.filter(visibility=Post.public)))
         for post in posts["posts"]:
             check_post(self,post)
             self.assertEqual(post["visibility"].upper(),"PUBLIC")
+
+    def test_server_get_post(self):
+        posts = self.server.get_posts_id(self.post.guid)
+        self.assertEqual(len(posts),1)
+        for post in posts["posts"]:
+            check_post(self,post)
+
+    def test_server_get_posts_auth(self):
+        request = HttpRequest()
+        request.profile = self.test_profile
+
+        posts = self.server.get_auth_author_posts(request)
+
+        self.assertEqual(len(posts),2)
 
 '''
     def test_server_posts_id(self):
