@@ -23,6 +23,18 @@ pip install pillow
 pip install django
 ```
 
+# External Tests
+
+Runs using nosetests
+
+Required to have nose tests installed
+
+This runs our server against our own server (Testing the api)
+
+```bash
+nosetests tests
+```
+
 # Vagrant Installation
 
 [Download and install Vagrant](https://www.vagrantup.com/downloads.html)

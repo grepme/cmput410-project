@@ -66,6 +66,38 @@ def require_http_accept(request_accept_list):
 
     return decorator
 
+def auth_as_user():
+    """
+        Fake user auth for api
+    """
+
+    def decorator(func):
+        @wraps(func, assigned=available_attrs(func))
+        def inner(request, *args, **kwargs):
+            profile = None
+            try:
+                user_guid = request.META.get('HTTP_PROFILE')
+                profile = Profile.objects.get(guid=user_guid)
+                request.profile = profile
+            except Profile.DoesNotExist as e:
+                if request.user.is_authenticated():
+                    profile = Profile.objects.get(author=request.user)
+                else:
+                    logger.warning('Not Authenticated (%s): %s', request.META.get('User'), request.path,
+                                   extra={
+                                       'status_code': 401,
+                                       'request': request
+                                   }
+                    )
+                    response = HttpResponse("Unauthorized ({}): {}".format(request.META.get('User'), request.path))
+                    response.status_code = 401
+                    return response
+            return func(request, *args, **kwargs)
+
+        return inner
+
+    return decorator
+
 
 def require_http_content_type(request_accept_list):
     """
@@ -158,7 +190,9 @@ def get_post_query(request):
                             Q(visibility=Post.FOAF, author__requester__requester=request.profile) |
                             Q(visibility=Post.FOAF, author__requester__accepter=request.profile) |
                             Q(visibility=Post.FOAF, author__accepter__requester=request.profile) |
-                            Q(visibility=Post.FOAF, author__accepter__accepter=request.profile))
+                            Q(visibility=Post.FOAF, author__accepter__accepter=request.profile)
+
+    )
 
 
 def model_list(model_query):
@@ -215,6 +249,7 @@ def get_foaf_servers(profile, author, friends):
 
 
 # @login_required
+@auth_as_user()
 @require_http_methods(["GET"])
 @require_http_accept(['application/json'])
 @require_http_content_type(['application/json'])

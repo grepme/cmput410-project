@@ -65,7 +65,7 @@ class Post(GUIDModel):
             "source": self.source,
             "origin": self.origin,
             # TODO: implement description
-            "description": "",
+            "description": self.text[:10],
             "content-type": self.get_content_type(),
             "content": self.text,
             "author": self.author.as_dict(),
