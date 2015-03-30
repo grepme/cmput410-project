@@ -24,7 +24,7 @@ from django.core import management
 from django.http import HttpRequest
 
 import signal
-import subprocess
+import subprocess, shlex
 import time
 
 BASE_DIR = os.path.dirname(os.path.dirname(__file__))
@@ -95,8 +95,7 @@ class ApiTestClass(unittest.TestCase):
         call_command('flush',interactive=False)
 
         #  Start our server
-        self.server_process = subprocess.Popen('python "{}" runserver --setting=social_network.test_settings'.format(path), stdout=subprocess.PIPE,
-                       shell=True, preexec_fn=os.setsid,stderr=subprocess.PIPE)
+        self.server_process = subprocess.Popen(shlex.split('python "{}" runserver --setting=social_network.test_settings'.format(path)))
 
         #call_command("runserver",addr='0.0.0.0', port='8080', use_reloader=False)
         user_tuple = create_user("test")
@@ -106,7 +105,7 @@ class ApiTestClass(unittest.TestCase):
         self.post = Post.objects.create(title='randomtitle', date=timezone.now(), text='sometext', image=None,
                                  visibility=Post.public, commonmark=False, author=self.test_profile, origin="localhost", source="localhost")
 
-        Post.objects.create(title='title', date=timezone.now(), text='text', image=None,
+        self.post_2 = Post.objects.create(title='title', date=timezone.now(), text='text', image=None,
                                  visibility=Post.private, commonmark=False, author=self.test_profile, origin="localhost", source="localhost")
 
 
@@ -124,7 +123,8 @@ class ApiTestClass(unittest.TestCase):
         print "Killing server"
 
         # Kill the server
-        os.killpg(self.server_process.pid, signal.SIGTERM)  # Send the signal to all the process groups
+        p1 = subprocess.Popen(shlex.split("pgrep -f 'manage.py runserver'"), stdout=subprocess.PIPE)
+        p2 = subprocess.Popen(shlex.split("xargs kill"), stdin=p1.stdout, stdout=subprocess.PIPE)
 
 
     def test_server_posts(self):
