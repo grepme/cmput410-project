@@ -2,8 +2,7 @@ from django.contrib.auth.models import AnonymousUser, User
 from django.test import TestCase, RequestFactory
 from django.utils import timezone
 
-from posts.views import new_post, delete_post, all_posts, my_posts
-from comments.views import new_comment, posts_comments
+from comments.views import new_comment
 from posts.models import Post
 from comments.models import Comment
 from user_profile.models import Profile
@@ -22,10 +21,9 @@ class PostsViewTests(TestCase):
 
 
     def test_new_comment(self):
-        post = Post.objects.get(title=self.post.title)
         ''' Tests if we can add a new comment using the endpoint '''
         request = self.factory.post('/comment/new',{"date":timezone.now(), "text":'new comment text', "image":None,
-                                                    "post_id":post.guid, "author":self.user_profile.guid})
+                                                    "post":self.post, 'post_id':self.post.guid})
         request.user = self.user
         request.profile = self.user_profile
 
@@ -35,19 +33,27 @@ class PostsViewTests(TestCase):
         self.assertEqual(response.status_code, 302)
         self.assertEqual(response.url, '/dashboard/')
 
-        self.assertEqual(len(Comment.objects.filter(text='justAtest')),1)
+        self.assertEqual(len(Comment.objects.filter(text='new comment text')),1)
 
-    def test_get_posts_comment(self):
-        post = Post.objects.get(title=self.post.title)
-        ''' Tests if we can get comments associated to a post '''
-        request = self.factory.get('/comments/post',{"text":'new comment text', "post_id":post.guid, "author":self.user_profile.guid})
+    def test_new_comment_wrong_Type(self):
+        ''' test 405 responses for method not allowed '''
+
+        request = self.factory.get('/comment/new')
         request.user = self.user
         request.profile = self.user_profile
+        response = new_comment(request)
+        self.assertEqual(response.status_code, 405)
 
-        response = posts_comments(request)
+        request = self.factory.delete('/comment/new')
+        request.user = self.user
+        request.profile = self.user_profile
+        response = new_comment(request)
+        self.assertEqual(response.status_code, 405)
 
-        # self.assertEqual(response.__class__.__name__,'HttpResponseRedirect')
-        self.assertEqual(response.status_code, 200)
-        # self.assertEqual(response.url, '/dashboard/')
+        request = self.factory.put('/comment/new')
+        request.user = self.user
+        request.profile = self.user_profile
+        response = new_comment(request)
+        self.assertEqual(response.status_code, 405)
 
-        self.assertEqual(len(Comment.objects.filter(text='justAtest')),1)
+    #TODO: Delete comments? Authentication tests?
