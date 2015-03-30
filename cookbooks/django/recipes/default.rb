@@ -1,5 +1,8 @@
 python_pip "django"
-python_pip "commonmark"
+python_pip "commonmark
+python_pip "pillow"
+python_pip "beautifulsoup4"
+python_pip "feedburner"
 
 file "/etc/apache2/sites-available/project" do
     action :create
