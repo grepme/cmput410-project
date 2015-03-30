@@ -32,9 +32,6 @@ def update_profile(request):
 
     # Profile object to save
     user = Profile.objects.get(guid=request.profile.guid)
-    
-    print "wee"
-    print user.github_name    
 
     # Iterate over all posted fields in profile update
     for key, value in request.POST.items():

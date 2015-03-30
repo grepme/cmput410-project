@@ -36,15 +36,3 @@ def new_comment(request, source=None):
     else:
         # Accept only POST, otherwise, redirect
         return redirect('/')
-
-
-@login_required
-def posts_comments(request):
-    # if request.method == 'GET':
-    """AJAX call that will grab all comments belonging to a post."""
-    # TODO: Add all filters
-    # c = Comment.objects.filter(Q(text="justAtest"))
-    c = Comment.objects.all()
-    print c[0]
-
-    return render(request, 'comments/post.html', {'comments': c})

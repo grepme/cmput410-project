@@ -151,22 +151,22 @@ function requestUser() {
 
     if(isFollow > -1) {
         // We clicked follow button
-        $.post( "/api/follow", {  
+        $.post( "/api/follow", JSON.stringify({  
    "query":"friendrequest",
    "author":{  
    "id":"{{profile.guid}}",
       "host":"http://127.0.0.1:8000/",
       "displayname":"{{user.profile.display_name}}",
       "url": "http://" + location.host + "/author/{{user.profile.display_name}}"},
-   "friend":{  
+   "follow":{  
       "id":$(this).attr('value'),
       "host":"http://" + location.host,
       "displayname": $(this).attr('data-displayname'),
       "url":"http://" + location.host + "/author/" + $(this).attr('value')
    }
-} , function( data ) {});
+}) , function( data ) {});
     } else {
-        $.post( "/api/friendrequest", {  
+        $.post( "/api/friendrequest", JSON.stringify({  
    "query":"friendrequest",
    "author":{  
    "id":"{{profile.guid}}",
@@ -179,7 +179,7 @@ function requestUser() {
       "displayname": $(this).attr('data-displayname'),
       "url":"http://" + location.host + "/author/" + $(this).attr('value')
    }
-} , function( data ) {});
+}) , function( data ) {});
     }
 }
         

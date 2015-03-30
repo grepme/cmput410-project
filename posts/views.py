@@ -3,11 +3,13 @@ from django.contrib.auth.decorators import login_required
 from django.http import HttpResponseNotAllowed
 from django.utils import timezone
 from posts.models import Post
+from api.models import Server
 from django.contrib.auth.models import User
 from django.db.models import Q
 from friends.models import Friend
 import feedparser
 from bs4 import BeautifulSoup
+import json
 
 # Create your views here
 
@@ -82,7 +84,18 @@ def all_posts(request):
     # https://docs.djangoproject.com/en/1.7/topics/db/queries/#complex-lookups-with-q-objects
     # Any posts that are private and owned, public, are on this server, or are friends, or friends of friends.
     # TODO: Friends of friends improvement. OH GOD MY EYES!
+    # TODO: FOAF not working
     # TODO: DAMMIT DJANGO! ALLOW MORE NESTED JOINS!
+    # p = Post.objects.filter(Q(visibility=Post.private, author=request.profile) |
+    # Q(visibility=Post.public) | Q(visibility=Post.server) |
+    #                         Q(visibility=Post.friend, author__accepter=request.profile) |
+    #                         Q(visibility=Post.friend, author__requester=request.profile) |
+    #                         Q(visibility=Post.FOAF, author__requester__requester=request.profile) |
+    #                         Q(visibility=Post.FOAF, author__requester__accepter=request.profile) |
+    #                         Q(visibility=Post.FOAF, author__accepter__requester=request.profile) |
+    #                         Q(visibility=Post.FOAF, author__accepter__accepter=request.profile)
+    #
+    # )
     p = Post.objects.filter(Q(visibility=Post.private, author=request.profile) |
                             Q(visibility=Post.public) | Q(visibility=Post.server) |
                             Q(visibility=Post.friend, author__accepter=request.profile) |
@@ -91,11 +104,15 @@ def all_posts(request):
                             Q(visibility=Post.FOAF, author__requester__accepter=request.profile) |
                             Q(visibility=Post.FOAF, author__accepter__requester=request.profile) |
                             Q(visibility=Post.FOAF, author__accepter__accepter=request.profile)
+
     )
 
-    # Nested query lookups aren't supported, so we need to make multiple queries :(
+    # Get all remote posts
+    for remote_server in Server.objects.all():
+        remote_posts = remote_server.get_posts()
 
-    return render(request, 'posts/all.html', {'posts': p})
+    # Nested query lookups aren't supported, so we need to make multiple queries :(
+    return render(request, 'posts/all.html', {'posts': p, 'remote': remote_posts})
 
 
 @login_required

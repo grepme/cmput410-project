@@ -19,7 +19,20 @@ If you are not using Vagrant, you'll also need to run this:
 
 ```bash
 pip install commonmark
+pip install pillow
 pip install django
+```
+
+# External Tests
+
+Runs using nosetests
+
+Required to have nose tests installed
+
+This runs our server against our own server (Testing the api)
+
+```bash
+nosetests tests
 ```
 
 # Vagrant Installation
