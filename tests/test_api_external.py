@@ -96,6 +96,7 @@ class ApiTestClass(unittest.TestCase):
 
         #  Start our server
         self.server_process = subprocess.Popen(shlex.split('python "{}" runserver --setting=social_network.test_settings'.format(path)))
+        time.sleep(2)
 
         #call_command("runserver",addr='0.0.0.0', port='8080', use_reloader=False)
         user_tuple = create_user("test")
@@ -146,7 +147,7 @@ class ApiTestClass(unittest.TestCase):
 
         posts = self.server.get_auth_author_posts(request)
 
-        self.assertEqual(len(posts),2)
+        self.assertEqual(len(posts["posts"]),2)
 
 '''
     def test_server_posts_id(self):

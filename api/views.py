@@ -190,7 +190,9 @@ def get_post_query(request):
                             Q(visibility=Post.FOAF, author__requester__requester=request.profile) |
                             Q(visibility=Post.FOAF, author__requester__accepter=request.profile) |
                             Q(visibility=Post.FOAF, author__accepter__requester=request.profile) |
-                            Q(visibility=Post.FOAF, author__accepter__accepter=request.profile))
+                            Q(visibility=Post.FOAF, author__accepter__accepter=request.profile)
+
+    )
 
 
 def model_list(model_query):
