@@ -1,3 +1,4 @@
+python_pip "pillow"
 python_pip "django"
 python_pip "commonmark"
 
