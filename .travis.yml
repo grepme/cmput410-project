@@ -12,7 +12,7 @@ install:
 # command to run before the tests, setup chef.
 before_script:
   - "python manage.py syncdb --noinput"
-  - "python loaddata dummy"
+  - "python manage.py loaddata dummy"
 # command to run tests, e.g. python setup.py test
 script:
   - "python manage.py test"
