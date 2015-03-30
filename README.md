@@ -19,6 +19,7 @@ If you are not using Vagrant, you'll also need to run this:
 
 ```bash
 pip install commonmark
+pip install pillow
 pip install django
 ```
 
