@@ -77,7 +77,7 @@ def dashboard(request):
     # TODO: Is the stream only their posts?
     posts = Post.objects.filter(author=request.profile)
 
-    # TODO: Time stamps need to be standardized and formated.
+    # TODO: Time stamps need to be standardized and formatted.
     # TODO: Limit them to 5?
     github_feed = {}
     if request.profile.github_name is not None:
