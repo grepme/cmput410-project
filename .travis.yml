@@ -5,9 +5,12 @@ python:
 install:
   - "sudo apt-get update"
   - "pip install django"
+  - "pip install commonmark"
   - "pip install pillow"
   - "curl -L https://www.opscode.com/chef/install.sh | sudo bash"
 # command to run before the tests, setup chef.
 before_script: sudo -E chef-solo -j chef_installation.json -c chef_config.rb
 # command to run tests, e.g. python setup.py test
-script:  nosetests tests
+script:
+  - "python manage.py test"
+  - "nosetests tests"
