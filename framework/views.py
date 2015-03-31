@@ -5,6 +5,7 @@ from django.contrib.auth.models import User
 from django.views.decorators.csrf import csrf_protect
 from posts.models import Post
 from user_profile.models import Profile
+import feedparser
 
 # Create your views here.
 
@@ -75,7 +76,13 @@ def dashboard(request):
     # Grab the user's stream (needs to be updated)
     # TODO: Is the stream only their posts?
     posts = Post.objects.filter(author=request.profile)
-    return render(request, 'framework/dashboard.html', {'posts': posts})
+
+    # TODO: Time stamps need to be standardized and formatted.
+    # TODO: Limit them to 5?
+    github_feed = {}
+    if request.profile.github_name is not None:
+        github_feed = feedparser.parse("https://github.com/{}.atom".format(request.profile.github_name))
+    return render(request, 'framework/dashboard.html', {'posts': posts, 'github_feed': github_feed})
 
 
 @login_required()

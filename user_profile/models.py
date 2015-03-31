@@ -20,13 +20,16 @@ class Profile(GUIDModel):
     last_updated = models.DateTimeField(null=True)
 
     # TODO don't use hardcoded host, should be of running instance
-    host = models.CharField(max_length=55)
+    host = models.CharField(max_length=55, null=True)
 
+    # TODO: Figure out if 55 characters is enough for a Github username
+    github_name = models.CharField(max_length=55)
 
     def as_dict(self):
         return {
             "id": self.guid,  # TODO implement host
             "host": "",
             "displayname": self.display_name,
-            "url": self.host + "/author/" + self.guid
+            "url": self.host + "/author/" + self.guid,
+            "github_name": self.github_name
         }

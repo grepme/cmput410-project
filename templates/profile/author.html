@@ -41,6 +41,36 @@
 
                             </div>
                             </div>
+                            
+                            <!---Github Information--->
+                            <div style="padding-top: 2em"/> 
+                            <div class="row">
+                            <div class="col-lg-12">
+                                <div class="input-group">
+                                    <span class="input-group-addon">Github Username</span>
+                                    <input type="text" class="form-control" placeholder="{{ profile.github_name }}"
+                                           disabled>
+                                    <span class="input-group-btn">
+                                    <button class="btn btn-default" onclick="editProfileField(this, 'github_name')">
+                                        Integrate Github
+                                    </button>
+                                    </span>
+                                    <span class="input-group-btn" style="display:none;">
+                                    <button class="btn btn-default"
+                                            onclick="confirmEditProfileField(this, 'github_name')">Done
+                                    </button>
+                                    </span>
+                                </div>
+                                <div class="progress" style="margin-top: 10px; display: none;">
+                                    <div class="progress-bar progress-bar-striped active" role="progressbar"
+                                         aria-valuenow="100" aria-valuemin="0" aria-valuemax="100"
+                                         style="width:  100%;">
+                                        <span class="sr-only">45% Complete</span>
+                                    </div>
+                                </div>
+
+                            </div>
+                            </div>
                         {% else %}
                             <p>Display Name: {{ profile.display_name }}</p>
                         {% endif %}

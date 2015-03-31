@@ -26,16 +26,19 @@ def user_profile(request):
 def update_profile(request):
     """This will update all posted fields"""
 
+
     # Allowed fields the user can update
-    allowed_field = ['display_name']
+    allowed_field = ['display_name', 'github_name']
 
     # Profile object to save
     user = Profile.objects.get(guid=request.profile.guid)
 
     # Iterate over all posted fields in profile update
     for key, value in request.POST.items():
+        print key + " // " + value
         if key in allowed_field:
             setattr(user, key, value)
     user.save()
+    print user.github_name
 
     return HttpResponse(json.dumps({'status': True}), content_type='application/json')
