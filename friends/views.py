@@ -68,4 +68,8 @@ def search_friends(request,name):
     search = Profile.objects.filter(Q(display_name__icontains=name) & ~Q(guid=request.profile.guid))
     return render(request, "friends/search.html",{"profiles":search})
 
+@login_required
+def search_all(request):
+    search = Profile.objects.filter(~Q(guid=request.profile.guid))
+    return render(request, "friends/search.html",{"profiles":search})
 

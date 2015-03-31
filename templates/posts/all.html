@@ -24,11 +24,13 @@
         <div style="float: right;">{{ post.author.display_name }} on {{ post.date }}</div>
 
         <br/>
+        <div style="text-align:left;">
         {% if  post.commonmark %}
             <span>{{ post.text|commonmark|safe }}</span>
         {% else %}
             <span>{{ post.text }}</span>
         {% endif %}
+        </div>
         <!-- Include all comments from post -->
         <!-- Add comment -->
         <div class="row col-md-10 new_comment" style="margin: 0; padding: 0; display: none;">
