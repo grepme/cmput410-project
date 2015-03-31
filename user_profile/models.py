@@ -8,6 +8,7 @@ import time
 
 # using the guid model
 from framework.models import GUIDModel
+from social_network.settings import CUSTOM_HOST_DEFAULT
 
 
 class Profile(GUIDModel):
@@ -20,7 +21,7 @@ class Profile(GUIDModel):
     last_updated = models.DateTimeField(null=True)
 
     # TODO don't use hardcoded host, should be of running instance
-    host = models.CharField(max_length=55, null=True)
+    host = models.CharField(max_length=55, null=True, default=CUSTOM_HOST_DEFAULT)
 
     # TODO: Figure out if 55 characters is enough for a Github username
     github_name = models.CharField(max_length=55)

@@ -117,3 +117,11 @@ FIXTURE_DIRS = (
 # Upload directory for media from MEDIA_URL tags
 MEDIA_ROOT = os.path.join(BASE_DIR, 'uploads')
 MEDIA_URL = '/uploads/'
+
+#
+# CUSTOM SETTINGS
+# These are application specific and not for Django but rather the underlining application
+# As such, they need to be prefixed with CUSTOM_ to prevent collision
+#
+
+CUSTOM_HOST_DEFAULT = "http://projecthub.ca/"
