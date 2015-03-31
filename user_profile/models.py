@@ -8,7 +8,9 @@ import time
 
 # using the guid model
 from framework.models import GUIDModel
-from social_network.settings import CUSTOM_HOST_DEFAULT
+from django.conf import settings
+
+CUSTOM_HOST_DEFAULT = settings.CUSTOM_HOST_DEFAULT
 
 
 class Profile(GUIDModel):

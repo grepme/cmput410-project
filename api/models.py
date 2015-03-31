@@ -13,6 +13,7 @@ from django.contrib.auth.models import User
 class Server(models.Model):
     # localhost:8000/api
     host = models.CharField(max_length=50, primary_key=True)
+    api_path = models.CharField(max_length=50,default="")
     user_header = models.CharField(max_length=40)
     auth_type = models.CharField(max_length=6)
     auth_user = models.CharField(max_length=50)
@@ -28,8 +29,11 @@ class Server(models.Model):
     friends_list = models.CharField(max_length=60, default="/friends/{friend_guid}")
     friend_request = models.CharField(max_length=60, default="/friendrequest")
 
+    def get_api_path(self):
+        return "http://{host}{api_path}".format(host=self.host,api_path=self.api_path)
+
     def get_auth_author_posts(self, user_request):
-        request = urllib2.Request("http://{host}{path}".format(host=self.host, path=self.author_posts))
+        request = urllib2.Request("{api_path}{path}".format(api_path=self.get_api_path(), path=self.author_posts))
         # Assume basic Auth
         base64string = base64.encodestring('%s:%s' % (self.auth_user, self.auth_password)).replace('\n', '')
         request.add_header("Authorization", "Basic %s" % base64string)
@@ -44,7 +48,7 @@ class Server(models.Model):
         return json.loads(result.read())
 
     def get_author_posts(self,user_request, author):
-        request = urllib2.Request("http://{host}{path}".format(host=self.host, path=self.author_id_posts).format(author_guid=author.guid))
+        request = urllib2.Request("{api_path}{path}".format(api_path=self.get_api_path(), path=self.author_id_posts).format(author_guid=author.guid))
         # Assume basic Auth
         base64string = base64.encodestring('%s:%s' % (self.auth_user, self.auth_password)).replace('\n', '')
         request.add_header("Authorization", "Basic %s" % base64string)
@@ -61,7 +65,7 @@ class Server(models.Model):
 
     def post_friend_request(self, requester, accepter):
 
-        request = urllib2.Request("http://{host}{path}".format(host=self.host, path=self.friend_request),
+        request = urllib2.Request("{api_path}{path}".format(api_path=self.get_api_path(), path=self.friend_request),
                                   json.dumps({"query": "friendrequest", "author": requester.as_dict(),
                                               "friend": accepter.as_dict()}))
         # Assume basic Auth
@@ -78,7 +82,7 @@ class Server(models.Model):
 
     def get_posts(self):
 
-        request = urllib2.Request("http://{host}{path}".format(host=self.host, path=self.posts))
+        request = urllib2.Request("{api_path}{path}".format(api_path=self.get_api_path(), path=self.posts))
         # Assume basic Auth
         base64string = base64.encodestring('%s:%s' % (self.auth_user, self.auth_password)).replace('\n', '')
         request.add_header("Authorization", "Basic %s" % base64string)
@@ -93,7 +97,7 @@ class Server(models.Model):
 
     def get_posts_id(self, post_guid):
 
-        request = urllib2.Request("http://{host}{path}".format(host=self.host, path=self.posts_id).format(post_guid=post_guid))
+        request = urllib2.Request("{api_path}{path}".format(api_path=self.get_api_path(), path=self.posts_id).format(post_guid=post_guid))
         # Assume basic Auth
         base64string = base64.encodestring('%s:%s' % (self.auth_user, self.auth_password)).replace('\n', '')
         request.add_header("Authorization", "Basic %s" % base64string)
@@ -106,7 +110,7 @@ class Server(models.Model):
 
     def post_posts_id(self, post_guid):
 
-        request = urllib2.Request("http://{host}{path}".format(host=self.host, path=self.posts_id_post).format(post_guid=post_guid))
+        request = urllib2.Request("{api_path}{path}".format(api_path=self.get_api_path(), path=self.posts_id_post).format(post_guid=post_guid))
         # Assume basic Auth
         base64string = base64.encodestring('%s:%s' % (self.auth_user, self.auth_password)).replace('\n', '')
         request.add_header("Authorization", "Basic %s" % base64string)
@@ -119,7 +123,7 @@ class Server(models.Model):
 
     def get_friends_id_id(self, friend_guid, friend_2_guid):
 
-        request = urllib2.Request("http://{host}{path}".format(host=self.host, path=self.friends_id_id).format(friend_guid=friend_guid,
+        request = urllib2.Request("{api_path}{path}".format(api_path=self.get_api_path(), path=self.friends_id_id).format(friend_guid=friend_guid,
                                                                                          friend_2_guid=friend_2_guid))
         # Assume basic Auth
         base64string = base64.encodestring('%s:%s' % (self.auth_user, self.auth_password)).replace('\n', '')
@@ -141,7 +145,7 @@ class Server(models.Model):
             "authors": friends_list
         }
 
-        path = "http://{host}{path}".format(host=self.host, path=self.friends_list).format(friend_guid=friend_guid)
+        path = urllib2.Request("{api_path}{path}".format(api_path=self.get_api_path(),path=self.friends_list).format(friend_guid=friend_guid))
         request = urllib2.Request(path, json.dumps(post_data))
         # Assume basic Auth
         base64string = base64.encodestring('%s:%s' % (self.auth_user, self.auth_password)).replace('\n', '')
