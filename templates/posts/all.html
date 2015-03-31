@@ -21,8 +21,9 @@
                 </input>
             </form>
         </div>
-        <div style="float: right;">{{ post.author.display_name }} on {{ post.date }}</div>
-
+        <div style="float: right;"><span class="link">
+          <a href="{{profile.host}}/profile/{{ post.author.display_name }}/">{{ post.author.display_name }}</a>
+        </span> on {{ post.date }}</div>
         <br/>
         <div style="text-align:left;">
         {% if  post.commonmark %}
