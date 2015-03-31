@@ -111,20 +111,7 @@ class ApiTestClass(unittest.TestCase):
 
         #  Start our server
         self.server_process = subprocess.Popen(shlex.split('python "{}" runserver --setting=social_network.test_settings'.format(path)))
-        time.sleep(4)
-
-        #call_command("runserver",addr='0.0.0.0', port='8080', use_reloader=False)
-        user_tuple = create_user("test")
-        self.test = user_tuple[0]
-        self.test_profile = user_tuple[1]
-
-        self.post = Post.objects.create(title='randomtitle', date=timezone.now(), text='sometext', image=None,
-                                 visibility=Post.public, commonmark=False, author=self.test_profile, origin="localhost", source="localhost")
-
-        self.post_2 = Post.objects.create(title='title', date=timezone.now(), text='text', image=None,
-                                 visibility=Post.private, commonmark=False, author=self.test_profile, origin="localhost", source="localhost")
-
-
+        time.sleep(2)
 
         # Setup our own server as a "server"
         self.server = Server.objects.create(host="127.0.0.1:8000",
@@ -134,6 +121,17 @@ class ApiTestClass(unittest.TestCase):
             auth_user="node",
             auth_password="api",
             realm="Realm")
+
+        #call_command("runserver",addr='0.0.0.0', port='8080', use_reloader=False)
+        user_tuple = create_user("test")
+        self.test = user_tuple[0]
+        self.test_profile = user_tuple[1]
+
+        self.post = Post.objects.create(title='randomtitle', date=timezone.now(), text='sometext', image=None,
+                                 visibility=Post.public, commonmark=False, author=self.test_profile, origin=self.server.host, source=self.server.host)
+
+        self.post_2 = Post.objects.create(title='title', date=timezone.now(), text='text', image=None,
+                                 visibility=Post.private, commonmark=False, author=self.test_profile, origin=self.server.host, source=self.server.host)
 
     @classmethod
     def tearDownClass(self):
