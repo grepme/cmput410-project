@@ -35,8 +35,6 @@ path = os.path.join(BASE_DIR, 'manage.py')
 
 visibilities = ["PUBLIC","FOAF","FRIENDS","PRIVATE","SERVERONLY"]
 
-host = "http://projecthub.ca/"
-
 def check_keys(self,keys,item):
     for key in keys:
         # Check if has key
@@ -55,7 +53,7 @@ def check_visibility(self,key,item):
 
 def check_url(self,item):
     check_keys(self,['url'],item)
-    self.assertTrue(host in item['url'],"{} not found in {}".format(self.server.host,item['url']))
+    self.assertTrue(self.server.host in item['url'],"{} not found in {}".format(self.server.host,item['url']))
     self.assertTrue(item['id'] in item['url'])
 
 def check_author(self,author,has_url=False):
@@ -69,8 +67,8 @@ def check_comment(self,comment):
     check_author(self,comment["author"])
 
 def check_origin_source(self,item):
-    self.assertTrue(self.server.host in item['origin'])
-    self.assertTrue(self.server.host in item['source'])
+    self.assertTrue(self.server.host in item['origin'],"{} not found in {}".format(self.server.host,item['origin']))
+    self.assertTrue(self.server.host in item['source'],"{} not found in {}".format(self.server.host,item['source']))
 
 
 
@@ -129,7 +127,8 @@ class ApiTestClass(unittest.TestCase):
 
 
         # Setup our own server as a "server"
-        self.server = Server.objects.create(host="127.0.0.1:8000/api",
+        self.server = Server.objects.create(host="127.0.0.1:8000",
+            api_path="/api",
             user_header="User",
             auth_type="Basic",
             auth_user="node",
