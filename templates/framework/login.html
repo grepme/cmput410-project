@@ -52,10 +52,13 @@
                        required>
 
                 <label for="signupPassword" class="sr-only">Password</label>
-                <input type="password" id="signupPassword" name="signupPassword" class="form-control" placeholder="Password"
-                       required>
+                <input type="password" id="signupPassword" name="signupPassword" class="form-control"
+                       placeholder="Password" style="margin-bottom: -1px;" required>
+                <label for="signupDuplicate" class="sr-only">Re-enter Password</label>
+                <input type="password" id="signupDuplicate" name="signupDuplicate" class="form-control"
+                       placeholder="Re-enter Password" required>
 
-                <button class="btn btn-lg btn-primary btn-block" type="submit">Sign Up</button>
+                <button id="signupSubmit" class="btn btn-lg btn-primary btn-block" type="submit">Sign Up</button>
 
                 <div style="padding-top:15px; font-size:85%" >
                     Have an account?
@@ -63,7 +66,30 @@
                         Sign In Here
                     </a>
                 </div>
+
             </form>
+            <script>
+            jQuery(function(){
+                $("#signupPassword").keyup(function(){
+                    checkPasswords();
+                });
+                $("#signupDuplicate").keyup(function(){
+                    checkPasswords();
+                });
+
+                function checkPasswords(){
+                    $(".error").hide();
+                    var signupPassword = $("#signupPassword").val();
+                    var signupDuplicate = $("#signupDuplicate").val();
+                    if (signupPassword != signupDuplicate ) {
+                        $("#signupDuplicate").after('<span class="error">Passwords do not match.</span>');
+                        $("#signupSubmit").prop('disabled', true);
+                    }else{
+                        $("#signupSubmit").prop('disabled', false);
+                    }
+                }
+            });
+            </script>
          </div>
     </div>
 
