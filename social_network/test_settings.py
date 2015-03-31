@@ -61,6 +61,8 @@ ROOT_URLCONF = 'social_network.urls'
 
 WSGI_APPLICATION = 'social_network.wsgi.application'
 
+CUSTOM_HOST_DEFAULT="http://127.0.0.1:8000/"
+
 
 # Database
 # https://docs.djangoproject.com/en/1.7/ref/settings/#databases

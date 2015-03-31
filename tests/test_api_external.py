@@ -17,6 +17,7 @@ from django.core.wsgi import get_wsgi_application
 application = get_wsgi_application()
 from api.models import Server
 from django.contrib.auth.models import User
+from django.conf import settings
 from user_profile.models import Profile
 from posts.models import Post
 from django.utils import timezone
@@ -34,6 +35,8 @@ path = os.path.join(BASE_DIR, 'manage.py')
 
 visibilities = ["PUBLIC","FOAF","FRIENDS","PRIVATE","SERVERONLY"]
 
+host = "http://projecthub.ca/"
+
 def check_keys(self,keys,item):
     for key in keys:
         # Check if has key
@@ -50,15 +53,25 @@ def check_visibility(self,key,item):
     if key == "visibility":
         self.assertEqual(item[key].upper() in visibilities,True,"Visibility is not valid")
 
-def check_author(self,author,check_url=False):
+def check_url(self,item):
+    check_keys(self,['url'],item)
+    self.assertTrue(host in item['url'],"{} not found in {}".format(self.server.host,item['url']))
+    self.assertTrue(item['id'] in item['url'])
+
+def check_author(self,author,has_url=False):
     check_keys(self,['id','host','displayname'],author)
     # If we want to check for url
-    if check_url:
-        check_keys(self,['url'],author)
+    if has_url:
+       check_url(self,author)
 
 def check_comment(self,comment):
     check_keys(self,['author','comment','pubDate','guid'],comment)
     check_author(self,comment["author"])
+
+def check_origin_source(self,item):
+    self.assertTrue(self.server.host in item['origin'])
+    self.assertTrue(self.server.host in item['source'])
+
 
 
 def check_post(self,post):
@@ -69,6 +82,8 @@ def check_post(self,post):
     # Check if author is valid
     check_author(self,post["author"],True)
 
+    check_origin_source(self,post)
+
     for comment in post["comments"]:
         check_comment(self,comment)
 
@@ -76,7 +91,8 @@ def check_friends(self,query):
     check_keys(self,['query','author','friends'],query)
 
 def check_profile(self,profile):
-    check_keys(self,['id','host','displayname','url','friends'],profile)
+    check_author(self,profile,True)
+    check_keys(self,['friends'],profile)
     for friend in profile["friends"]:
         check_author(self,friend,True)
 
@@ -89,6 +105,7 @@ class ApiTestClass(unittest.TestCase):
 
     @classmethod
     def setUpClass(self):
+        subprocess.Popen(shlex.split('rm "{}"'.format(settings.DATABASES["default"]["NAME"])))
         call_command('makemigrations', interactive=False)
         call_command('migrate', interactive=False)
         call_command('syncdb', interactive=False)
@@ -96,7 +113,7 @@ class ApiTestClass(unittest.TestCase):
 
         #  Start our server
         self.server_process = subprocess.Popen(shlex.split('python "{}" runserver --setting=social_network.test_settings'.format(path)))
-        time.sleep(2)
+        time.sleep(4)
 
         #call_command("runserver",addr='0.0.0.0', port='8080', use_reloader=False)
         user_tuple = create_user("test")
