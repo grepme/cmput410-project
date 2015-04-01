@@ -47,8 +47,6 @@ def following_friends(request):
 
     return render(request, "friends/accepted.html", {'profiles': profiles, "user":request.user,"profile":request.profile})
 
-
-
 @login_required
 def incoming_friends(request):
     # get current friends
@@ -68,4 +66,24 @@ def search_friends(request,name):
     search = Profile.objects.filter(Q(display_name__icontains=name) & ~Q(guid=request.profile.guid))
     return render(request, "friends/search.html",{"profiles":search})
 
+@login_required
+def remove_friend(request, display_name):
+    # TODO: Make delete?
+    # remove indicated friend
+    friend_profile = Profile.objects.filter(display_name=display_name)
+    old_friend = Friend.objects.filter(Q(requester=request.profile, accepter=friend_profile) |
+                                       Q(accepter=request.profile, requester=friend_profile)).first()
 
+    if old_friend is not None:
+        old_friend.delete()
+    # else:
+    # TODO: Return friend not found?
+    old_follow = Follow.objects.filter(Q(following=request.profile, follower=friend_profile) |
+                                       Q(follower=request.profile, following=friend_profile)).first()
+    if old_follow is not None:
+        old_follow.delete()
+    # else:
+        # TODO: return follow not found?
+    #TODO: go back to the actual /friends (not /friends/remove/display_name)
+    return friends(request)
+    # return render(request, "friends/index.html")

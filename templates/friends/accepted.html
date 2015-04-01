@@ -7,6 +7,12 @@
         <span class="search-user-displayname">
             <a href="{{profile.profile.host}}/profile/{{profile.display_name}}">{{profile.display_name}}</a>
         </span>
-          </div>
+    </div>
+    <div id="remove" class="col-lg-9 col-md-9 col-sm-9">
+        <!--TODO: Make this match the expected UI look and feel-->
+        <span class="link">
+            <a href="{{request.profile.host}}/friends/remove/{{profile.display_name}}">Remove</a>
+        </span>
+    </div>
 </div>
 {% endfor %}
