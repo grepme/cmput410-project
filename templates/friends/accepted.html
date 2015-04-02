@@ -1,5 +1,5 @@
 {% for profile in profiles %}
-<div id="guid_{{profile.guid}}" class="search-user col-lg-12 col-md-12 col-sm-12">
+<div id="div_{{profile.guid}}" class="search-user col-lg-12 col-md-12 col-sm-12">
     <div class="col-lg-3 col-md-3 col-sm-3">
         <a href="{{profile.host}}/profile/{{profile.display_name}}"><img src="http://placehold.it/100x100" alt="" class="img-thumbnail"></a>
     </div>
@@ -8,10 +8,8 @@
              <a href="{{profile.profile.host}}/profile/{{profile.display_name}}">{{profile.display_name}}</a>
          </span>
     </div>
-    <div id="remove" class="col-lg-9 col-md-9 col-sm-9">
-        <!--TODO: Make this match the expected UI look and feel-->
-
-            <button id="removebtn" type="button" class="btn btn-primary friend-button" friend-guid="{{profile.guid}}"><i class="glyphicon glyphicon-user"></i>&nbsp;Remove</button>
+    <div class="col-lg-9 col-md-9 col-sm-9">
+            <button id="btn_{{profile.guid}}" type="button" class="btn btn-primary friend-button" friend-guid="{{profile.guid}}"><i class="glyphicon glyphicon-user"></i>&nbsp;Remove</button>
     </div>
 </div>
 {% endfor %}
@@ -19,15 +17,14 @@
 <script>
 $(function() {
 
-    $("#removebtn").click(function() {
+    $(".btn.btn-primary.friend-button").click(function() {
         friendGuid = $(this).attr("friend-guid");
 
         $.post( "delete/"+friendGuid, JSON.stringify({}),
             // callback
             function( data ) {
                 if(data == "200"){
-                    alert(friendGuid)
-                    $("guid_"+friendGuid).hide();
+                    $("#div_"+friendGuid).hide();
                 }
             });
     });
