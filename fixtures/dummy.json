@@ -33,6 +33,7 @@
       "auth_type": "Basic",
       "auth_user": "user",
       "auth_password": "pass",
+      "api_path": "",
       "realm": "hi",
       "posts": "/main/getposts/"
     },
