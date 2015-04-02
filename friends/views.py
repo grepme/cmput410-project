@@ -1,3 +1,4 @@
+from django.http import HttpResponse
 from django.shortcuts import render
 from django.contrib.auth.decorators import login_required
 
@@ -67,23 +68,22 @@ def search_friends(request,name):
     return render(request, "friends/search.html",{"profiles":search})
 
 @login_required
-def remove_friend(request, display_name):
-    # TODO: Make delete?
-    # remove indicated friend
-    friend_profile = Profile.objects.filter(display_name=display_name)
+def delete(request, friend_guid):
+    nothing_found = True
+    friend_profile = Profile.objects.filter(guid=friend_guid).first()
     old_friend = Friend.objects.filter(Q(requester=request.profile, accepter=friend_profile) |
                                        Q(accepter=request.profile, requester=friend_profile)).first()
-
     if old_friend is not None:
         old_friend.delete()
-    # else:
-    # TODO: Return friend not found?
+        nothing_found = False
+
     old_follow = Follow.objects.filter(Q(following=request.profile, follower=friend_profile) |
                                        Q(follower=request.profile, following=friend_profile)).first()
     if old_follow is not None:
         old_follow.delete()
-    # else:
-        # TODO: return follow not found?
-    #TODO: go back to the actual /friends (not /friends/remove/display_name)
-    return friends(request)
-    # return render(request, "friends/index.html")
+        nothing_found=False
+
+    if(nothing_found):
+        return HttpResponse(404)
+
+    return HttpResponse(200)

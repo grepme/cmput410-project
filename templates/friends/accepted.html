@@ -1,18 +1,35 @@
 {% for profile in profiles %}
-<div class="search-user col-lg-12 col-md-12 col-sm-12">
+<div id="guid_{{profile.guid}}" class="search-user col-lg-12 col-md-12 col-sm-12">
     <div class="col-lg-3 col-md-3 col-sm-3">
         <a href="{{profile.host}}/profile/{{profile.display_name}}"><img src="http://placehold.it/100x100" alt="" class="img-thumbnail"></a>
     </div>
     <div class="col-lg-9 col-md-9 col-sm-9">
         <span class="search-user-displayname">
-            <a href="{{profile.profile.host}}/profile/{{profile.display_name}}">{{profile.display_name}}</a>
-        </span>
+             <a href="{{profile.profile.host}}/profile/{{profile.display_name}}">{{profile.display_name}}</a>
+         </span>
     </div>
     <div id="remove" class="col-lg-9 col-md-9 col-sm-9">
         <!--TODO: Make this match the expected UI look and feel-->
-        <span class="link">
-            <a href="{{request.profile.host}}/friends/remove/{{profile.display_name}}">Remove</a>
-        </span>
+
+            <button id="removebtn" type="button" class="btn btn-primary friend-button" friend-guid="{{profile.guid}}"><i class="glyphicon glyphicon-user"></i>&nbsp;Remove</button>
     </div>
 </div>
 {% endfor %}
+
+<script>
+$(function() {
+
+    $("#removebtn").click(function() {
+        friendGuid = $(this).attr("friend-guid");
+
+        $.post( "delete/"+friendGuid, JSON.stringify({}),
+            // callback
+            function( data ) {
+                if(data == "200"){
+                    alert(friendGuid)
+                    $("guid_"+friendGuid).hide();
+                }
+            });
+    });
+});
+</script>
