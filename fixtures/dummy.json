@@ -22,10 +22,11 @@
       "author": ["admin"],
       "display_name": "Admin",
       "github_name": "grepme",
-      "host": "projecthub.ca"
+      "host": "projecthub.ca",
+      "guid": "7a1c7226-d1e4-11e4-aa4c-b8f6b116b2b7"
     },
     "model": "user_profile.profile",
-    "pk": "7a1c7226-d1e4-11e4-aa4c-b8f6b116b2b7"
+    "pk": 1
   },
   {
     "fields": {
