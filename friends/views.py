@@ -1,3 +1,4 @@
+from django.http import HttpResponse
 from django.shortcuts import render
 from django.contrib.auth.decorators import login_required
 
@@ -47,8 +48,6 @@ def following_friends(request):
 
     return render(request, "friends/accepted.html", {'profiles': profiles, "user":request.user,"profile":request.profile})
 
-
-
 @login_required
 def incoming_friends(request):
     # get current friends
@@ -68,4 +67,23 @@ def search_friends(request,name):
     search = Profile.objects.filter(Q(display_name__icontains=name) & ~Q(guid=request.profile.guid))
     return render(request, "friends/search.html",{"profiles":search})
 
+@login_required
+def delete(request, friend_guid):
+    nothing_found = True
+    friend_profile = Profile.objects.filter(guid=friend_guid).first()
+    old_friend = Friend.objects.filter(Q(requester=request.profile, accepter=friend_profile) |
+                                       Q(accepter=request.profile, requester=friend_profile)).first()
+    if old_friend is not None:
+        old_friend.delete()
+        nothing_found = False
 
+    old_follow = Follow.objects.filter(Q(following=request.profile, follower=friend_profile) |
+                                       Q(follower=request.profile, following=friend_profile)).first()
+    if old_follow is not None:
+        old_follow.delete()
+        nothing_found=False
+
+    if(nothing_found):
+        return HttpResponse(404)
+
+    return HttpResponse(200)
