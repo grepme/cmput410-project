@@ -82,7 +82,7 @@ def dashboard(request):
     github_feed = {}
     if request.profile.github_name is not None:
         github_feed = feedparser.parse("https://github.com/{}.atom".format(request.profile.github_name))
-    return render(request, 'framework/dashboard.html', {'posts': posts, 'github_feed': github_feed})
+    return render(request, 'framework/dashboard.html', {'posts': posts, 'github_feed': github_feed, 'profile': request.profile})
 
 
 @login_required()
