@@ -38,5 +38,18 @@
     },
     "model": "api.server",
     "pk": 1
+  },
+  {
+    "fields": {
+      "host": "thought-bubble.herokuapp.com",
+      "auth_type": "Basic",
+      "auth_user": "user",
+      "auth_password": "pass",
+      "realm": "hi",
+      "api_path": "/main/",
+      "posts": "/getposts/"
+    },
+    "model": "api.server",
+    "pk": 2
   }
 ]

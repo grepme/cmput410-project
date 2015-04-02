@@ -383,7 +383,7 @@ def friend_request(request, page="0"):
             found.accepted = True
             try:
                 Follow.objects.create(follower=author, following=friend)
-            except Follow.IntegrityError as e:
+            except IntegrityError as e:
                 pass
             found.save()
 
