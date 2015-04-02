@@ -248,7 +248,6 @@ def get_foaf_servers(profile, author, friends):
         return True
 
 
-# @login_required
 @auth_as_user()
 @require_http_methods(["GET"])
 @require_http_accept(['application/json'])
@@ -286,7 +285,6 @@ def get_posts(request, author_id=None, page="0"):
     return JsonResponse(data)
 
 
-# @login_required
 @csrf_exempt
 @require_http_methods(["GET", "POST"])
 @require_http_accept(['application/json'])
@@ -345,12 +343,10 @@ def get_post(request, post_id=None, page="0"):
     return JsonResponse({"posts": return_data})
 
 
-#@login_required
 @csrf_exempt
 @require_http_methods(["POST"])
 @require_http_accept(['application/json'])
 @require_http_content_type(['application/json'])
-#@http_error_code(501,"Not Implemented")
 def friend_request(request, page="0"):
     # get data from request
     data = None
@@ -404,6 +400,18 @@ def friend_request(request, page="0"):
 
         return HttpResponseBadRequest()
 
+@csrf_exempt
+@require_http_methods(["GET"])
+@require_http_accept(['application/json'])
+@require_http_content_type(['application/json'])
+def get_authors(request):
+    # get all accepted friends
+    profiles = model_list(Profile.objects.all())
+    # for profile in profiles:
+        # delete github_username?
+
+    return JsonResponse({"authors": profiles})
+
 
 #TODO PUT THIS IN COMMON PLACE THIS IS FROM
 # THE FRIENDS APP
@@ -418,7 +426,6 @@ def get_other_profiles(profile, query):
     return profiles
 
 
-#@login_required
 @csrf_exempt
 @require_http_methods(["POST"])
 @require_http_accept(['application/json'])
@@ -487,7 +494,6 @@ def follow_user(request):
         print e.message
 
 
-#@login_required
 @require_http_methods(["GET"])
 @require_http_accept(['application/json'])
 @require_http_content_type(['application/json'])
