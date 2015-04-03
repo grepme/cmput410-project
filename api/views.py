@@ -414,36 +414,7 @@ def get_friends(request, author_id=None, page="0"):
 @require_http_accept(['application/json'])
 @require_http_content_type(['application/json'])
 def follow_user(request):
-    try:
-        data = None
-        try:
-            data = json.loads(request.body)
-        except ValueError as e:
-            return HttpResponseBadRequest()
-
-        following_guid = data["follow"]["id"]
-
-        # Valid Profile?
-        following = None
-        try:
-            following = Profile.objects.get(guid=following_guid)
-        except Profile.DoesNotExist as e:
-            res = HttpResponse("Profile with id {} does not exist".format(following_guid))
-            res.status_code = 404
-            return res
-
-        # Create follow if does not exist
-        try:
-            Follow.objects.get(follower=request.profile, following=following)
-        except Follow.DoesNotExist as e:
-            Follow.objects.create(follower=request.profile, following=following)
-
-        # Return 201
-        res = HttpResponse()
-        res.status_code = 201
-        return res
-    except Exception as e:
-        print e.message
+    return(friends.views.follow_user(request))
 
 
 @require_http_methods(["GET"])
