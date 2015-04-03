@@ -59,6 +59,35 @@
 
 <div class="panel panel-default">
   <div class="panel-heading">
+    <h3 class="panel-title">/api/authors</h3>
+  </div>
+  <div class="panel-body">
+      <h4>Method: GET</h4>
+      Retrive all our author profiles.
+      <div class="hightlight">
+          <h5>Expected Input</h5>
+<pre><code>No input required</code></pre>
+      </div>
+      <div class="hightlight">
+          <h5>Expected Output</h5>
+<pre><code>{
+   "authors":[
+      {
+         "url":"projecthub.ca/author/7a1c7226-d1e4-11e4-aa4c-b8f6b116b2b7",
+         "host":"projecthub.ca",
+         "displayname":"Admin",
+         "id":"7a1c7226-d1e4-11e4-aa4c-b8f6b116b2b7",
+         "github_name":"grepme"
+      }
+   ]
+}</code></pre>
+      </div>
+</div>
+
+</div>
+
+<div class="panel panel-default">
+  <div class="panel-heading">
     <h3 class="panel-title">/api/author/posts</h3>
   </div>
   <div class="panel-body">
@@ -70,28 +99,28 @@
       </div>
       <div class="hightlight">
           <h5>Expected Output</h5>
-<pre><code>{  
-   "posts":[  
-      {  
+<pre><code>{
+   "posts":[
+      {
          "title":"A post title about a post about web dev",
          "source":"http://lastplaceigotthisfrom.com/post/yyyyy",
          "origin":"http://whereitcamefrom.com/post/zzzzz",
          "description":"This post discusses stuff -- brief",
          "content-type":"text/html",
          "content":"Content of the post",
-         "author":{  
+         "author":{
             "id":"9de17f29c12e8f97bcbbd34cc908f1baba40658e",
             "host":"http://127.0.0.1:5454/",
             "displayname":"Lara",
             "url":"http://127.0.0.1:5454/author/9de17f29c12e8f97bcbbd34cc908f1baba40658e"
          },
-         "categories":[  
+         "categories":[
             "web",
             "tutorial"
          ],
-         "comments":[  
-            {  
-               "author":{  
+         "comments":[
+            {
+               "author":{
                   "id":"8d919f29c12e8f97bcbbd34cc908f19ab9496989",
                   "host":"http://127.0.0.1:5454/",
                   "displayname":"Greg"
@@ -124,28 +153,28 @@
       </div>
       <div class="hightlight">
           <h5>Expected Output</h5>
-<pre><code>{  
-   "posts":[  
-      {  
+<pre><code>{
+   "posts":[
+      {
          "title":"A post title about a post about web dev",
          "source":"http://lastplaceigotthisfrom.com/post/yyyyy",
          "origin":"http://whereitcamefrom.com/post/zzzzz",
          "description":"This post discusses stuff -- brief",
          "content-type":"text/html",
          "content":"Content of the post",
-         "author":{  
+         "author":{
             "id":"9de17f29c12e8f97bcbbd34cc908f1baba40658e",
             "host":"http://127.0.0.1:5454/",
             "displayname":"Lara",
             "url":"http://127.0.0.1:5454/author/9de17f29c12e8f97bcbbd34cc908f1baba40658e"
          },
-         "categories":[  
+         "categories":[
             "web",
             "tutorial"
          ],
-         "comments":[  
-            {  
-               "author":{  
+         "comments":[
+            {
+               "author":{
                   "id":"8d919f29c12e8f97bcbbd34cc908f19ab9496989",
                   "host":"http://127.0.0.1:5454/",
                   "displayname":"Greg"
@@ -170,35 +199,35 @@
   </div>
   <div class="panel-body">
       <h4>Method: GET</h4>
-      Retrieves all public posts. 
+      Retrieves all public posts.
       <div class="hightlight">
           <h5>Expected Input</h5>
 <pre><code>No input required</code></pre>
       </div>
       <div class="hightlight">
           <h5>Expected Output</h5>
-<pre><code>{  
-   "posts":[  
-      {  
+<pre><code>{
+   "posts":[
+      {
          "title":"A post title about a post about web dev",
          "source":"http://lastplaceigotthisfrom.com/post/yyyyy",
          "origin":"http://whereitcamefrom.com/post/zzzzz",
          "description":"This post discusses stuff -- brief",
          "content-type":"text/html",
          "content":"Content of the post",
-         "author":{  
+         "author":{
             "id":"9de17f29c12e8f97bcbbd34cc908f1baba40658e",
             "host":"http://127.0.0.1:5454/",
             "displayname":"Lara",
             "url":"http://127.0.0.1:5454/author/9de17f29c12e8f97bcbbd34cc908f1baba40658e"
          },
-         "categories":[  
+         "categories":[
             "web",
             "tutorial"
          ],
-         "comments":[  
-            {  
-               "author":{  
+         "comments":[
+            {
+               "author":{
                   "id":"8d919f29c12e8f97bcbbd34cc908f19ab9496989",
                   "host":"http://127.0.0.1:5454/",
                   "displayname":"Greg"
@@ -232,28 +261,28 @@
       </div>
       <div class="hightlight">
           <h5>Expected Output</h5>
-<pre><code>{  
-   "posts":[  
-      {  
+<pre><code>{
+   "posts":[
+      {
          "title":"A post title about a post about web dev",
          "source":"http://lastplaceigotthisfrom.com/post/yyyyy",
          "origin":"http://whereitcamefrom.com/post/zzzzz",
          "description":"This post discusses stuff -- brief",
          "content-type":"text/html",
          "content":"Content of the post",
-         "author":{  
+         "author":{
             "id":"9de17f29c12e8f97bcbbd34cc908f1baba40658e",
             "host":"http://127.0.0.1:5454/",
             "displayname":"Lara",
             "url":"http://127.0.0.1:5454/author/9de17f29c12e8f97bcbbd34cc908f1baba40658e"
          },
-         "categories":[  
+         "categories":[
             "web",
             "tutorial"
          ],
-         "comments":[  
-            {  
-               "author":{  
+         "comments":[
+            {
+               "author":{
                   "id":"8d919f29c12e8f97bcbbd34cc908f19ab9496989",
                   "host":"http://127.0.0.1:5454/",
                   "displayname":"Greg"
@@ -280,16 +309,16 @@
       <span class="label label-danger">Not Implemented</span>
       <h4>Method: GET</h4>
       Returns with :friend_guid is friends with :friend2_guid.
-      Replace :friend_guid and :friend2_guid with the guid of the authors you want to see if they are friends. 
+      Replace :friend_guid and :friend2_guid with the guid of the authors you want to see if they are friends.
       <div class="hightlight">
           <h5>Expected Input</h5>
 <pre><code>No input required</code></pre>
       </div>
       <div class="hightlight">
           <h5>Expected Output</h5>
-<pre><code>{  
+<pre><code>{
    "query":"friends",
-   "authors":[  
+   "authors":[
       "9de17f29c12e8f97bcbbd34cc908f1baba40658e",
       "8d919f29c12e8f97bcbbd34cc908f19ab9496989"
    ],
@@ -307,13 +336,13 @@
       <span class="label label-danger">Not Implemented</span>
       <h4>Method: POST</h4>
       Compares a list of authors guids with the :friend_guid and determines if they are friends.
-      Replace :friend_guid with author guid for query. 
+      Replace :friend_guid with author guid for query.
       <div class="hightlight">
           <h5>Expected Input</h5>
-<pre><code>{  
+<pre><code>{
    "query":"friends",
    "author":"9de17f29c12e8f97bcbbd34cc908f1baba40658e",
-   "authors":[  
+   "authors":[
       "7deee0684811f22b384ccb5991b2ca7e78abacde",
       "31cc28a8fbc05787d0470cdbd62ea0474764b0ae",
       "1af17e947f387a2d8c09a807271bd094e8eff077",
@@ -338,10 +367,10 @@
       </div>
       <div class="hightlight">
           <h5>Expected Output</h5>
-<pre><code>{  
+<pre><code>{
    "query":"friends",
    "author":"9de17f29c12e8f97bcbbd34cc908f1baba40658e",
-   "friends":[  
+   "friends":[
       "7deee0684811f22b384ccb5991b2ca7e78abacde",
       "11c3783f15f7ade03430303573098f0d4d20797b"
    ]
@@ -360,14 +389,14 @@
       Sends a friend request from the author to the friend specified.
       <div class="hightlight">
           <h5>Expected Input</h5>
-<pre><code>{  
+<pre><code>{
    "query":"friendrequest",
-   "author":{  
+   "author":{
       "id":"8d919f29c12e8f97bcbbd34cc908f19ab9496989",
       "host":"http://127.0.0.1:5454/",
       "displayname":"Greg"
    },
-   "friend":{  
+   "friend":{
       "id":"9de17f29c12e8f97bcbbd34cc908f1baba40658e",
       "host":"http://127.0.0.1:5454/",
       "displayname":"Lara",
