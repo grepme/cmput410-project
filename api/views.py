@@ -15,6 +15,7 @@ from comments.models import Comment
 from django.db import IntegrityError
 from user_profile.models import Profile
 from friends.models import Friend, Follow
+import friends.views
 from posts.models import Post, PostEncoder
 from tags.models import Tag
 from django.contrib.auth.models import User
@@ -348,57 +349,8 @@ def get_post(request, post_id=None, page="0"):
 @require_http_accept(['application/json'])
 @require_http_content_type(['application/json'])
 def friend_request(request, page="0"):
-    # get data from request
-    data = None
+    return(friends.views.friend_request(request, page))
 
-    # print request.body
-    try:
-        data = json.loads(request.body)
-    except ValueError as e:
-        return HttpResponseBadRequest()
-
-    keys = ['id', 'host', 'url', 'displayname']
-
-    if has_keys(keys, data, 'author') and has_keys(keys, data, 'friend'):
-        author = Profile.objects.filter(guid=data["author"]["id"]).first()
-        friend = Profile.objects.filter(guid=data["friend"]["id"]).first()
-
-        try:
-            if author == None:
-                author = Profile.objects.create(is_external=True, display_name=data["author"]["displayname"],
-                                                host=data["author"]["host"])
-
-            if friend == None:
-                friend = Profile.objects.create(is_external=True, display_name=data["friend"]["displayname"],
-                                                host=data["friend"]["host"])
-
-            if author == friend:
-                return HttpResponseBadRequest()
-        except Exception as e:
-            print e
-
-        found = Friend.objects.filter(Q(requester=friend, accepter=author)).first()
-
-        if found is not None:
-            found.accepted = True
-            try:
-                Follow.objects.create(follower=author, following=friend)
-            except IntegrityError as e:
-                pass
-            found.save()
-
-            return HttpResponse()
-
-        else:
-            Friend.objects.create(requester=author, accepter=friend)
-            try:
-                Follow.objects.create(follower=author, following=friend)
-            except IntegrityError as e:
-                pass
-
-            return HttpResponse(200)
-
-        return HttpResponseBadRequest()
 
 @csrf_exempt
 @require_http_methods(["GET"])

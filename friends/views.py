@@ -1,10 +1,13 @@
-from django.http import HttpResponse
+from django.http import HttpResponse, HttpResponseBadRequest
 from django.shortcuts import render
 from django.contrib.auth.decorators import login_required
 
 from friends.models import Friend, Follow
 from django.db.models import Q
+from django.db import IntegrityError
 from user_profile.models import Profile
+
+import json
 
 def get_other_profiles(profile,query):
     profiles = list()
@@ -90,3 +93,61 @@ def delete(request, friend_guid):
         return HttpResponse(404)
 
     return HttpResponse(200)
+
+def has_keys(keys, dictionary, main_key):
+    if all(key in dictionary[main_key] for key in keys):
+        return True
+    return False
+
+def friend_request(request, page="0"):
+    # get data from request
+    data = None
+
+    # print request.body
+    try:
+        data = json.loads(request.body)
+    except ValueError as e:
+        return HttpResponseBadRequest()
+
+    keys = ['id', 'host', 'url', 'displayname']
+
+    if has_keys(keys, data, 'author') and has_keys(keys, data, 'friend'):
+        author = Profile.objects.filter(guid=data["author"]["id"]).first()
+        friend = Profile.objects.filter(guid=data["friend"]["id"]).first()
+
+        try:
+            if author == None:
+                author = Profile.objects.create(is_external=True, display_name=data["author"]["displayname"],
+                                                host=data["author"]["host"])
+
+            if friend == None:
+                friend = Profile.objects.create(is_external=True, display_name=data["friend"]["displayname"],
+                                                host=data["friend"]["host"])
+
+            if author == friend:
+                return HttpResponseBadRequest()
+        except Exception as e:
+            print e
+
+        found = Friend.objects.filter(Q(requester=friend, accepter=author)).first()
+
+        if found is not None:
+            found.accepted = True
+            try:
+                Follow.objects.create(follower=author, following=friend)
+            except IntegrityError as e:
+                pass
+            found.save()
+
+            return HttpResponse()
+
+        else:
+            Friend.objects.create(requester=author, accepter=friend)
+            try:
+                Follow.objects.create(follower=author, following=friend)
+            except IntegrityError as e:
+                pass
+
+            return HttpResponse(200)
+
+        return HttpResponseBadRequest()
