@@ -384,6 +384,7 @@ def get_other_profiles(profile, query):
 @require_http_content_type(['application/json'])
 #@http_error_code(501,"Not Implemented")
 def get_friends(request, author_id=None, page="0"):
+    print("MADE IT")
     data = None
     try:
         data = json.loads(request.body)
