@@ -422,23 +422,23 @@ class ApiViewTests(TestCase):
         self.assertIsNone(found)
 
 
-    # def test_empty_displayName_friendrequest(self):
-    #     ''' invalid author name (is GUID) '''
+    def test_empty_displayName_friendrequest(self):
+        ''' invalid author name (is GUID) '''
 
-    #     newUser = User.objects.create_user(
-    #         username='newUser', email='13@email.com', password='13')
-    #     newProfile = Profile.objects.create(author=newUser, display_name="")
-    #     secondUser = User.objects.create_user(
-    #         username='15', email='15@email.com', password='15')
-    #     secondProfile = Profile.objects.create(author=secondUser, display_name="15")
+        newUser = User.objects.create_user(
+            username='newUser', email='13@email.com', password='13')
+        newProfile = Profile.objects.create(author=newUser, display_name="")
+        secondUser = User.objects.create_user(
+            username='15', email='15@email.com', password='15')
+        secondProfile = Profile.objects.create(author=secondUser, display_name="15")
 
-    #     request_dict = json.dumps({"author":newProfile.as_dict(), "friend":secondProfile.as_dict()})
-    #     request = self.factory.post('/api/friendrequest/', data=request_dict, content_type='application/json')
+        request_dict = json.dumps({"author":newProfile.as_dict(), "friend":secondProfile.as_dict()})
+        request = self.factory.post('/api/friendrequest/', data=request_dict, content_type='application/json')
 
-    #     response = friend_request(request)
-    #     found = Friend.objects.filter(Q(requester=newProfile,accepter=secondProfile)).first()
-    #     self.assertEqual(response.status_code, 400)
-    #     self.assertIsNotNone(found)
+        response = friend_request(request)
+        found = Friend.objects.filter(Q(requester=newProfile,accepter=secondProfile)).first()
+        self.assertEqual(response.status_code, 400)
+        self.assertIsNotNone(found)
 
     def test_already_following_friendrequest(self):
         ''' test that there exists only one Follow when friending someone followed '''
