@@ -489,8 +489,8 @@ class ApiViewTests(TestCase):
         authors.append(thirdProfile.as_dict())
         request_dict = json.dumps({"author":firstProfile.as_dict(), "authors":authors})
 
-        request = self.factory.post('/api/friends/'+str(firstProfile.id), data=request_dict, content_type='application/json')
-        response = friend_request(request)
+        request = self.factory.post('/api/friends/'+str(firstProfile.guid), data=request_dict, content_type='application/json')
+        response = get_friends(request,author_id=firstProfile.guid)
         print(response)
 
         # found = Follow.objects.filter(Q(follower=firstProfile,following=secondProfile))
