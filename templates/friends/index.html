@@ -36,7 +36,7 @@
             <!-- Stream -->
             <div id="friends" class="col-sm-9 col-sm-offset-3 col-md-9 col-md-offset-3 col-lg-offset-3 main">
                 <h1 class="page-header">Friends</h1>
-                <div class="content"></div> 
+                <div class="content"></div>
             </div>
 
             <div id="following" class="col-sm-9 col-sm-offset-3 col-md-9 col-md-offset-3 col-lg-offset-3 main">
@@ -128,8 +128,8 @@ $(".nav-sidebar > li[id$='_nav']").click(function (item) {
     }
 
     currentBlock.find(".loading-main").show();
-    //loading.show(); 
-    
+    //loading.show();
+
     $.get("http://" + location.host + currentObject.attr('data-url'), function(data) {
             var content= currentBlock.find(".content");
     content.empty();
@@ -151,14 +151,14 @@ function requestUser() {
 
     if(isFollow > -1) {
         // We clicked follow button
-        $.post( "/api/follow", JSON.stringify({  
+        $.post( "/api/follow", JSON.stringify({
    "query":"friendrequest",
-   "author":{  
+   "author":{
    "id":"{{profile.guid}}",
       "host":"http://127.0.0.1:8000/",
       "displayname":"{{user.profile.display_name}}",
       "url": "http://" + location.host + "/author/{{user.profile.display_name}}"},
-   "follow":{  
+   "follow":{
       "id":$(this).attr('value'),
       "host":"http://" + location.host,
       "displayname": $(this).attr('data-displayname'),
@@ -166,14 +166,14 @@ function requestUser() {
    }
 }) , function( data ) {});
     } else {
-        $.post( "/api/friendrequest", JSON.stringify({  
+        $.post( "/friends/friendrequest", JSON.stringify({
    "query":"friendrequest",
-   "author":{  
+   "author":{
    "id":"{{profile.guid}}",
       "host":"http://127.0.0.1:8000/",
       "displayname":"{{user.profile.display_name}}",
       "url": "http://" + location.host + "/author/{{user.profile.display_name}}"},
-   "friend":{  
+   "friend":{
       "id":$(this).attr('value'),
       "host":"http://" + location.host,
       "displayname": $(this).attr('data-displayname'),
@@ -182,7 +182,7 @@ function requestUser() {
 }) , function( data ) {});
     }
 }
-        
+
 var loading = $(".loading");
         loading.hide();
 
@@ -233,7 +233,7 @@ var loading = $(".loading");
                     });
             }
         }
-        
+
 
         $("#search-friend").keyup(
             debounce(search, maxTimer)
