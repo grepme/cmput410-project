@@ -238,8 +238,7 @@ class ApiTestClass(unittest.TestCase):
 
     def test_server_get_friends_id_id(self):
         response = self.server.get_friends_id_id(friend_guid=self.test_profile.guid,friend_2_guid=self.test_profile3.guid)
-        print response
-        self.assertTrue(False)
+        self.assertTrue(response.friends)
 
     '''def test_server_friends_id_id(self):
         print server.get_friends_id_id(friend_guid="7a1c7226-d1e4-11e4-aa4c-b8f6b116b2b7",friend_2_guid="290da6fd-d3d3-11e4-a23b-b8f6b116b2b7")
