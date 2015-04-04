@@ -216,6 +216,8 @@ def get_foaf_servers(profile, author, friends):
     # Find the server we defined as host, check for contains to be safe...
     current_server = Server.objects.filter(host__icontains=profile["host"]).first()
 
+    friends_profiles = Profile.objects.filter(guid__in=friends)
+
     if current_server is not None:
         result = current_server.get_friends_list(profile, friends)
 
@@ -227,7 +229,7 @@ def get_foaf_servers(profile, author, friends):
     # Check if the Author is
     try:
         friends_query = Friend.objects.filter(
-            Q(accepter=author, requester__in=friends, accepted=True) | Q(requester=author, accepter__in=friends,
+            Q(accepter=author, requester__in=friends_profiles, accepted=True) | Q(requester=author, accepter__in=friends_profiles,
                                                                          accepted=True))
     except Exception as e:
         print e
@@ -239,7 +241,7 @@ def get_foaf_servers(profile, author, friends):
     if len(friends) > 0:
         for server in servers:
             for friend in friends:
-                if len(server.get_friends_list(profile.guid, friends)["friends"]) > 0:
+                if len(server.get_friends_list(profile["id"], friends)["friends"]) > 0:
                     return True
     else:
         return False
@@ -290,54 +292,57 @@ def get_posts(request, author_id=None, page="0"):
 @require_http_accept(['application/json'])
 @require_http_content_type(['application/json'])
 def get_post(request, post_id=None, page="0"):
-    if request.method == "POST":
-        data = None
-        post = None
-        try:
-            data = json.loads(request.body)
-        except ValueError as e:
-            return HttpResponseBadRequest()
 
-        try:
-            post = Post.objects.get(guid=post_id)
-        except Exception as e:
-            return HttpResponseNotFound()
+    try:
+        if request.method == "POST":
+            data = None
+            post = None
+            try:
+                data = json.loads(request.body)
+            except ValueError as e:
+                return HttpResponseBadRequest()
 
-        post_author = post.author
+            try:
+                post = Post.objects.get(guid=post_id)
+            except Exception as e:
+                return HttpResponseNotFound()
 
-        keys = ['id', 'host', 'displayname']
-        if has_keys(keys, data, 'author') and 'friends' in data:
-            author = data["author"]
+            post_author = post.author
 
-            if not get_foaf_servers(author, post_author, data["friends"]):
-                res = HttpResponse("Unauthorized")
-                res.status_code = 401
-                return res
-            else:
-                return_data = model_list(post)
-                return JsonResponse({"posts": return_data})
+            keys = ['id', 'host', 'displayname']
+            if has_keys(keys, data, 'author') and 'friends' in data:
+                author = data["author"]
 
-    return_data = list()
-    if post_id is not None and request.user.is_authenticated():
+                if not get_foaf_servers(author, post_author, data["friends"]):
+                    res = HttpResponse("Unauthorized")
+                    res.status_code = 401
+                    return res
+                else:
+                    return JsonResponse({"posts": [post.as_dict()]})
 
-        query = (get_post_query(request) & Q(guid=post_id))
+        return_data = list()
+        if post_id is not None and request.user.is_authenticated():
 
-        posts_query = Post.objects.filter(query)
-        return_data = model_list(posts_query)
+            query = (get_post_query(request) & Q(guid=post_id))
 
-        if len(posts_query) == 0:
-            response = JsonResponse({"message": "Post with id {} does not exist".format(post_id)})
-            response.status_code = 404
-            return response
+            posts_query = Post.objects.filter(query)
+            return_data = model_list(posts_query)
 
-    else:
-        posts_query = Post.objects.filter(visibility=Post.public).order_by('-date')
-        return_data = model_list(posts_query)
+            if len(posts_query) == 0:
+                response = JsonResponse({"message": "Post with id {} does not exist".format(post_id)})
+                response.status_code = 404
+                return response
+
+        else:
+            posts_query = Post.objects.filter(visibility=Post.public).order_by('-date')
+            return_data = model_list(posts_query)
 
 
 
-    # TODO Add pagination
-    return JsonResponse({"posts": return_data})
+        # TODO Add pagination
+        return JsonResponse({"posts": return_data})
+    except Exception as e:
+        print e
 
 
 @csrf_exempt
@@ -429,6 +434,7 @@ def get_other_profiles(profile, query):
 #@http_error_code(501,"Not Implemented")
 def get_friends(request, author_id=None, page="0"):
     data = None
+    author = None
     try:
         data = json.loads(request.body)
     except ValueError as e:
@@ -437,17 +443,26 @@ def get_friends(request, author_id=None, page="0"):
     if data['author'] is not None and data['authors'] is not None:
         # List of authors
         friends_list = data['authors']
-        author = Profile(guid=data['author'])
+
+        try:
+            author = Profile.objects.get(guid=data['author'])
+        except Profile.DoesNotExist as e:
+            res = HttpResponse("Profile with id {} does not exist".format(data['author']))
+            res.status_code = 404
+            return res
 
         if author.guid != author_id:
             return HttpResponseBadRequest()
     else:
         return HttpResponseBadRequest()
 
+    profile_list = Profile.objects.filter(guid__in=friends_list)
+
     # get all accepted friends
     friends = Friend.objects.filter(
-        Q(requester__in=friends_list, accepted=True, accepter=author) | Q(accepter__in=friends_list, accepted=True,
+        Q(requester__in=profile_list, accepted=True, accepter=author) | Q(accepter__in=profile_list, accepted=True,
                                                                           requester=author))
+
     return_friends = get_other_profiles(author, friends)
 
     return JsonResponse({"query": "friends", "author": author.guid, "friends": return_friends})

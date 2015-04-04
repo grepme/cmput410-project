@@ -144,6 +144,9 @@ class ApiTestClass(unittest.TestCase):
 
         self.post = create_post(self.server,'randomtitle','sometext',self.test_profile,Post.public)
         self.post_2 = create_post(self.server,'title','text',self.test_profile,Post.private)
+        self.foaf = create_post(self.server,'foaf','foaf',self.test_profile3,Post.FOAF)
+
+
 
     @classmethod
     def tearDownClass(self):
@@ -184,6 +187,8 @@ class ApiTestClass(unittest.TestCase):
         request.profile = self.test_profile
 
         posts = self.server.get_auth_author_posts(request)
+
+        print posts["posts"][0]
 
         self.assertEqual(len(posts["posts"]),2)
 
@@ -237,14 +242,71 @@ class ApiTestClass(unittest.TestCase):
         self.assertEqual(response,None)
 
     def test_server_get_friends_id_id(self):
-        response = self.server.get_friends_id_id(friend_guid=self.test_profile.guid,friend_2_guid=self.test_profile3.guid)
-        self.assertTrue(response.friends)
-
-    '''def test_server_friends_id_id(self):
-        print server.get_friends_id_id(friend_guid="7a1c7226-d1e4-11e4-aa4c-b8f6b116b2b7",friend_2_guid="290da6fd-d3d3-11e4-a23b-b8f6b116b2b7")
-
-    def test_server_friends_list(self):
-        my_list = ['7a1c7226-d1e4-11e4-aa4c-b8f6b116b2b7','e725d1c2-d3d6-11e4-97dc-b8f6b116b2b7','f0e2aec2-d3d6-11e4-8af3-b8f6b116b2b7','0471f261-d3d7-11e4-9922-b8f6b116b2b7']
-        response = server.get_friends_list(friend_guid="7a1c7226-d1e4-11e4-aa4c-b8f6b116b2b7",friends_list=my_list)
-        print response
         '''
+            Test for Server get_friends_id_id():
+            Path: '/api/friends/{author_guid}/{author_guid_2}'
+
+        '''
+        # Put Request into Database
+        friend = Friend.objects.create(requester=self.test_profile3,accepter=self.test_profile,accepted=True)
+        response = self.server.get_friends_id_id(friend_guid=self.test_profile.guid,friend_2_guid=self.test_profile3.guid)
+        self.assertEqual(response["friends"],u"YES")
+        friend.delete()
+
+    def test_server_get_friends_list(self):
+        '''
+            Test for Server get_friends_list():
+            Path: '/api/friends/{author_guid}'
+
+        '''
+
+
+
+        # Put Request into Database
+        friend = Friend.objects.create(requester=self.test_profile3,accepter=self.test_profile,accepted=True)
+        friend2 = Friend.objects.create(requester=self.test_profile2,accepter=self.test_profile,accepted=True)
+
+        response = self.server.get_friends_list(friend_guid=self.test_profile.guid, friends_list=[self.test_profile3.guid,self.test_profile2.guid,'7a1c7226-d1e4-11e4-aa4c-b8f6b116b2b7','e725d1c2-d3d6-11e4-97dc-b8f6b116b2b7','f0e2aec2-d3d6-11e4-8af3-b8f6b116b2b7','0471f261-d3d7-11e4-9922-b8f6b116b2b7'])
+        self.assertTrue(self.test_profile3.guid in response["friends"])
+        self.assertTrue(self.test_profile2.guid in response["friends"])
+        friend.delete()
+        friend2.delete()
+
+
+    def test_server_post_posts_id(self):
+        '''
+            Test for Server post_posts_id():
+            Path: '/api/posts/{post_guid}'
+
+        '''
+        # Put Request into Database
+        friend = Friend.objects.create(requester=self.test_profile3,accepter=self.test_profile,accepted=True)
+        friend2 = Friend.objects.create(requester=self.test_profile2,accepter=self.test_profile,accepted=True)
+
+        request = HttpRequest()
+        request.profile = self.test_profile2
+
+        response = self.server.post_posts_id(request, self.foaf.guid)
+
+        post = response["posts"][0]
+
+        self.assertTrue(post["guid"],self.foaf.guid)
+        self.assertTrue(post["visibility"],"FOAF")
+
+    def test_server_post_posts_id_invalid(self):
+        '''
+            Test for Server post_posts_id():
+            Path: '/api/posts/{post_guid}' not friend
+
+        '''
+        # Put Request into Database
+        friend = Friend.objects.create(requester=self.test_profile3,accepter=self.test_profile,accepted=True)
+        friend2 = Friend.objects.create(requester=self.test_profile2,accepter=self.test_profile,accepted=True)
+
+        request = HttpRequest()
+        request.profile = self.test_profile2
+
+        response = self.server.post_posts_id(request, self.post.guid)
+
+        self.assertTrue(response.code,401)
+
