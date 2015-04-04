@@ -76,20 +76,20 @@ def auth_as_user():
         def inner(request, *args, **kwargs):
             profile = None
             try:
-                user_guid = request.META.get('HTTP_PROFILE')
+                user_guid = request.META.get('HTTP_USER')
                 profile = Profile.objects.get(guid=user_guid)
                 request.profile = profile
             except Profile.DoesNotExist as e:
                 if request.user.is_authenticated():
                     profile = Profile.objects.get(author=request.user)
                 else:
-                    logger.warning('Not Authenticated (%s): %s', request.META.get('User'), request.path,
+                    logger.warning('Not Authenticated (%s): %s', request.META.get('HTTP_USER'), request.path,
                                    extra={
                                        'status_code': 401,
                                        'request': request
                                    }
                     )
-                    response = HttpResponse("Unauthorized ({}): {}".format(request.META.get('User'), request.path))
+                    response = HttpResponse("Unauthorized ({}): {}".format(request.META.get('HTTP_USER'), request.path))
                     response.status_code = 401
                     return response
             return func(request, *args, **kwargs)
@@ -255,6 +255,8 @@ def get_foaf_servers(profile, author, friends):
 def get_posts(request, author_id=None, page="0"):
     # author/posts
     #author/author_id/posts
+
+    print author_id
 
     query = get_post_query(request)
 

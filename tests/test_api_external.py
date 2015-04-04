@@ -99,10 +99,18 @@ def create_user(name):
     profile = Profile.objects.create(author=user,display_name=name)
     return (user,profile)
 
+def create_post(server,title,text,author,visibility):
+    return Post.objects.create(title=title, date=timezone.now(), text=text, image=None,
+                                 visibility=visibility, commonmark=False, author=author, origin=server.host, source=server.host)
+
+
 class ApiTestClass(unittest.TestCase):
 
     @classmethod
     def setUpClass(self):
+        p1 = subprocess.Popen(shlex.split("pgrep -f 'manage.py runserver'"), stdout=subprocess.PIPE)
+        p2 = subprocess.Popen(shlex.split("xargs kill"), stdin=p1.stdout, stdout=subprocess.PIPE)
+
         subprocess.Popen(shlex.split('rm "{}"'.format(settings.DATABASES["default"]["NAME"])))
         call_command('makemigrations', interactive=False)
         call_command('migrate', interactive=False)
@@ -127,11 +135,12 @@ class ApiTestClass(unittest.TestCase):
         self.test = user_tuple[0]
         self.test_profile = user_tuple[1]
 
-        self.post = Post.objects.create(title='randomtitle', date=timezone.now(), text='sometext', image=None,
-                                 visibility=Post.public, commonmark=False, author=self.test_profile, origin=self.server.host, source=self.server.host)
+        user_tuple2 = create_user("test2")
+        self.test2 = user_tuple2[0]
+        self.test_profile2 = user_tuple2[1]
 
-        self.post_2 = Post.objects.create(title='title', date=timezone.now(), text='text', image=None,
-                                 visibility=Post.private, commonmark=False, author=self.test_profile, origin=self.server.host, source=self.server.host)
+        self.post = create_post(self.server,'randomtitle','sometext',self.test_profile,Post.public)
+        self.post_2 = create_post(self.server,'title','text',self.test_profile,Post.private)
 
     @classmethod
     def tearDownClass(self):
@@ -148,15 +157,15 @@ class ApiTestClass(unittest.TestCase):
             Path: '/api/posts'
         '''
         posts = self.server.get_posts()
-        self.assertEqual(len(posts),len(Post.objects.filter(visibility=Post.public)))
+        self.assertEqual(len(posts["posts"]),len(Post.objects.filter(visibility=Post.public)))
         for post in posts["posts"]:
             check_post(self,post)
             self.assertEqual(post["visibility"].upper(),"PUBLIC")
 
     def test_server_get_post(self):
         '''
-            Test for Server get_posts():
-            Path: '/api/posts'
+            Test for Server get_post_id():
+            Path: '/api/posts/{post_guid}'
         '''
         posts = self.server.get_posts_id(self.post.guid)
         self.assertEqual(len(posts),1)
@@ -164,12 +173,28 @@ class ApiTestClass(unittest.TestCase):
             check_post(self,post)
 
     def test_server_get_posts_auth(self):
+        '''
+            Test for Server get_auth_author_posts():
+            Path: '/api/author/posts'
+        '''
         request = HttpRequest()
         request.profile = self.test_profile
 
         posts = self.server.get_auth_author_posts(request)
 
         self.assertEqual(len(posts["posts"]),2)
+
+    def test_server_get_author_posts(self):
+        '''
+            Test for Server get_author_posts():
+            Path: '/api/author/{author_guid}/posts'
+        '''
+        request = HttpRequest()
+        request.profile = self.test_profile2
+
+        posts = self.server.get_author_posts(request, self.test_profile)
+
+        self.assertEqual(len(posts["posts"]),1)
 
 '''
     def test_server_posts_id(self):

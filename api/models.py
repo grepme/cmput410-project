@@ -39,7 +39,7 @@ class Server(models.Model):
         request.add_header("Authorization", "Basic %s" % base64string)
 
         # Add User header for current auth user
-        request.add_header("Profile", "%s" % user_request.profile.guid)
+        request.add_header("User", "%s" % user_request.profile.guid)
         try:
             result = urllib2.urlopen(request)
         except (urllib2.HTTPError, urllib2.URLError) as e:
