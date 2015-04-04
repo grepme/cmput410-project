@@ -31,7 +31,7 @@ class Profile(GUIDModel):
     def as_dict(self):
         return {
             "id": self.guid,  # TODO implement host
-            "host": "",
+            "host": self.host,
             "displayname": self.display_name,
             "url": self.host + "/author/" + self.guid,
             "github_name": self.github_name

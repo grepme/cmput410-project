@@ -13,8 +13,11 @@ def profile(request, author):
 
     # Get the user's profile. Get is useful for one object.
     # https://docs.djangoproject.com/en/1.7/topics/db/queries/#lookups-that-span-relationships
+    profile = Profile.objects.filter(display_name=author).first()
+    if profile is not None:
+        return render(request, "profile/author.html", {'profile': profile})
+    # TODO: Return profile not found if that's the case
     return render(request, "profile/author.html", {'profile': request.profile})
-
 
 @login_required
 def user_profile(request):

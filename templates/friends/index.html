@@ -206,7 +206,7 @@ var loading = $(".loading");
         };
 
         function search() {
-            if (this.value.length >= minLength) {
+            if (this.value != undefined && this.value.length >= minLength) {
                 $("#search-list").empty();
                 loading.show();
                 $.get("http://" + location.host + "/friends/search/" + encodeURIComponent(this.value), function(data) {
@@ -219,13 +219,30 @@ var loading = $(".loading");
                         $("button[class$='-button']").click(requestUser);
                         }
                     });
-                };
+            } else if (this.value == undefined){
+                loading.show();
+                $.get("http://" + location.host + "/friends/all/", function(data) {
+                    $("#search-list").empty();
+                    loading.hide();
+                    if(data.length <= 2) {
+                        $("#search-list").append('<span>No results.</span>');
+                        } else {
+                        $("#search-list").append(data);
+                        $("button[class$='-button']").click(requestUser);
+                        }
+                    });
             }
+        }
         
 
         $("#search-friend").keyup(
             debounce(search, maxTimer)
         );
+        $("#search-friend").ready(
+            debounce(search, maxTimer)
+        );
+
     })
+
 </script>
 {% endblock %}

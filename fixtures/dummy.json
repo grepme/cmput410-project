@@ -22,10 +22,11 @@
       "author": ["admin"],
       "display_name": "Admin",
       "github_name": "grepme",
-      "host": "projecthub.ca"
+      "host": "projecthub.ca",
+      "guid": "7a1c7226-d1e4-11e4-aa4c-b8f6b116b2b7"
     },
     "model": "user_profile.profile",
-    "pk": "7a1c7226-d1e4-11e4-aa4c-b8f6b116b2b7"
+    "pk": 1
   },
   {
     "fields": {
@@ -39,5 +40,18 @@
     },
     "model": "api.server",
     "pk": 1
+  },
+  {
+    "fields": {
+      "host": "thought-bubble.herokuapp.com",
+      "auth_type": "Basic",
+      "auth_user": "user",
+      "auth_password": "pass",
+      "realm": "hi",
+      "api_path": "/main/",
+      "posts": "/getposts/"
+    },
+    "model": "api.server",
+    "pk": 2
   }
 ]

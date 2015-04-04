@@ -68,6 +68,10 @@ def search_friends(request,name):
     return render(request, "friends/search.html",{"profiles":search})
 
 @login_required
+def search_all(request):
+    search = Profile.objects.filter(~Q(guid=request.profile.guid))
+    return render(request, "friends/search.html",{"profiles":search})
+@login_required
 def delete(request, friend_guid):
     nothing_found = True
     friend_profile = Profile.objects.filter(guid=friend_guid).first()
@@ -76,7 +80,6 @@ def delete(request, friend_guid):
     if old_friend is not None:
         old_friend.delete()
         nothing_found = False
-
     old_follow = Follow.objects.filter(Q(following=request.profile, follower=friend_profile) |
                                        Q(follower=request.profile, following=friend_profile)).first()
     if old_follow is not None:

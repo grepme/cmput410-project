@@ -143,6 +143,10 @@ class ApiTestClass(unittest.TestCase):
 
 
     def test_server_posts(self):
+        '''
+            Test for Server get_posts():
+            Path: '/api/posts'
+        '''
         posts = self.server.get_posts()
         self.assertEqual(len(posts),len(Post.objects.filter(visibility=Post.public)))
         for post in posts["posts"]:
@@ -150,6 +154,10 @@ class ApiTestClass(unittest.TestCase):
             self.assertEqual(post["visibility"].upper(),"PUBLIC")
 
     def test_server_get_post(self):
+        '''
+            Test for Server get_posts():
+            Path: '/api/posts'
+        '''
         posts = self.server.get_posts_id(self.post.guid)
         self.assertEqual(len(posts),1)
         for post in posts["posts"]:

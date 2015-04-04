@@ -21,6 +21,10 @@ urlpatterns = patterns('api.views',
 
                        # POST authors, returns list of friends in the list
                        (r'^friends/(?P<author_id>{})/?$'.format(id_regex), 'get_friends'),
+
+                       # GET authors on our server
+                       (r'^authors$', 'get_authors'),
+
                        # Make a friend request with another user
                        (r'^friendrequest$', 'friend_request'),
 
