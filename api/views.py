@@ -495,13 +495,29 @@ def follow_user(request):
 @require_http_content_type(['application/json'])
 def is_friend(request, author_id=None, author_2_id=None, page="0"):
     response_data = {"query": "friends", "authors": [author_id, author_2_id]}
-    friend = Friend.objects.filter(
-        Q(requester=author_id, accepted=True, accepter=author_2_id) | Q(accepter=author_id, accepted=True,
-                                                                        requester=author_2_id)).first()
+
+    author = None
+    author_2 = None
+
+    try:
+        author = Profile.objects.get(guid=author_id)
+    except Profile.NotFound as e:
+        response = JsonResponse({"message": "Author with id {} does not exist".format(author_id)})
+        response.status_code = 404
+        return response
+
+    try:
+        author_2 = Profile.objects.get(guid=author_2_id)
+    except:
+        pass
+
+    friend = Friend.objects.filter(Q(requester=author, accepted=True, accepter=author_2) | Q(accepter=author, accepted=True,requester=author_2)).first()
+
     if friend is not None:
         response_data["friends"] = "YES"
     else:
         response_data["friends"] = "NO"
+
     return JsonResponse(response_data)
 
 

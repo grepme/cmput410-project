@@ -140,6 +140,8 @@ class ApiTestClass(unittest.TestCase):
         self.test2 = user_tuple2[0]
         self.test_profile2 = user_tuple2[1]
 
+        self.test_profile3 = Profile.objects.create(display_name="Random Profile",host="http://127.0.0.1:8000",is_external=True)
+
         self.post = create_post(self.server,'randomtitle','sometext',self.test_profile,Post.public)
         self.post_2 = create_post(self.server,'title','text',self.test_profile,Post.private)
 
@@ -202,8 +204,7 @@ class ApiTestClass(unittest.TestCase):
             Test for Server post_friend_request():
             Path: '/api/friendrequest'
         '''
-
-        self.test_profile3 = profile = Profile.objects.create(display_name="Random Profile",host="http://127.0.0.1:8000",is_external=True)
+        profile = self.test_profile3
 
         response = self.server.post_friend_request(requester=profile, accepter=self.test_profile)
 
@@ -236,13 +237,15 @@ class ApiTestClass(unittest.TestCase):
         self.assertEqual(response,None)
 
     def test_server_get_friends_id_id(self):
+        response = self.server.get_friends_id_id(friend_guid=self.test_profile.guid,friend_2_guid=self.test_profile3.guid)
+        print response
+        self.assertTrue(False)
 
-        self.server.get_friends_id_id()
-
-    def test_server_friends_id_id(self):
+    '''def test_server_friends_id_id(self):
         print server.get_friends_id_id(friend_guid="7a1c7226-d1e4-11e4-aa4c-b8f6b116b2b7",friend_2_guid="290da6fd-d3d3-11e4-a23b-b8f6b116b2b7")
 
     def test_server_friends_list(self):
         my_list = ['7a1c7226-d1e4-11e4-aa4c-b8f6b116b2b7','e725d1c2-d3d6-11e4-97dc-b8f6b116b2b7','f0e2aec2-d3d6-11e4-8af3-b8f6b116b2b7','0471f261-d3d7-11e4-9922-b8f6b116b2b7']
         response = server.get_friends_list(friend_guid="7a1c7226-d1e4-11e4-aa4c-b8f6b116b2b7",friends_list=my_list)
         print response
+        '''
