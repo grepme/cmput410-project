@@ -19,6 +19,7 @@ from api.models import Server
 from django.contrib.auth.models import User
 from django.conf import settings
 from user_profile.models import Profile
+from friends.models import Friend,Follow
 from posts.models import Post
 from django.utils import timezone
 from django.core import management
@@ -195,6 +196,47 @@ class ApiTestClass(unittest.TestCase):
         posts = self.server.get_author_posts(request, self.test_profile)
 
         self.assertEqual(len(posts["posts"]),1)
+
+    def test_server_post_friend_request(self):
+        '''
+            Test for Server post_friend_request():
+            Path: '/api/friendrequest'
+        '''
+
+        profile = Profile.objects.create(display_name="Random Profile",host="http://127.0.0.1:8000",is_external=True)
+
+        response = self.server.post_friend_request(requester=profile, accepter=self.test_profile)
+
+        self.assertEqual(response,None)
+
+        # Throw error if we cannot find this request
+        Friend.objects.get(requester=profile,accepter=self.test_profile,accepted=False)
+        Follow.objects.get(follower=profile,following=self.test_profile)
+
+        # Try duplicate requests
+        response = self.server.post_friend_request(requester=profile, accepter=self.test_profile)
+        self.assertEqual(response,None)
+        # Try duplicate requests
+        response = self.server.post_friend_request(requester=profile, accepter=self.test_profile)
+        self.assertEqual(response,None)
+
+        # Accept the request
+        response = self.server.post_friend_request(requester=self.test_profile, accepter=profile)
+        self.assertEqual(response,None)
+
+        # Check database for the Request
+        Friend.objects.get(requester=profile,accepter=self.test_profile,accepted=True)
+        Follow.objects.get(follower=profile,following=self.test_profile)
+
+        # Accept the request
+        response = self.server.post_friend_request(requester=self.test_profile, accepter=profile)
+        self.assertEqual(response,None)
+        # Accept the request
+        response = self.server.post_friend_request(requester=self.test_profile, accepter=profile)
+        self.assertEqual(response,None)
+
+
+
 
 '''
     def test_server_posts_id(self):
