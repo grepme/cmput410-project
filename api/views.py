@@ -256,8 +256,6 @@ def get_posts(request, author_id=None, page="0"):
     # author/posts
     #author/author_id/posts
 
-    print author_id
-
     query = get_post_query(request)
 
     # user specified a specific user id they want to find
@@ -324,8 +322,6 @@ def get_post(request, post_id=None, page="0"):
 
         query = (get_post_query(request) & Q(guid=post_id))
 
-        print query
-
         posts_query = Post.objects.filter(query)
         return_data = model_list(posts_query)
 
@@ -341,7 +337,6 @@ def get_post(request, post_id=None, page="0"):
 
 
     # TODO Add pagination
-    print return_data
     return JsonResponse({"posts": return_data})
 
 
@@ -353,7 +348,6 @@ def friend_request(request, page="0"):
     # get data from request
     data = None
 
-    print request.body
     try:
         data = json.loads(request.body)
     except ValueError as e:
