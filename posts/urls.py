@@ -5,6 +5,7 @@ urlpatterns = patterns('posts.views',
                        (r'^delete/(?P<guid>[-\w]+)/$', 'delete_post'),
                        (r'^all/', 'all_posts'),
                        (r'^my/', 'my_posts'),
+                       (r'^stream/', 'stream'),
                        (r'^new/github/$', 'new_github_post')
 )
 

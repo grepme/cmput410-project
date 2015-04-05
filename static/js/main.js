@@ -84,47 +84,89 @@ function confirmEditProfileField(that, field_name) {
     })
 }
 
+/**
+ * Add all current page nav items
+ */
 
+var allNavItems = $(".nav-sidebar > li[id$='_nav']");
 
-$("#myposts_nav").click(function () {
+var navItemBlocks = [];
+
+// Add all the classes into the buttons
+for (var i = 0; i < allNavItems.length; i++) {
+    var object = $(allNavItems[i]);
+    var id = $(allNavItems[i]).attr('id').replace("_nav","");
+
+    navItemBlocks.push("#" + id);
+    var block = $("#" + id);
+    if(i > 0) {
+        block.hide();
+    }
+    block.find("h1").after('<div class="loading-main" style="display:none;"></div>');
+}
+
+function getNavItem(currentBlock,navItem) {
+    $.get("http://" + location.host + navItem.attr('data-url'), function(data) {
+            var content= currentBlock.find(".content");
+    content.empty();
+    currentBlock.find(".loading-main").hide();
+    if(data.length <= 2) {
+        content.append('<span>No results.</span>');
+        } else {
+        content.append(data);
+        }
+        }).fail(function(error) {
+    alert( "error " + error);
+  });
+};
+
+getNavItem($(navItemBlocks[0]),$(allNavItems[0]));
+
+// When we click a nav item..
+$(".nav-sidebar > li[id$='_nav']").click(function (item) {
     //Hide other streams
-    $("#stream").hide();
-    $("#allposts").hide();
-    $.get('/post/my', function (data) {
-        $("#myposts").html(data);
-        //Show the My Posts stream
-        $("#myposts").show();
-        //Update Sidebar
-        $("#myposts_nav").addClass("active");
-        $("#stream_nav").removeClass("active");
-        $("#allposts_nav").removeClass("active");
+    // Make clicked item active
+    // Make the others not
+    var currentObject = $(this);
+    var currentId = currentObject.attr('id');
+    var currentBlock = null;
+    for(var i = 0; i < allNavItems.length; i++) {
+        console.log(currentId)
+        // Get the object
+        var object = $(allNavItems[i]);
+        var objectId = object.attr('id');
+
+        var blockId = navItemBlocks[i];
+
+        // Check if it's the item we clicked
+        if(objectId !== currentId) {
+            // Set all others as inactive
+            object.removeClass("active");
+            // Hide their content
+            $(blockId).hide();
+        } else if(objectId === currentId) {
+
+                // Show clicked content
+                currentBlock = $(blockId);
+                currentBlock.show();
+
+                // Add active class to nav item
+                currentObject.addClass("active");
+        }
+        $(blockId).find(".content").empty();
+    }
+
+    currentBlock.find(".loading-main").show();
+    var content = currentBlock.find(".content");
+    //loading.show(); 
+    
+    $.get("http://" + location.host + currentObject.attr('data-url'), function(data) {
+    currentBlock.find(".loading-main").hide();
+    if(data.length <= 2) {
+        content.append('<span>No results.</span>');
+        } else {
+        content.append(data);
+        }
+        });
+
     });
-});
-
-$("#allposts_nav").click(function () {
-    //Hide other streams
-    $("#stream").hide();
-    $("#myposts").hide();
-    $.get('/post/all', function (data) {
-        $("#allposts").html(data);
-        //Show the My Posts stream
-        $("#allposts").show();
-        //Update Sidebar
-        $("#allposts_nav").addClass("active");
-        $("#stream_nav").removeClass("active");
-        $("#myposts_nav").removeClass("active");
-    });
-
-});
-
-$("#stream_nav").click(function () {
-    //Hide other streams
-    $("#myposts").hide();
-    $("#allposts").hide();
-    //Show the My Posts stream
-    $("#stream").show();
-    //Update Sidebar
-    $("#stream_nav").addClass("active");
-    $("#myposts_nav").removeClass("active");
-    $("#allposts_nav").removeClass("active");
-});

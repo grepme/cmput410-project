@@ -53,14 +53,14 @@ def incoming_friends(request):
     # get current friends
     incoming_query = Friend.objects.filter(accepter=request.profile,accepted=False)
     profiles = [item.requester for item in incoming_query]
-    return render(request, "friends/request.html", {'profiles': profiles, "user":request.user})
+    return render(request, "friends/incoming.html", {'profiles': profiles, "user":request.user})
 
 @login_required
 def sent_friends(request):
     # get current friends
     sent_query = Friend.objects.filter(requester=request.profile,accepted=False)
     profiles = [item.accepter for item in sent_query]
-    return render(request, "friends/request.html", {'profiles': profiles, "user":request.user})
+    return render(request, "friends/sent.html", {'profiles': profiles, "user":request.user})
 
 @login_required
 def search_friends(request,name):

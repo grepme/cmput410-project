@@ -11,13 +11,13 @@
             <!-- Sticky Left Sidebar -->
             <div class="col-sm-3 col-md-2 sidebar">
                 <ul class="nav nav-sidebar">
-                    <li id="stream_nav" class="active">
+                    <li id="stream_nav" data-url="/post/stream" class="active">
                         <a href="#"><span class="glyphicon glyphicon-menu-hamburger" aria-hidden="true"></span>
                             Stream</a>
                     </li>
-                    <li id="myposts_nav"><a href="#"><span class="glyphicon glyphicon-object-align-left"
+                    <li id="myposts_nav" data-url="/post/my"><a href="#"><span class="glyphicon glyphicon-object-align-left"
                                                            aria-hidden="true"></span> My Posts</a></li>
-                    <li id="allposts_nav"><a href="#"><span class="glyphicon glyphicon-tag" aria-hidden="true"></span>
+                    <li id="allposts_nav"  data-url="/post/all"><a href="#"><span class="glyphicon glyphicon-tag" aria-hidden="true"></span>
                         All Posts</a></li>
                 </ul>
             </div>
@@ -88,8 +88,7 @@
                     <div class="row col-md-10" style="margin: 0; padding: 0;">
                         {% include 'posts/github_feed.html' %}
                     </div>
-                    <div class="row col-md-10" style="margin: 0; padding: 0;">
-                        {% include 'posts/all.html' %}
+                    <div class="row col-md-10 content" style="margin: 0; padding: 0;">
                     </div>
                 </div>
 
@@ -99,23 +98,11 @@
             <!-- My Posts -->
             <div id="myposts" style="display:none;" class="col-sm-9 col-sm-offset-3 col-md-10 col-md-offset-2 main">
                 <h1 class="page-header">My Posts</h1>
-
-                <!-- Posts -->
-                <div class="row">
-                    <div class="row col-md-10 col-md-offset-1">
-
-                    <!-- Line Break -->
-                    <div style="margin: 0; padding: 0;" class="row col-md-10">
-                        <hr>
-                    </div>
-
                     <!-- Include all posts from stream -->
-                    <div class="row col-md-10" style="margin: 0; padding: 0;">
-                        {% include 'posts/all.html' %}
-                    </div>
+                <div class="row">
+                    <div class="content col-md-10 col-md-offset-1">
                 </div>
                 </div>
-
             </div>
 
             <!-- All Posts -->
@@ -124,17 +111,7 @@
 
                 <!-- Posts -->
                 <div class="row">
-                    <div class="row col-md-10 col-md-offset-1">
-
-                    <!-- Line Break -->
-                    <div style="margin: 0; padding: 0;" class="row col-md-10">
-                        <hr>
-                    </div>
-
-                    <!-- Include all posts from stream -->
-                    <div class="row col-md-10" style="margin: 0; padding: 0;">
-                        {% include 'posts/all.html' %}
-                    </div>
+                    <div class="content col-md-10 col-md-offset-1">
                 </div>
             </div>
         </div>
