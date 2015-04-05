@@ -3,6 +3,7 @@ from django.contrib.auth.models import User
 from user_profile.models import Profile
 # Create your models here.
 
+
 class Follow(models.Model):
     # when started following
     date = models.DateTimeField(auto_now_add=True)
@@ -12,7 +13,7 @@ class Follow(models.Model):
     following = models.ForeignKey(Profile, related_name="following")
 
     def __unicode__(self):
-        return u"{} -> {}".format(self.follower, self.following)
+        return u"{} -> {}".format(self.follower.display_name, self.following.display_name)
 
     def as_dict(self):
         return {
@@ -28,7 +29,7 @@ class Friend(models.Model):
     # when request was accepted
     date = models.DateTimeField(auto_now_add=True)
     # who followed back
-    accepter = models.ForeignKey(Profile, related_name="accepter", primary_key=True)
+    accepter = models.ForeignKey(Profile, related_name="accepter")
     # who started following
     requester = models.ForeignKey(Profile, related_name="requester")
     # did accepter accept the request

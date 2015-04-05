@@ -15,6 +15,7 @@ from comments.models import Comment
 from django.db import IntegrityError
 from user_profile.models import Profile
 from friends.models import Friend, Follow
+import friends.views
 from posts.models import Post, PostEncoder
 from tags.models import Tag
 from django.contrib.auth.models import User
@@ -248,7 +249,6 @@ def get_foaf_servers(profile, author, friends):
         return True
 
 
-# @login_required
 @auth_as_user()
 @require_http_methods(["GET"])
 @require_http_accept(['application/json'])
@@ -286,7 +286,6 @@ def get_posts(request, author_id=None, page="0"):
     return JsonResponse(data)
 
 
-# @login_required
 @csrf_exempt
 @require_http_methods(["GET", "POST"])
 @require_http_accept(['application/json'])
@@ -324,7 +323,7 @@ def get_post(request, post_id=None, page="0"):
 
         query = (get_post_query(request) & Q(guid=post_id))
 
-        print query
+        # print query
 
         posts_query = Post.objects.filter(query)
         return_data = model_list(posts_query)
@@ -341,68 +340,29 @@ def get_post(request, post_id=None, page="0"):
 
 
     # TODO Add pagination
-    print return_data
+    # print return_data
     return JsonResponse({"posts": return_data})
 
 
-#@login_required
 @csrf_exempt
 @require_http_methods(["POST"])
 @require_http_accept(['application/json'])
 @require_http_content_type(['application/json'])
-#@http_error_code(501,"Not Implemented")
 def friend_request(request, page="0"):
-    # get data from request
-    data = None
+    return(friends.views.friend_request(request, page))
 
-    print request.body
-    try:
-        data = json.loads(request.body)
-    except ValueError as e:
-        return HttpResponseBadRequest()
 
-    keys = ['id', 'host', 'url', 'displayname']
+@csrf_exempt
+@require_http_methods(["GET"])
+@require_http_accept(['application/json'])
+@require_http_content_type(['application/json'])
+def get_authors(request):
+    # get all accepted friends
+    profiles = model_list(Profile.objects.all())
+    # for profile in profiles:
+        # delete github_username?
 
-    if has_keys(keys, data, 'author') and has_keys(keys, data, 'friend'):
-        author = Profile.objects.filter(guid=data["author"]["id"]).first()
-        friend = Profile.objects.filter(guid=data["friend"]["id"]).first()
-
-        try:
-            if author == None:
-                author = Profile.objects.create(is_external=True, display_name=data["author"]["displayname"],
-                                                host=data["author"]["host"])
-
-            if friend == None:
-                friend = Profile.objects.create(is_external=True, display_name=data["friend"]["displayname"],
-                                                host=data["friend"]["host"])
-
-            if author == friend:
-                return HttpResponseBadRequest()
-        except Exception as e:
-            print e
-
-        found = Friend.objects.filter(Q(requester=friend, accepter=author)).first()
-
-        if found is not None:
-            found.accepted = True
-            try:
-                Follow.objects.create(follower=author, following=friend)
-            except Follow.IntegrityError as e:
-                pass
-            found.save()
-
-            return HttpResponse()
-
-        else:
-            Friend.objects.create(requester=author, accepter=friend)
-            try:
-                Follow.objects.create(follower=author, following=friend)
-            except IntegrityError as e:
-                pass
-
-            return HttpResponse(200)
-
-        return HttpResponseBadRequest()
+    return JsonResponse({"authors": profiles})
 
 
 #TODO PUT THIS IN COMMON PLACE THIS IS FROM
@@ -418,7 +378,6 @@ def get_other_profiles(profile, query):
     return profiles
 
 
-#@login_required
 @csrf_exempt
 @require_http_methods(["POST"])
 @require_http_accept(['application/json'])
@@ -455,39 +414,9 @@ def get_friends(request, author_id=None, page="0"):
 @require_http_accept(['application/json'])
 @require_http_content_type(['application/json'])
 def follow_user(request):
-    try:
-        data = None
-        try:
-            data = json.loads(request.body)
-        except ValueError as e:
-            return HttpResponseBadRequest()
-
-        following_guid = data["follow"]["id"]
-
-        # Valid Profile?
-        following = None
-        try:
-            following = Profile.objects.get(guid=following_guid)
-        except Profile.DoesNotExist as e:
-            res = HttpResponse("Profile with id {} does not exist".format(following_guid))
-            res.status_code = 404
-            return res
-
-        # Create follow if does not exist
-        try:
-            Follow.objects.get(follower=request.profile, following=following)
-        except Follow.DoesNotExist as e:
-            Follow.objects.create(follower=request.profile, following=following)
-
-        # Return 201
-        res = HttpResponse()
-        res.status_code = 201
-        return res
-    except Exception as e:
-        print e.message
+    return(friends.views.follow_user(request))
 
 
-#@login_required
 @require_http_methods(["GET"])
 @require_http_accept(['application/json'])
 @require_http_content_type(['application/json'])
