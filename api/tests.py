@@ -1,5 +1,6 @@
 from django.contrib.auth.models import AnonymousUser, User
 from django.db.models import Q
+from django.db import transaction
 from posts.models import Post
 from friends.models import Friend, Follow
 from user_profile.models import Profile
@@ -275,12 +276,12 @@ class ApiViewTests(TestCase):
         request = self.factory.post('/api/friendrequest/', data=request_dict, content_type='application/json')
 
         # make sure it doesn't already exist
-        found = Friend.objects.filter(requester_id=newProfile.guid).first()
+        found = Friend.objects.filter(requester=newProfile).first()
         self.assertIsNone(found)
 
         response = friend_request(request)
-        found = Friend.objects.filter(Q(requester_id=newProfile.guid,
-                                      accepter_id=secondProfile.guid)).first()
+        found = Friend.objects.filter(Q(requester=newProfile,
+                                      accepter=secondProfile)).first()
         self.assertEqual(response.status_code, 200)
         self.assertIsNotNone(found)
 
@@ -298,11 +299,11 @@ class ApiViewTests(TestCase):
         request = self.factory.post('/api/friendrequest/', data=request_dict, content_type='application/json')
 
         # make sure it doesn't already exist
-        follower = Follow.objects.filter(Q(follower_id=newProfile.guid, following_id=secondProfile.guid)).first()
+        follower = Follow.objects.filter(Q(follower=newProfile, following=secondProfile)).first()
         self.assertIsNone(follower)
-
-        response = friend_request(request)
-        follower = Follow.objects.filter(Q(follower_id=newProfile.guid, following_id=secondProfile.guid)).first()
+        with transaction.atomic():
+            response = friend_request(request)
+        follower = Follow.objects.filter(Q(follower=newProfile, following=secondProfile)).first()
         self.assertEqual(response.status_code,200)
         self.assertIsNotNone(follower)
 
@@ -320,14 +321,15 @@ class ApiViewTests(TestCase):
         request = self.factory.post('/api/friendrequest/', data=request_dict, content_type='application/json')
 
         # make sure it doesn't already exist
-        found = Friend.objects.filter(requester_id=newProfile.guid).first()
+        found = Friend.objects.filter(requester=newProfile).first()
         self.assertIsNone(found)
-
-        response = friend_request(request)
-        response = friend_request(request)
+        with transaction.atomic():
+            response = friend_request(request)
+        with transaction.atomic():
+            response = friend_request(request)
         # check that duplicate didn't accept wrongfully
-        found = Friend.objects.filter(Q(requester_id=newProfile.guid,accepter_id=secondProfile.guid, accepted=False) |
-                                      Q(requester_id=secondProfile.guid,accepter_id=newProfile.guid, accepted=False)).first()
+        found = Friend.objects.filter(Q(requester=newProfile,accepter=secondProfile, accepted=False) |
+                                      Q(requester=secondProfile,accepter=newProfile, accepted=False)).first()
         self.assertEqual(response.status_code, 200)
         self.assertIsNotNone(found)
 
@@ -345,8 +347,8 @@ class ApiViewTests(TestCase):
         request = self.factory.post('/api/friendrequest/', data=request_dict, content_type='application/json')
 
         # make sure it is not already accepted
-        found = Friend.objects.filter(Q(requester_id=newProfile.guid,accepter_id=secondProfile.guid, accepted=True) |
-                                      Q(requester_id=secondProfile.guid,accepter_id=newProfile.guid, accepted=True)).first()
+        found = Friend.objects.filter(Q(requester=newProfile,accepter=secondProfile, accepted=True) |
+                                      Q(requester=secondProfile,accepter=newProfile, accepted=True)).first()
 
         response = friend_request(request)
         self.assertEqual(response.status_code, 200)
@@ -358,8 +360,8 @@ class ApiViewTests(TestCase):
         response = friend_request(request)
 
         # check that it was accepted and status indicates refresh page required (because now friends)
-        found = Friend.objects.filter(Q(requester_id=newProfile.guid,accepter_id=secondProfile.guid, accepted=True) |
-                                      Q(requester_id=secondProfile.guid,accepter_id=newProfile.guid, accepted=True)).first()
+        found = Friend.objects.filter(Q(requester=newProfile,accepter=secondProfile, accepted=True) |
+                                      Q(requester=secondProfile,accepter=newProfile, accepted=True)).first()
         self.assertEqual(response.status_code, 200)
         self.assertIsNotNone(found)
 
@@ -377,16 +379,16 @@ class ApiViewTests(TestCase):
         request = self.factory.post('/api/friendrequest/', data=request_dict, content_type='application/json')
 
         # make sure no one is already following
-        follower = Follow.objects.filter(Q(follower_id=newProfile.guid, following_id=secondProfile.guid)).first()
-        following = Follow.objects.filter(Q(follower_id=secondProfile.guid, following_id=newProfile.guid)).first()
+        follower = Follow.objects.filter(Q(follower=newProfile, following=secondProfile)).first()
+        following = Follow.objects.filter(Q(follower=secondProfile, following_id=newProfile)).first()
         self.assertIsNone(follower)
         self.assertIsNone(following)
 
         # check that author is not following friend
         response = friend_request(request)
 
-        follower = Follow.objects.filter(Q(follower_id=newProfile.guid, following_id=secondProfile.guid)).first()
-        following = Follow.objects.filter(Q(follower_id=secondProfile.guid, following_id=newProfile.guid)).first()
+        follower = Follow.objects.filter(Q(follower=newProfile, following=secondProfile)).first()
+        following = Follow.objects.filter(Q(follower=secondProfile, following=newProfile)).first()
         self.assertIsNotNone(follower)
         self.assertIsNone(following)
         self.assertEqual(response.status_code, 200)
@@ -396,8 +398,8 @@ class ApiViewTests(TestCase):
         response = friend_request(request)
 
         # check that friend is now following author
-        follower = Follow.objects.filter(Q(follower_id=secondProfile.guid, following_id=newProfile.guid)).first()
-        following = Follow.objects.filter(Q(follower_id=newProfile.guid, following_id=secondProfile.guid)).first()
+        follower = Follow.objects.filter(Q(follower=secondProfile, following=newProfile)).first()
+        following = Follow.objects.filter(Q(follower=newProfile, following=secondProfile)).first()
         self.assertIsNotNone(follower)
         self.assertIsNotNone(following)
         self.assertEqual(response.status_code, 200)
@@ -415,27 +417,10 @@ class ApiViewTests(TestCase):
         request = self.factory.post('/api/friendrequest/', data=request_dict, content_type='application/json')
 
         response = friend_request(request)
-        found = Friend.objects.filter(Q(requester_id=newProfile.as_dict(),accepter_id=newProfile.as_dict())).first()
+        found = Friend.objects.filter(Q(requester=newProfile,accepter=newProfile)).first()
         self.assertEqual(response.status_code, 400)
         self.assertIsNone(found)
 
-    def test_empty_name_friendrequest(self):
-        ''' invalid author ID '''
-
-        newUser = User.objects.create_user(
-            username='', email='13@email.com', password='13')
-        newProfile = Profile.objects.create(author=newUser, display_name="123")
-        secondUser = User.objects.create_user(
-            username='14', email='14@email.com', password='14')
-        secondProfile = Profile.objects.create(author=secondUser, display_name="14")
-
-        request_dict = json.dumps({"author":newProfile.as_dict(), "friend":secondProfile.as_dict()})
-        request = self.factory.post('/api/friendrequest/', data=request_dict, content_type='application/json')
-
-        response = friend_request(request)
-        found = Friend.objects.filter(Q(requester_id=newProfile.as_dict(),accepter_id=secondProfile.as_dict())).first()
-        self.assertEqual(response.status_code, 400)
-        self.assertIsNotNone(found)
 
     def test_empty_displayName_friendrequest(self):
         ''' invalid author name (is GUID) '''
@@ -451,7 +436,7 @@ class ApiViewTests(TestCase):
         request = self.factory.post('/api/friendrequest/', data=request_dict, content_type='application/json')
 
         response = friend_request(request)
-        found = Friend.objects.filter(Q(requester_id=newProfile.as_dict(),accepter_id=secondProfile.as_dict())).first()
+        found = Friend.objects.filter(Q(requester=newProfile,accepter=secondProfile)).first()
         self.assertEqual(response.status_code, 400)
         self.assertIsNotNone(found)
 
@@ -459,21 +444,22 @@ class ApiViewTests(TestCase):
         ''' test that there exists only one Follow when friending someone followed '''
 
         newUser = User.objects.create_user(
-            username='nine', email='nine@email.com', password='nine')
-        newProfile = Profile.objects.create(author=newUser, display_name="nine")
+            username='888', email='888@email.com', password='888')
+        newProfile = Profile.objects.create(author=newUser, display_name="888")
         secondUser = User.objects.create_user(
-            username='ten', email='ten@email.com', password='ten')
-        secondProfile = Profile.objects.create(author=secondUser, display_name="ten")
+            username='999', email='999@email.com', password='999')
+        secondProfile = Profile.objects.create(author=secondUser, display_name="999")
 
         Follow.objects.create(follower=newProfile,following=secondProfile)
-        firstFound = Follow.objects.filter(Q(follower=newProfile.guid,following=secondProfile.guid))
+        firstFound = Follow.objects.filter(Q(follower=newProfile,following=secondProfile))
 
         request_dict = json.dumps({"author":newProfile.as_dict(), "friend":secondProfile.as_dict()})
         request = self.factory.post('/api/friendrequest/', data=request_dict, content_type='application/json')
 
         response = friend_request(request)
 
-        found = Follow.objects.filter(Q(follower=newProfile.guid,following=secondProfile.guid))
+        found = Follow.objects.filter(Q(follower=newProfile,following=secondProfile))
+        self.assertIsNotNone(found)
         self.assertEquals(response.status_code,200)
         #TODO: Make sure these are the same found FOLLOW objects?
         # self.assertEquals(firstFound, found)

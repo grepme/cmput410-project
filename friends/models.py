@@ -13,7 +13,7 @@ class Follow(models.Model):
     following = models.ForeignKey(Profile, related_name="following")
 
     def __unicode__(self):
-        return u"{} -> {}".format(self.follower, self.following)
+        return u"{} -> {}".format(self.follower.display_name, self.following.display_name)
 
     def as_dict(self):
         return {

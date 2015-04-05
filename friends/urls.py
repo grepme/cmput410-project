@@ -9,4 +9,6 @@ urlpatterns = patterns('friends.views',
                        (r'following/?$', 'following_friends'),
                        (r'friends/?$', 'friends_friends'),
                        (r'delete/(?P<friend_guid>[-\w]+)/?$', 'delete'),
+                       (r'^follow$', 'follow_user'),
+                       (r'^friendrequest$', 'friend_request'),
 )
