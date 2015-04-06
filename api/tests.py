@@ -192,7 +192,7 @@ class ApiViewTests(TestCase):
         ''' try to get with invalid accept /api/posts/200'''
 
         # Factory for get request
-        request = self.factory.get('/api/posts/{}'.format(post_id,Accept='html/text'))
+        request = self.factory.get('/api/posts/{}'.format(post_id), Accept='html/text')
 
         # Set the user
         request.user = self.user
@@ -423,7 +423,7 @@ class ApiViewTests(TestCase):
 
 
     def test_empty_displayName_friendrequest(self):
-        ''' invalid author name (is GUID) '''
+        ''' invalid author name '''
 
         newUser = User.objects.create_user(
             username='newUser', email='13@email.com', password='13')
@@ -492,12 +492,26 @@ class ApiViewTests(TestCase):
         request = self.factory.post('/api/friends/'+str(firstProfile.guid), data=request_dict, content_type='application/json')
         response = get_friends(request,author_id=firstProfile.guid)
         print(response)
+        #TODO: FINISH ME
 
-        # found = Follow.objects.filter(Q(follower=firstProfile,following=secondProfile))
-        # self.assertIsNotNone(found)
-        # self.assertEquals(response.status_code,200)
-        #TODO: Make sure these are the same found FOLLOW objects?
-        # self.assertEquals(firstFound, found)
+    def test_yes_isfriends(self):
+        ''' test get all friends of a list with only friends '''
+        firstUser = User.objects.create_user(
+            username='b1', email='a1@email.com', password='b1')
+        firstProfile = Profile.objects.create(author=firstUser, display_name="b1")
+        secondUser = User.objects.create_user(
+            username='b2', email='a2@email.com', password='b2')
+        secondProfile = Profile.objects.create(author=secondUser, display_name="b2")
+        Friend.objects.create(requester=secondProfile,accepter=firstProfile)
+        firstFound = Friend.objects.filter(Q(accepter=firstProfile,requester=secondProfile))
+        self.assertIsNotNone(firstFound)
+        request_dict = json.dumps({})
+        request = self.factory.post('/api/friends/'+str(firstProfile.id)+"/"+str(secondProfile.id), data=request_dict, content_type='application/json')
+        response = is_friend(request)
+        print(response)
+        #TODO: FINISH ME
+
+
 
 
     # def test_not_implemented_paths(self):
