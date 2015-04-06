@@ -36,3 +36,6 @@ class Profile(GUIDModel):
             "url": self.host + "/author/" + self.guid,
             "github_name": self.github_name
         }
+
+    def __unicode__(self):
+        return u"GUID:{} display_name:{}".format(self.guid,self.display_name)
