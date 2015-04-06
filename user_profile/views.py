@@ -41,7 +41,37 @@ def update_profile(request):
         print key + " // " + value
         if key in allowed_field:
             setattr(user, key, value)
+    # Images are in a dictionary that were encoded in the multipart
+    if "upload_image" in request.FILES:
+        image = request.FILES['upload_image']
+        setattr(user, 'image', image)
+        print("picture:" + str(image))
+    else:
+        print("no picture")
+        
     user.save()
-    print user.github_name
+    print (user.author)
+    print (user.image)
 
     return HttpResponse(json.dumps({'status': True}), content_type='application/json')
+
+@login_required()
+def update_profilepic(request):
+    """This will update all posted fields"""
+    print('hi')
+    # Profile object to save
+    user = Profile.objects.get(guid=request.profile.guid)
+
+    # Images are in a dictionary that were encoded in the multipart
+    if "upload_image" in request.FILES:
+        image = request.FILES['upload_image']
+        setattr(user, 'image', image)
+        print("picture:" + str(image))
+    else:
+        print("no picture")
+        
+    user.save()
+    
+    print (user.image)
+
+    return redirect('/profile/')
