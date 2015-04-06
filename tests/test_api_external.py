@@ -307,8 +307,13 @@ class ApiTestClass(unittest.TestCase):
 
         '''
         # Put Request into Database
-        friend = Friend.objects.create(requester=self.test_profile3,accepter=self.test_profile)
-        friend2 = Friend.objects.create(requester=self.test_profile2,accepter=self.test_profile)
+        friend = None
+        friend2 = None
+        try:
+            friend = Friend.objects.create(requester=self.test_profile3,accepter=self.test_profile)
+            friend2 = Friend.objects.create(requester=self.test_profile2,accepter=self.test_profile)
+        except Exception as e:
+            pass
 
         request = HttpRequest()
         request.profile = self.test_profile2
