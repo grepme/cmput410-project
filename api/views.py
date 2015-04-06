@@ -341,11 +341,8 @@ def get_post(request, post_id=None, page="0"):
         posts_query = Post.objects.filter(visibility=Post.public).order_by('-date')
         return_data = model_list(posts_query)
 
-
-
         # TODO Add pagination
-        # print return_data
-        return JsonResponse({"posts": return_data})
+    return JsonResponse({"posts": return_data})
 
 
 @csrf_exempt
