@@ -112,8 +112,6 @@ def all_posts(request):
     for remote_server in Server.objects.all():
         if(remote_server.get_posts() is not None):
             remote_posts.append(remote_server.get_posts())
-        print(remote_posts)
-    print(len(Server.objects.all()))
 
     # Nested query lookups aren't supported, so we need to make multiple queries :(
     return render(request, 'posts/all.html', {'posts': p, 'remote': remote_posts})
