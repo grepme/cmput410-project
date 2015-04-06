@@ -124,32 +124,32 @@ def my_posts(request):
 @login_required
 def new_github_post(request, source=None):
     origin = request.build_absolute_uri().strip("new/")
-    
+
     # Profile object to save
     user = request.profile
     github = user.github_name
-    
+
     d = feedparser.parse("http://github.com/" + github + ".atom")
-    
+
     title = d.entries[0].title
     link = d.entries[0].link
-    
+
     summary = d.entries[0].summary
     parsed_html = BeautifulSoup(summary)
     if (str(parsed_html.blockquote)=="None"):
         text = "None"
     else:
         text = str(parsed_html.blockquote.string).strip()
-    
+
     text_format = False
-    
+
     visibility = Post.get_visibility('PUBLIC')
-    
+
     image = None
-    
+
     source = origin
-    
-    
+
+
     # Make the post object
     p = Post.objects.create(title=title, date=timezone.now(), text=text, image=image, origin=origin,
                             source=source, visibility=visibility, commonmark=text_format, author=user)
