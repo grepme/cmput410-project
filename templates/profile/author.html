@@ -13,12 +13,12 @@
                     </div>
                     <div class="panel-body">
                         {# We allow editing of the profile if this is the user' profile, else display #}
-                        {% if user.username == profile.author.username %}
+                        {% if user.username == author_profile.author.username %}
                         <div class="row">
                             <div class="col-lg-12">
                                 <div class="input-group">
                                     <span class="input-group-addon">Display Name</span>
-                                    <input type="text" class="form-control" placeholder="{{ profile.display_name }}"
+                                    <input type="text" class="form-control" placeholder="{{ author_profile.display_name }}"
                                            disabled>
                                     <span class="input-group-btn">
                                     <button class="btn btn-default" onclick="editProfileField(this, 'display_name')">
@@ -72,7 +72,7 @@
                             </div>
                             </div>
                         {% else %}
-                            <p>Display Name: {{ profile.display_name }}</p>
+                            <p>Display Name: {{ author_profile.display_name }}</p>
                         {% endif %}
 
                     </div>

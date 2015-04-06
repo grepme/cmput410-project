@@ -15,9 +15,9 @@ def profile(request, author):
     # https://docs.djangoproject.com/en/1.7/topics/db/queries/#lookups-that-span-relationships
     profile = Profile.objects.filter(display_name=author).first()
     if profile is not None:
-        return render(request, "profile/author.html", {'profile': profile})
+        return render(request, "profile/author.html", {'author_profile': profile, 'profile': request.profile})
     # TODO: Return profile not found if that's the case
-    return render(request, "profile/author.html", {'profile': request.profile})
+    return render(request, "profile/author.html", {'author_profile': request.profile, 'profile': request.profile})
 
 @login_required
 def user_profile(request):
