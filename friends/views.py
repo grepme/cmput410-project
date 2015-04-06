@@ -161,7 +161,7 @@ def friend_request(request, page="0"):
         except Exception as e:
             print e
 
-        found = Friend.objects.filter(Q(requester=friend, accepter=author)).first()
+        found = Friend.objects.filter(Q(requester=friend, accepter=author) | Q(accepter=friend,requester=author)).first()
 
         if found is not None:
             found.accepted = True

@@ -271,35 +271,31 @@ def get_foaf_servers(profile, author, friends):
 def get_posts(request, author_id=None, page="0"):
     # author/posts
     #author/author_id/posts
-    try:
 
-        query = get_post_query(request)
+    query = get_post_query(request)
 
-        # user specified a specific user id they want to find
-        if author_id is not None and author_id != request.profile.guid:
-            query = ( query ) & Q(author__guid=author_id)
-        elif author_id is not None:
-            # author id = same user
-            query = Q(author__guid=request.profile.guid)
+    # user specified a specific user id they want to find
+    if author_id is not None and author_id != request.profile.guid:
+        query = ( query ) & Q(author__guid=author_id)
+    elif author_id is not None:
+        # author id = same user
+        query = Q(author__guid=request.profile.guid)
 
-        # Check if user is valid
-        # TODO Decorator?
-        if author_id is not None:
-            try:
-                Profile.objects.get(guid=author_id)
-            except Profile.DoesNotExist as e:
-                return JsonNotFound("Author",author_id)
+    # Check if user is valid
+    # TODO Decorator?
+    if author_id is not None:
+        try:
+            Profile.objects.get(guid=author_id)
+        except Profile.DoesNotExist as e:
+            return JsonNotFound("Author",author_id)
 
-        posts_query = Post.objects.filter(query)
-        posts = model_list(posts_query)
+    posts_query = Post.objects.filter(query)
+    posts = model_list(posts_query)
 
-        # TODO Add Pagination
-        data = {"posts": posts}
+    # TODO Add Pagination
+    data = {"posts": posts}
 
-        return JsonResponse(data)
-    except Exception as e:
-        print e
-        raise e
+    return JsonResponse(data)
 
 
 @csrf_exempt
