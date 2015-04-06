@@ -1,0 +1,45 @@
+{% for profile in profiles %}
+<div id="div_{{profile.guid}}" class="col-lg-12 col-md-12 col-sm-12">
+    <div class="col-lg-3 col-md-3 col-sm-3">
+        <a href="{{profile.host}}/profile/{{profile.display_name}}"><img src="http://placehold.it/100x100" alt="" class="img-thumbnail"></a>
+    </div>
+    <div class="col-lg-9 col-md-9 col-sm-9">
+        <span class="search-user-displayname">
+             <a href="{{profile.profile.host}}/profile/{{profile.display_name}}">{{profile.display_name}}</a>
+         </span>
+          <div class="btn-group btn-group-md pull-right" role="group" aria-label="...">
+            <button type="button" class="btn btn-danger decline-button" value="{{profile.guid}}" data-displayname="{{profile.display_name}}"><i class="glyphicon glyphicon-remove"></i>&nbsp;Decline</button>
+            <button type="button" class="btn btn-success accept-button" value="{{profile.guid}}" data-displayname="{{profile.display_name}}"><i class="glyphicon glyphicon-user"></i>&nbsp;Accept</button>
+        </div>
+    </div>
+
+
+</div>
+{% endfor %}
+
+<script>
+$(function() {
+
+    $(".decline-button").click(function() {
+        friendGuid = $(this).attr('value');
+        $.post( "delete/"+friendGuid, JSON.stringify({}),
+            // callback
+            function( data ) {
+                if(data == "200"){
+                    $("#div_"+friendGuid).hide();
+                }
+            });
+    });
+
+    $(".accept-button").click(function() {
+        friendGuid = $(this).attr("friend-guid");
+        $.post( "delete/"+friendGuid, JSON.stringify({}),
+            // callback
+            function( data ) {
+                if(data == "200"){
+                    $("#div_"+friendGuid).hide();
+                }
+            });
+    });
+});
+</script>

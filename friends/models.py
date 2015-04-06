@@ -8,9 +8,12 @@ class Follow(models.Model):
     # when started following
     date = models.DateTimeField(auto_now_add=True)
     # who started following
-    follower = models.ForeignKey(Profile, related_name="follower", primary_key=True)
+    follower = models.ForeignKey(Profile, related_name="follower")
     # who was followed
     following = models.ForeignKey(Profile, related_name="following")
+
+    class Meta:
+        unique_together = ('follower', 'following')
 
     def __unicode__(self):
         return u"{} -> {}".format(self.follower.display_name, self.following.display_name)
