@@ -19,7 +19,8 @@ from api.models import Server
 from django.contrib.auth.models import User
 from django.conf import settings
 from user_profile.models import Profile
-from friends.models import Friend,Follow
+from django.db.models import Q
+from friends.models import Friend,Follow,FriendRequest
 from posts.models import Post
 from django.utils import timezone
 from django.core import management
@@ -218,7 +219,7 @@ class ApiTestClass(unittest.TestCase):
         self.assertEqual(response,None)
 
         # Throw error if we cannot find this request
-        Friend.objects.get(requester=profile,accepter=self.test_profile,accepted=False)
+        FriendRequest.objects.get(requester=profile,accepter=self.test_profile)
         Follow.objects.get(follower=profile,following=self.test_profile)
 
         # Try duplicate requests
@@ -233,8 +234,12 @@ class ApiTestClass(unittest.TestCase):
         self.assertEqual(response,None)
 
         # Check database for the Request
-        Friend.objects.get(requester=profile,accepter=self.test_profile,accepted=True)
-        Follow.objects.get(follower=profile,following=self.test_profile)
+        friend = Friend.objects.filter(Q(requester=profile,accepter=self.test_profile) | Q(requester=self.test_profile,accepter=profile)).first()
+        print Friend.objects.all()
+        self.assertNotEqual(friend,None)
+
+        follow = Follow.objects.filter(Q(follower=profile,following=self.test_profile) | Q(following=profile,follower=self.test_profile))
+        self.assertNotEqual(follow,None)
 
         # Accept the request
         response = self.server.post_friend_request(requester=self.test_profile, accepter=profile)
@@ -250,7 +255,7 @@ class ApiTestClass(unittest.TestCase):
 
         '''
         # Put Request into Database
-        friend = Friend.objects.create(requester=self.test_profile3,accepter=self.test_profile,accepted=True)
+        friend = Friend.objects.create(requester=self.test_profile3,accepter=self.test_profile)
         response = self.server.get_friends_id_id(friend_guid=self.test_profile.guid,friend_2_guid=self.test_profile3.guid)
         self.assertEqual(response["friends"],u"YES")
         friend.delete()
@@ -265,8 +270,8 @@ class ApiTestClass(unittest.TestCase):
 
 
         # Put Request into Database
-        friend = Friend.objects.create(requester=self.test_profile3,accepter=self.test_profile,accepted=True)
-        friend2 = Friend.objects.create(requester=self.test_profile2,accepter=self.test_profile,accepted=True)
+        friend = Friend.objects.create(requester=self.test_profile3,accepter=self.test_profile)
+        friend2 = Friend.objects.create(requester=self.test_profile2,accepter=self.test_profile)
 
         response = self.server.get_friends_list(friend_guid=self.test_profile.guid, friends_list=[self.test_profile3.guid,self.test_profile2.guid,'7a1c7226-d1e4-11e4-aa4c-b8f6b116b2b7','e725d1c2-d3d6-11e4-97dc-b8f6b116b2b7','f0e2aec2-d3d6-11e4-8af3-b8f6b116b2b7','0471f261-d3d7-11e4-9922-b8f6b116b2b7'])
         self.assertTrue(self.test_profile3.guid in response["friends"])
@@ -282,8 +287,8 @@ class ApiTestClass(unittest.TestCase):
 
         '''
         # Put Request into Database
-        friend = Friend.objects.create(requester=self.test_profile3,accepter=self.test_profile,accepted=True)
-        friend2 = Friend.objects.create(requester=self.test_profile2,accepter=self.test_profile,accepted=True)
+        friend = Friend.objects.create(requester=self.test_profile3,accepter=self.test_profile)
+        friend2 = Friend.objects.create(requester=self.test_profile2,accepter=self.test_profile)
 
         request = HttpRequest()
         request.profile = self.test_profile2
@@ -302,8 +307,8 @@ class ApiTestClass(unittest.TestCase):
 
         '''
         # Put Request into Database
-        friend = Friend.objects.create(requester=self.test_profile3,accepter=self.test_profile,accepted=True)
-        friend2 = Friend.objects.create(requester=self.test_profile2,accepter=self.test_profile,accepted=True)
+        friend = Friend.objects.create(requester=self.test_profile3,accepter=self.test_profile)
+        friend2 = Friend.objects.create(requester=self.test_profile2,accepter=self.test_profile)
 
         request = HttpRequest()
         request.profile = self.test_profile2

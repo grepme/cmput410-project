@@ -3,6 +3,7 @@ from django.contrib.auth.decorators import login_required
 from django.contrib.auth import authenticate, login as django_login, logout as django_logout
 from django.contrib.auth.models import User
 from django.views.decorators.csrf import csrf_protect
+from django.db.models import Q
 from posts.models import Post
 from user_profile.models import Profile
 import feedparser
@@ -75,7 +76,13 @@ def dashboard(request):
     """The dashboard contains all required information for the social network."""
     # Grab the user's stream (needs to be updated)
     # TODO: Is the stream only their posts?
-    posts = Post.objects.filter(author=request.profile)
+
+    # All My Posts
+    # All Posts of anyone I follow with Public Visibility
+    # Any posts of my friends with Visibility Friends
+    # Any of my Friends that have same server and visibility local friends
+    # FOAF - Local and Remote
+    posts = Post.objects.filter(Q(author=request.profile))
 
     # TODO: Time stamps need to be standardized and formatted.
     # TODO: Limit them to 5?

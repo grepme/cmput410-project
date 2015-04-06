@@ -242,9 +242,7 @@ def get_foaf_servers(profile, author, friends):
 
     # Check if the Author is
     try:
-        friends_query = Friend.objects.filter(
-            Q(accepter=author, requester__in=friends_profiles, accepted=True) | Q(requester=author, accepter__in=friends_profiles,
-                                                                         accepted=True))
+        friends_query = Friend.objects.filter(Q(accepter=author, requester__in=friends_profiles) | Q(requester=author, accepter__in=friends_profiles))
     except Exception as e:
         print e
 
@@ -414,8 +412,7 @@ def get_friends(request, author_id=None, page="0"):
 
     # get all accepted friends
     friends = Friend.objects.filter(
-        Q(requester__in=profile_list, accepted=True, accepter=author) | Q(accepter__in=profile_list, accepted=True,
-                                                                          requester=author))
+        Q(requester__in=profile_list, accepter=author) | Q(accepter__in=profile_list,requester=author))
 
     return_friends = get_other_profiles(author, friends)
 
@@ -451,7 +448,7 @@ def is_friend(request, author_id=None, author_2_id=None, page="0"):
     except:
         pass
 
-    friend = Friend.objects.filter(Q(requester=author, accepted=True, accepter=author_2) | Q(accepter=author, accepted=True,requester=author_2)).first()
+    friend = Friend.objects.filter(Q(requester=author,  accepter=author_2) | Q(accepter=author, requester=author_2)).first()
 
     if friend is not None:
         response_data["friends"] = "YES"

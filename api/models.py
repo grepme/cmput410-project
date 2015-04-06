@@ -119,7 +119,7 @@ class Server(models.Model):
             "query":"getpost",
             "id":post_guid,
             "author": profile.as_dict(),
-            "friends": get_other_profiles(profile,Friend.objects.filter(Q(accepter=profile,accepted=True) | Q(requester=profile,accepted=True)))
+            "friends": get_other_profiles(profile,Friend.objects.filter(Q(accepter=profile) | Q(requester=profile)))
         }
 
         request = urllib2.Request("{api_path}{path}".format(api_path=self.get_api_path(), path=self.posts_id_post).format(post_guid=post_guid), json.dumps(post_data))

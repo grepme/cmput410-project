@@ -2,7 +2,7 @@ from django.http import HttpResponse, HttpResponseBadRequest
 from django.shortcuts import render
 from django.contrib.auth.decorators import login_required
 
-from friends.models import Friend, Follow
+from friends.models import Friend, Follow, FriendRequest
 from django.db.models import Q
 from django.db import IntegrityError
 from user_profile.models import Profile
@@ -35,7 +35,7 @@ def friends(request):
 @login_required
 def friends_friends(request):
     # find all of our friends
-    friends_query = Friend.objects.filter(Q(accepter=request.profile,accepted=True) | Q(requester=request.profile,accepted=True))
+    friends_query = Friend.objects.filter(Q(accepter=request.profile) | Q(requester=request.profile))
 
     friends_profile = get_other_profiles(request.profile,friends_query)
 
@@ -54,14 +54,14 @@ def following_friends(request):
 @login_required
 def incoming_friends(request):
     # get current friends
-    incoming_query = Friend.objects.filter(accepter=request.profile,accepted=False)
+    incoming_query = FriendRequest.objects.filter(accepter=request.profile)
     profiles = [item.requester for item in incoming_query]
     return render(request, "friends/request.html", {'profiles': profiles, "user":request.user})
 
 @login_required
 def sent_friends(request):
     # get current friends
-    sent_query = Friend.objects.filter(requester=request.profile,accepted=False)
+    sent_query = FriendRequest.objects.filter(requester=request.profile)
     profiles = [item.accepter for item in sent_query]
     return render(request, "friends/request.html", {'profiles': profiles, "user":request.user})
 
@@ -161,25 +161,21 @@ def friend_request(request, page="0"):
         except Exception as e:
             print e
 
-        found = Friend.objects.filter(Q(requester=friend, accepter=author) | Q(accepter=friend,requester=author)).first()
+        found = FriendRequest.objects.filter(Q(requester=friend, accepter=author) | Q(accepter=friend,requester=author)).first()
+        found_friend = Friend.objects.filter(Q(requester=friend, accepter=author) | Q(accepter=friend,requester=author)).first()
 
         if found is not None:
-            found.accepted = True
-            try:
-                Follow.objects.create(follower=author, following=friend)
-            except IntegrityError as e:
-                pass
-            found.save()
-
-            return HttpResponse()
-
+            friend = None
+            if found_friend is None:
+                friend = Friend.objects.create(requester=found.requester,accepter=found.accepter)
+            found.delete()
+            return HttpResponse(friend)
         else:
-            Friend.objects.create(requester=author, accepter=friend)
+            FriendRequest.objects.create(requester=author, accepter=friend)
             try:
                 Follow.objects.create(follower=author, following=friend)
             except IntegrityError as e:
                 pass
-
             # TODO: return 201?
             return HttpResponse(200)
 
