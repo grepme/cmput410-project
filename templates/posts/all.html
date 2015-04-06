@@ -73,7 +73,7 @@
                 <span class="glyphicon  glyphicon-comment" aria-hidden="true"></span> Add Comment
             </button>
         </div>
-        <div style="float: right;">{{ post.author.displayname }} on {{ post.pubdate }}</div>
+        <div style="float: right;"> <a href="{{profile.host}}/profile/{{ post.author.display_name }}/">{{ post.author.display_name }}</a> on {{ post.pubdate }}</div>
 
         <br/>
         {% if  post.commonmark %}

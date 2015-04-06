@@ -1,9 +1,9 @@
 {% load posts_extra %}
 {% for comment in post.comment_set.all %}
     <div class="col-md-12" style="background-color: white;">
-        <span style="font-weight:bold;font-size:125%;">{{ comment.author.profile_set.get.display_name }}</span>
 
-        <div style="float: right;">{{ comment.date }}</div>
+        <div style="float: right;"><span style="font-weight:bold;font-size:125%;"> <a href="{{comment.author.profile.host}}/profile/{{ comment.author.display_name }}/">{{ comment.author.display_name }}</a></span>
+        on {{ comment.date }}</div>
 
         <br/>
         {% if  post.commonmark %}
