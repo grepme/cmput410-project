@@ -34,6 +34,7 @@
       "auth_type": "Basic",
       "auth_user": "user",
       "auth_password": "pass",
+      "api_path": "",
       "realm": "hi",
       "posts": "/main/getposts/"
     },
@@ -47,7 +48,7 @@
       "auth_user": "user",
       "auth_password": "pass",
       "realm": "hi",
-      "api_path": "/main/",
+      "api_path": "/main/api/",
       "posts": "/getposts/"
     },
     "model": "api.server",

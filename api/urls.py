@@ -11,7 +11,7 @@ urlpatterns = patterns('api.views',
                         # can view
 #                       author/id1/posts
                         #  /api/author/ef3e0e05-c5f8-11e4-a972-b8f6b116b2b7/posts/
-                        (r'^author/(?:(?P<author_id>{}/?))?posts/?(?:/(?P<page>\d*)/?)?$'.format(id_regex), 'get_posts'),
+                        (r'^author/(?:(?P<author_id>{})/?)?posts/?(?:/(?P<page>\d*)/?)?$'.format(id_regex), 'get_posts'),
 
                        # Get a specific post or all public posts
                        (r'^posts/?(?:(?P<post_id>{}))?/?$'.format(id_regex), 'get_post'),

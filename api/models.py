@@ -8,6 +8,7 @@ from friends.models import Friend, Follow
 from posts.models import Post
 from tags.models import Tag
 from django.contrib.auth.models import User
+from django.db.models import Q
 
 
 class Server(models.Model):
@@ -39,7 +40,7 @@ class Server(models.Model):
         request.add_header("Authorization", "Basic %s" % base64string)
 
         # Add User header for current auth user
-        request.add_header("Profile", "%s" % user_request.profile.guid)
+        request.add_header("User", "%s" % user_request.profile.guid)
         try:
             result = urllib2.urlopen(request)
         except (urllib2.HTTPError, urllib2.URLError) as e:
@@ -108,12 +109,24 @@ class Server(models.Model):
             return e
         return json.loads(result.read())
 
-    def post_posts_id(self, post_guid):
+    def post_posts_id(self, user_request, post_guid):
 
-        request = urllib2.Request("{api_path}{path}".format(api_path=self.get_api_path(), path=self.posts_id_post).format(post_guid=post_guid))
+        profile = user_request.profile
+
+        from api.views import get_other_profiles
+
+        post_data = {
+            "query":"getpost",
+            "id":post_guid,
+            "author": profile.as_dict(),
+            "friends": get_other_profiles(profile,Friend.objects.filter(Q(accepter=profile) | Q(requester=profile)))
+        }
+
+        request = urllib2.Request("{api_path}{path}".format(api_path=self.get_api_path(), path=self.posts_id_post).format(post_guid=post_guid), json.dumps(post_data))
         # Assume basic Auth
         base64string = base64.encodestring('%s:%s' % (self.auth_user, self.auth_password)).replace('\n', '')
         request.add_header("Authorization", "Basic %s" % base64string)
+
         try:
             result = urllib2.urlopen(request)
         except (urllib2.HTTPError, urllib2.URLError) as e:
@@ -145,7 +158,7 @@ class Server(models.Model):
             "authors": friends_list
         }
 
-        path = urllib2.Request("{api_path}{path}".format(api_path=self.get_api_path(),path=self.friends_list).format(friend_guid=friend_guid))
+        path = "{api_path}{path}".format(api_path=self.get_api_path(),path=self.friends_list).format(friend_guid=friend_guid)
         request = urllib2.Request(path, json.dumps(post_data))
         # Assume basic Auth
         base64string = base64.encodestring('%s:%s' % (self.auth_user, self.auth_password)).replace('\n', '')

@@ -1,5 +1,5 @@
 {% for profile in profiles %}
-<div class="search-user col-lg-12 col-md-12 col-sm-12">
+<div class="search-user col-lg-12 col-md-12 col-sm-12" id = "div_{{profile.guid}}">
     <div class="col-lg-3 col-md-3 col-sm-3">
         <a href="{{profile.host}}/profile/{{profile.display_name}}"><img src="http://placehold.it/100x100" alt="" class="img-thumbnail"></a>
     </div>
@@ -8,9 +8,29 @@
             <a href="{{profile.profile.host}}/profile/{{profile.display_name}}">{{profile.display_name}}</a>
         </span>
         <div class="btn-group-vertical btn-group-xs pull-right" role="group" aria-label="...">
-            <button type="button" class="btn btn-warning follow-button" value="{{profile.guid}}" data-displayname="{{profile.display_name}}"><i class="glyphicon glyphicon-eye-open"></i>&nbsp;Follow</button>
-            <button type="button" class="btn btn-primary friend-button" value="{{profile.guid}}" data-displayname="{{profile.display_name}}"><i class="glyphicon glyphicon-user"></i>&nbsp;Add Friend</button>
+            {% if direction == "sent" %}
+                <button id="btn_{{profile.guid}}" type="button" class="btn btn-primary remove-button" friend-guid="{{profile.guid}}"><i class="glyphicon glyphicon-user"></i>&nbsp;Remove</button>
+            {% elif direction == "incoming" %}
+                <button type="button" class="btn btn-warning follow-button" value="{{profile.guid}}" data-displayname="{{profile.display_name}}"><i class="glyphicon glyphicon-eye-open"></i>&nbsp;Follow</button>
+                <button type="button" class="btn btn-primary friend-button" value="{{profile.guid}}" data-displayname="{{profile.display_name}}"><i class="glyphicon glyphicon-user"></i>&nbsp;Add Friend</button>
+            {% endif %}
         </div>
     </div>
 </div>
 {% endfor %}
+<script>
+$(function() {
+
+    $(".btn.btn-primary.remove-button").click(function() {
+        friendGuid = $(this).attr("friend-guid");
+
+        $.post( "delete/"+friendGuid, JSON.stringify({}),
+            // callback
+            function( data ) {
+                if(data == "200"){
+                    $("#div_"+friendGuid).hide();
+                }
+            });
+    });
+});
+</script>

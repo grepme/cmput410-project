@@ -27,6 +27,8 @@ class Profile(GUIDModel):
 
     # TODO: Figure out if 55 characters is enough for a Github username
     github_name = models.CharField(max_length=55)
+    
+    image = models.ImageField(blank=True, upload_to='images/%Y/%m/%d')
 
     def as_dict(self):
         return {
@@ -36,3 +38,6 @@ class Profile(GUIDModel):
             "url": self.host + "/author/" + self.guid,
             "github_name": self.github_name
         }
+
+    def __unicode__(self):
+        return u"GUID:{} display_name:{}".format(self.guid,self.display_name)

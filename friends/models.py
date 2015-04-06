@@ -8,9 +8,12 @@ class Follow(models.Model):
     # when started following
     date = models.DateTimeField(auto_now_add=True)
     # who started following
-    follower = models.ForeignKey(Profile, related_name="follower", primary_key=True)
+    follower = models.ForeignKey(Profile, related_name="follower")
     # who was followed
     following = models.ForeignKey(Profile, related_name="following")
+
+    class Meta:
+        unique_together = ('follower', 'following')
 
     def __unicode__(self):
         return u"{} -> {}".format(self.follower.display_name, self.following.display_name)
@@ -32,8 +35,6 @@ class Friend(models.Model):
     accepter = models.ForeignKey(Profile, related_name="accepter")
     # who started following
     requester = models.ForeignKey(Profile, related_name="requester")
-    # did accepter accept the request
-    accepted = models.BooleanField(default=False)
 
     def __unicode__(self):
         return u"{} -> {}".format(self.requester, self.accepter)
@@ -45,3 +46,19 @@ class Friend(models.Model):
             "friend": self.accepter.as_dict(),
             "date": self.date
         }
+
+    class Meta:
+        unique_together = (('requester', 'accepter'),)
+
+class FriendRequest(models.Model):
+    # when request was accepted
+    date = models.DateTimeField(auto_now_add=True)
+    requester = models.ForeignKey(Profile, related_name="frrequester")
+    accepter = models.ForeignKey(Profile, related_name="fraccepter")
+
+    def __unicode__(self):
+        return u"{} -> {}".format(self.requester, self.accepter)
+
+    class Meta:
+        unique_together = (('requester', 'accepter'),)
+
