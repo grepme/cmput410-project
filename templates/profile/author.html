@@ -38,12 +38,13 @@
                         <h3 class="panel-title">Profile Details</h3>
                     </div>
                     <div class="panel-body">
-                        
+                        {# We allow editing of the profile if this is the user' profile, else display #}
+                        {% if user.username == author_profile.author.username %}
                         <div class="row">
                             <div class="col-lg-12">
                                 <div class="input-group">
                                     <span class="input-group-addon">Display Name</span>
-                                    <input type="text" class="form-control" placeholder="{{ profile.display_name }}"
+                                    <input type="text" class="form-control" placeholder="{{ author_profile.display_name }}"
                                            disabled>
                                     <span class="input-group-btn">
                                     <button class="btn btn-default" onclick="editProfileField(this, 'display_name')">
@@ -96,6 +97,14 @@
 
                             </div>
                             </div>
+                        {% else %}
+                        <p>Display Name: {{ author_profile.display_name }}</p>
+                        <div class="btn-group btn-group-m pull-right" role="group" aria-label="...">
+                            <button type="button" class="btn btn-warning follow-button" value="{{author_profile.guid}}" data-displayname="{{author_profile.display_name}}"><i class="glyphicon glyphicon-eye-open"></i>&nbsp;Follow</button>
+                            <button type="button" class="btn btn-primary friend-button" value="{{author_profile.guid}}" data-displayname="{{author_profile.display_name}}"><i class="glyphicon glyphicon-user"></i>&nbsp;Add Friend</button>
+                        </div>
+                        {% endif %}
+
                     </div>
                 </div>
             </div>
@@ -105,4 +114,45 @@
         </div>
     </div>
     </div>
+<script>
+    function requestUser() {
+    var button = $(this);
+    var isFollow = button.attr('class').indexOf("follow");
+    button.attr('disabled',true);
+
+    if(isFollow > -1) {
+        // We clicked follow button
+        $.post( "/friends/follow", JSON.stringify({
+           "query":"friendrequest",
+           "author":{
+           "id":"{{profile.guid}}",
+              "host":"http://127.0.0.1:8000/",
+              "displayname":"{{user.profile.display_name}}",
+              "url": "http://" + location.host + "/author/{{user.profile.display_name}}"},
+           "follow":{
+              "id":$(this).attr('value'),
+              "host":"http://" + location.host,
+              "displayname": $(this).attr('data-displayname'),
+              "url":"http://" + location.host + "/author/" + $(this).attr('value')
+           }
+        }) , function( data ) {});
+    } else {
+        $.post( "/friends/friendrequest", JSON.stringify({
+           "query":"friendrequest",
+           "author":{
+           "id":"{{profile.guid}}",
+              "host":"http://127.0.0.1:8000/",
+              "displayname":"{{user.profile.display_name}}",
+              "url": "http://" + location.host + "/author/{{user.profile.display_name}}"},
+           "friend":{
+              "id":$(this).attr('value'),
+              "host":"http://" + location.host,
+              "displayname": $(this).attr('data-displayname'),
+              "url":"http://" + location.host + "/author/" + $(this).attr('value')
+           }
+        }) , function( data ) {});
+    }
+}
+$("button[class$='-button']").click(requestUser);
+</script>
 {% endblock %}

@@ -3,7 +3,9 @@ from django.contrib.auth.decorators import login_required
 from django.contrib.auth import authenticate, login as django_login, logout as django_logout
 from django.contrib.auth.models import User
 from django.views.decorators.csrf import csrf_protect
+from django.db.models import Q
 from posts.models import Post
+from friends.models import Friend,Follow
 from user_profile.models import Profile
 import feedparser
 
@@ -70,12 +72,58 @@ def signup(request):
                 pass
     return render(request, 'framework/login.html', {'body_class': 'login-page', 'nav_bar': False})
 
+def get_other_profiles(profile, query):
+    profiles = list()
+
+    for query_item in query:
+        if query_item.accepter == profile:
+            profiles.append(query_item.requester)
+        else:
+            profiles.append(query_item.accepter)
+    return profiles
+
+
+def get_other_friends(friends, query):
+    profiles = list()
+    for query_item in query:
+        if query_item.accepter in friends:
+            profiles.append(query_item.requester)
+        else:
+            profiles.append(query_item.accepter)
+    return profiles
+
 @login_required
 def dashboard(request):
     """The dashboard contains all required information for the social network."""
     # Grab the user's stream (needs to be updated)
     # TODO: Is the stream only their posts?
-    posts = Post.objects.filter(author=request.profile)
+
+    # All My Posts
+    # All Posts of anyone I follow with Public Visibility
+    # Any posts of my friends with Visibility Friends and following
+    # Any of my Friends that have same server and visibility local friends
+    # FOAF - Local and Remote
+
+    # All people I follow
+    following = Follow.objects.filter(follower=request.profile)
+
+    # My Friends
+    friends = Friend.objects.filter(Q(requester=request.profile) | Q(accepter=request.profile))
+
+    # The Friends Profile
+    friends = get_other_profiles(request.profile,friends)
+
+    # Get my Friends of Friends
+    friends_friends = Friend.objects.filter(Q(requester__in=friends) | Q(accepter__in=friends))
+
+    # Get the other friends..
+    friends_friends = get_other_friends(friends,friends_friends)
+
+    posts = Post.objects.filter(Q(author=request.profile) | Q(author__following__in=following,visibility=Post.public) |
+                                Q(visibility=Post.friend, author__accepter=request.profile,author__following__in=following) |
+                                Q(visibility=Post.server, author__accepter=request.profile,author__following__in=following) |
+                                Q(visibility=Post.friend, author__requester=request.profile,author__following__in=following) |
+                                Q(author__in=friends_friends,visibility=Post.FOAF)).distinct()
 
     # TODO: Time stamps need to be standardized and formatted.
     # TODO: Limit them to 5?
