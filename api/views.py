@@ -90,9 +90,7 @@ def auth_as_user():
                                        'request': request
                                    }
                     )
-                    response = HttpResponse("Unauthorized ({}): {}".format(request.META.get('HTTP_USER'), request.path))
-                    response.status_code = 401
-                    return response
+                    return JsonUnauthorized()
             return func(request, *args, **kwargs)
 
         return inner
@@ -209,6 +207,21 @@ def has_keys(keys, dictionary, main_key):
 def compare(s, t):
     return Counter(s) == Counter(t)
 
+def JsonNotFound(model,model_id):
+    response = JsonResponse({"message": "{} with id {} does not exist".format(model,model_id)})
+    response.status_code = 404
+    return response
+
+def JsonBadRequest():
+    response = JsonResponse({"message": "Malformed request data"})
+    response.status_code = 400
+    return response
+
+def JsonUnauthorized():
+    response = JsonResponse({"message": "Unauthorized"})
+    response.status_code = 401
+    return response
+
 
 # Profile = User Who is trying to get post
 # Author = Author of the Post we are trying to get
@@ -274,10 +287,7 @@ def get_posts(request, author_id=None, page="0"):
         try:
             Profile.objects.get(guid=author_id)
         except Profile.DoesNotExist as e:
-            # return a better error for missing user
-            response = JsonResponse({"message": "Author with id {} does not exist".format(author_id)})
-            response.status_code = 404
-            return response
+            return JsonNotFound("Author",author_id)
 
     posts_query = Post.objects.filter(query)
     posts = model_list(posts_query)
@@ -300,12 +310,12 @@ def get_post(request, post_id=None, page="0"):
         try:
             data = json.loads(request.body)
         except ValueError as e:
-            return HttpResponseBadRequest()
+            return JsonBadRequest()
 
         try:
             post = Post.objects.get(guid=post_id)
         except Exception as e:
-            return HttpResponseNotFound()
+            return JsonNotFound("Post",post_id)
 
         post_author = post.author
 
@@ -314,9 +324,7 @@ def get_post(request, post_id=None, page="0"):
             author = data["author"]
 
             if not get_foaf_servers(author, post_author, data["friends"]):
-                res = HttpResponse("Unauthorized")
-                res.status_code = 401
-                return res
+                return JsonUnauthorized()
             else:
                 return JsonResponse({"posts": [post.as_dict()]})
 
@@ -329,9 +337,7 @@ def get_post(request, post_id=None, page="0"):
         return_data = model_list(posts_query)
 
         if len(posts_query) == 0:
-            response = JsonResponse({"message": "Post with id {} does not exist".format(post_id)})
-            response.status_code = 404
-            return response
+            return JsonNotFound("Post",post_id)
 
     else:
         posts_query = Post.objects.filter(visibility=Post.public).order_by('-date')
@@ -388,7 +394,7 @@ def get_friends(request, author_id=None, page="0"):
     try:
         data = json.loads(request.body)
     except ValueError as e:
-        return HttpResponseBadRequest()
+        return JsonBadRequest()
 
     if data['author'] is not None and data['authors'] is not None:
         # List of authors
@@ -397,14 +403,12 @@ def get_friends(request, author_id=None, page="0"):
         try:
             author = Profile.objects.get(guid=data['author'])
         except Profile.DoesNotExist as e:
-            res = HttpResponse("Profile with id {} does not exist".format(data['author']))
-            res.status_code = 404
-            return res
+            return JsonNotFound("Profile",data["author"])
 
         if author.guid != author_id:
-            return HttpResponseBadRequest()
+            return JsonBadRequest()
     else:
-        return HttpResponseBadRequest()
+        return JsonBadRequest()
 
     profile_list = Profile.objects.filter(guid__in=friends_list)
 
