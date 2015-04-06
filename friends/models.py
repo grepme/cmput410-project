@@ -47,6 +47,9 @@ class Friend(models.Model):
             "date": self.date
         }
 
+    class Meta:
+        unique_together = (('requester', 'accepter'),)
+
 class FriendRequest(models.Model):
     # when request was accepted
     date = models.DateTimeField(auto_now_add=True)

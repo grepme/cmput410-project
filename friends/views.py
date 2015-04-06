@@ -81,11 +81,20 @@ def delete(request, friend_guid):
     friend_profile = Profile.objects.filter(guid=friend_guid).first()
     old_friend = Friend.objects.filter(Q(requester=request.profile, accepter=friend_profile) |
                                        Q(accepter=request.profile, requester=friend_profile)).first()
+
+    old_friend_request = FriendRequest.objects.filter(Q(requester=request.profile, accepter=friend_profile) |
+                                       Q(accepter=request.profile, requester=friend_profile)).first()
+
+
     if old_friend is not None:
         old_friend.delete()
         nothing_found = False
-    old_follow = Follow.objects.filter(Q(following=request.profile, follower=friend_profile) |
-                                       Q(follower=request.profile, following=friend_profile)).first()
+
+    if old_friend_request is not None:
+        old_friend_request.delete()
+        nothing_found = False
+
+    old_follow = Follow.objects.filter(Q(follower=request.profile, following=friend_profile)).first()
     if old_follow is not None:
         old_follow.delete()
         nothing_found=False
@@ -160,24 +169,40 @@ def friend_request(request, page="0"):
             if author == friend:
                 return HttpResponseBadRequest()
         except Exception as e:
-            print e
+            return HttpResponseBadRequest()
 
-        found = FriendRequest.objects.filter(Q(requester=friend, accepter=author) | Q(accepter=friend,requester=author)).first()
+        # They Sent us a request First
+        found = FriendRequest.objects.filter(Q(accepter=author,requester=friend)).first()
+
+        # Check to make sure we don't have a friend obj already
         found_friend = Friend.objects.filter(Q(requester=friend, accepter=author) | Q(accepter=friend,requester=author)).first()
 
+        # found friendrequest
         if found is not None:
-            friend = None
-            if found_friend is None:
-                friend = Friend.objects.create(requester=found.requester,accepter=found.accepter)
+
+            # Remove Request
             found.delete()
-            return HttpResponse(friend)
-        else:
-            FriendRequest.objects.create(requester=author, accepter=friend)
+            if found_friend is None:
+
+                # Create Friend Object
+                Friend.objects.create(requester=author,accepter=friend)
+
+                # Add the follow object catch an errors they may be following already
+                try:
+                    Follow.objects.create(follower=author, following=friend)
+                except IntegrityError as e:
+                    pass
+            return HttpResponse()
+        elif found_friend is None:
+            # No friend object already create a request
             try:
+                FriendRequest.objects.create(requester=author, accepter=friend)
                 Follow.objects.create(follower=author, following=friend)
             except IntegrityError as e:
                 pass
             # TODO: return 201?
-            return HttpResponse(200)
+            return HttpResponse()
+        else:
+            return HttpResponse()
 
-        return HttpResponseBadRequest()
+    return HttpResponseBadRequest()
