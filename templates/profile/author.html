@@ -6,7 +6,7 @@
             <div class="col-md-4">
             {# We allow editing of the profile if this is the user' profile, else display #}
             {% if user.username == profile.author.username %}
-                {% if profile.image == NULL %}
+                {% if not profile.image %}
                     <img style="width: 600px; height: 600px;" src="http://placehold.it/600x600" alt="" class="img-thumbnail">
                 {% else %}
                     <img style="min-width: 300px; max-width: 300px" src="{{ profile.image.url }}" alt="" class="img-thumbnail">
