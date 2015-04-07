@@ -9,6 +9,6 @@ print '^({})/$'.format(id_regex)
 urlpatterns = patterns('user_profile.views',
                        (r'^$', 'user_profile'),
                        (r'^update/$', 'update_profile'),
-                       (r'(?P<guid>{})$'.format(id_regex), 'profile'),
+                       (r'(?P<guid>{})/?$'.format(id_regex), 'profile'),
                        (r'^update/pic/$', 'update_profilepic')
 )

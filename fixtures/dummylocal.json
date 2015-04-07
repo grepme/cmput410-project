@@ -1,0 +1,55 @@
+[
+  {
+    "fields": {
+      "username": "admin",
+      "first_name": "",
+      "last_name": "",
+      "is_active": true,
+      "is_superuser": true,
+      "is_staff": true,
+      "last_login": "2015-03-04T23:44:37.841Z",
+      "groups": [],
+      "user_permissions": [],
+      "password": "pbkdf2_sha256$15000$2CoOSiriXDJy$xDdZoZHyGw1v2PQ9J1rycY9v/BydMOi9ZXSGP93HQ1s=",
+      "email": "admin@admin.com",
+      "date_joined": "2015-02-26T21:20:21.440Z"
+    },
+    "model": "auth.user",
+    "pk": 1
+  },
+  {
+    "fields": {
+      "author": ["admin"],
+      "display_name": "Admin",
+      "github_name": "grepme",
+      "host": "http://127.0.0.1:8000",
+      "guid": "74f3fbe6-1b1a-40d5-9b90-2fe65f28d191"
+    },
+    "model": "user_profile.profile",
+    "pk": 1
+  },
+  {
+    "fields": {
+      "host": "cmput410project15.herokuapp.com",
+      "auth_type": "Basic",
+      "auth_user": "user",
+      "auth_password": "pass",
+      "api_path": "",
+      "realm": "hi",
+      "posts": "/main/getposts/"
+    },
+    "model": "api.server",
+    "pk": 1
+  },
+    {
+    "fields": {
+      "host": "50.65.95.145",
+      "auth_type": "Basic",
+      "auth_user": "user",
+      "auth_password": "pass",
+      "api_path": "/api"
+    },
+    "model": "api.server",
+    "pk": 2
+  }
+]

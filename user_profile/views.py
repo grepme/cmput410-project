@@ -24,6 +24,7 @@ def profile(request, guid):
 @login_required
 def user_profile(request):
     """This will redirect /profile/ to /profile/<profile.guid>"""
+    print request.profile
     return redirect(profile, request.profile.guid)
 
 
