@@ -409,7 +409,7 @@ def get_author(request,profile_id):
 
     friends = Friend.objects.filter(Q(accepter=profile) | Q(requester=profile))
 
-    friends = model_list(get_other_friends(profile,friends))
+    friends = get_other_friends(profile,friends)
 
     profile_dict = profile.as_dict()
 

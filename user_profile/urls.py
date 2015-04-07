@@ -4,8 +4,6 @@ from django.conf import settings
 
 from api.urls import id_regex
 
-print '^({})/$'.format(id_regex)
-
 urlpatterns = patterns('user_profile.views',
                        (r'^$', 'user_profile'),
                        (r'^update/$', 'update_profile'),

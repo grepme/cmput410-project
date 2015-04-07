@@ -46,7 +46,7 @@ class Server(models.Model):
         try:
             result = urllib2.urlopen(request)
         except (urllib2.HTTPError, urllib2.URLError) as e:
-            return e
+            return None
 
         return json.loads(result.read())
 
@@ -59,11 +59,12 @@ class Server(models.Model):
         try:
             result = urllib2.urlopen(request)
         except (urllib2.HTTPError, urllib2.URLError) as e:
-            return e
+            return None
 
         return json.loads(result.read())
 
     def get_author_id(self, author_id):
+        print "{api_path}{path}".format(api_path=self.get_api_path(), path=self.author_id).format(author_id=author_id)
         request = urllib2.Request("{api_path}{path}".format(api_path=self.get_api_path(), path=self.author_id).format(author_id=author_id))
         # Assume basic Auth
         base64string = base64.encodestring('%s:%s' % (self.auth_user, self.auth_password)).replace('\n', '')
@@ -72,7 +73,7 @@ class Server(models.Model):
         try:
             result = urllib2.urlopen(request)
         except (urllib2.HTTPError, urllib2.URLError) as e:
-            return e
+            return None
 
         return json.loads(result.read())
 
@@ -88,7 +89,7 @@ class Server(models.Model):
         try:
             result = urllib2.urlopen(request)
         except (urllib2.HTTPError, urllib2.URLError) as e:
-            return e
+            return None
 
         return json.loads(result.read())
 
@@ -122,7 +123,7 @@ class Server(models.Model):
             result = urllib2.urlopen(request)
         except (urllib2.HTTPError, urllib2.URLError) as e:
             print e
-            return e
+            return None
 
         return json.loads(result.read())
 
@@ -137,7 +138,7 @@ class Server(models.Model):
             result = urllib2.urlopen(request)
         except (urllib2.HTTPError, urllib2.URLError) as e:
             print e
-            return e
+            return None
         return json.loads(result.read())
 
     def post_posts_id(self, user_request, post_guid):
@@ -162,7 +163,7 @@ class Server(models.Model):
             result = urllib2.urlopen(request)
         except (urllib2.HTTPError, urllib2.URLError) as e:
             print e
-            return e
+            return None
         return json.loads(result.read())
 
     def get_friends_id_id(self, friend_guid, friend_2_guid):
@@ -176,7 +177,7 @@ class Server(models.Model):
             result = urllib2.urlopen(request)
         except (urllib2.HTTPError, urllib2.URLError) as e:
             print e.reason
-            return e.code
+            return None
 
         return json.loads(result.read())
 
@@ -198,7 +199,7 @@ class Server(models.Model):
             result = urllib2.urlopen(request)
         except (urllib2.HTTPError, urllib2.URLError) as e:
             print e.reason
-            return e.code
+            return None
 
         return json.loads(result.read())
 

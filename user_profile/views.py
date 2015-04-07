@@ -2,6 +2,7 @@ from django.shortcuts import render, redirect
 from user_profile.models import Profile
 from django.contrib.auth.decorators import login_required
 from django.http import HttpResponse
+from api.models import Server
 import json
 
 # Create your views here.
@@ -17,9 +18,15 @@ def profile(request, guid):
     try:
         profile = Profile.objects.get(guid=guid)
     except Profile.DoesNotExist as e:
-        return render(request, "profile/author.html", {'author_profile': profile, 'profile': request.profile})
+        servers = Server.objects.all()
+        for server in servers:
+            profile = server.get_author_id(guid)
+            print profile
+            if profile is not None:
+                break;
+        return render(request, "profile/author.html", {'author_profile': request.profile, 'profile': profile})
     # TODO: Return profile not found if that's the case
-    return render(request, "profile/author.html", {'author_profile': request.profile, 'profile': request.profile})
+    return render(request, "profile/author.html", {'author_profile': request.profile, 'profile': profile.as_dict()})
 
 @login_required
 def user_profile(request):
