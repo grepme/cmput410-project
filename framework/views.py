@@ -48,8 +48,6 @@ def signup(request):
                 if user.is_active:
                     django_login(request, user)
                     return redirect(dashboard)
-            else:
-        # username does not yet exist
         else:
             newUser = User.objects.create_user(username=username, email=email, password=password)
             # newUser.save()  # didn't seem to do anything

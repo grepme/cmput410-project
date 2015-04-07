@@ -44,6 +44,7 @@ class UserProfileTests(TestCase):
         ''' test get profile '''
         request = self.factory.get('/profile/')
         request.user = self.user
+        request.profile = self.user_profile
         add_session_to_request(request)
         response = user_profile(request)
         self.assertEqual(response.status_code,302)
@@ -144,6 +145,7 @@ class UserProfileTests(TestCase):
         ''' test update profile when logged in '''
         request = self.factory.post('/profile/update/',{'display_name':'my new display name'})
         request.user = self.user
+        request.profile = self.user_profile
         add_session_to_request(request)
 
         response = user_profile(request)
