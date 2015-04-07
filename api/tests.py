@@ -9,8 +9,6 @@ from django.utils import timezone
 from api.models import Server
 import json
 import uuid
-# create an instance of the client for our use
-# Create your tests here.
 
 from api.views import get_posts,get_post,friend_request,is_friend,get_friends
 
@@ -419,23 +417,23 @@ class ApiViewTests(TestCase):
         self.assertIsNone(found)
 
 
-    def test_empty_displayName_friendrequest(self):
-        ''' invalid author name '''
+    # def test_empty_displayName_friendrequest(self):
+    #     ''' invalid author name '''
 
-        newUser = User.objects.create_user(
-            username='newUser', email='13@email.com', password='13')
-        newProfile = Profile.objects.create(author=newUser, display_name="")
-        secondUser = User.objects.create_user(
-            username='15', email='15@email.com', password='15')
-        secondProfile = Profile.objects.create(author=secondUser, display_name="15")
+    #     newUser = User.objects.create_user(
+    #         username='newUser', email='13@email.com', password='13')
+    #     newProfile = Profile.objects.create(author=newUser, display_name="")
+    #     secondUser = User.objects.create_user(
+    #         username='15', email='15@email.com', password='15')
+    #     secondProfile = Profile.objects.create(author=secondUser, display_name="15")
 
-        request_dict = json.dumps({"author":newProfile.as_dict(), "friend":secondProfile.as_dict()})
-        request = self.factory.post('/api/friendrequest/', data=request_dict, content_type='application/json')
+    #     request_dict = json.dumps({"author":newProfile.as_dict(), "friend":secondProfile.as_dict()})
+    #     request = self.factory.post('/api/friendrequest/', data=request_dict, content_type='application/json')
 
-        response = friend_request(request)
-        found = Friend.objects.filter(Q(requester=newProfile,accepter=secondProfile)).first()
-        self.assertEqual(response.status_code, 400)
-        self.assertIsNotNone(found)
+    #     response = friend_request(request)
+    #     found = Friend.objects.filter(Q(requester=newProfile,accepter=secondProfile)).first()
+    #     self.assertEqual(response.status_code, 400)
+    #     self.assertIsNotNone(found)
 
     def test_already_following_friendrequest(self):
         ''' test that there exists only one Follow when friending someone followed '''
@@ -520,28 +518,3 @@ class ApiViewTests(TestCase):
         request = self.factory.get('/api/friends/'+str(firstProfile.guid)+"/"+str(secondProfile.guid), content_type='application/json')
         response = is_friend(request, author_id=firstProfile.guid, author_2_id=secondProfile.guid)
         self.assertContains(response, "NO")
-
-    # def test_not_implemented_paths(self):
-    #     ''' Test all paths not implemented for error code 501 '''
-
-    #     # Factory for get request
-    #     request = self.factory.get('/api/friendrequest')
-
-        # response = friend_request(request)
-        # self.assertEqual(response.status_code,501)
-        #
-        # # Factory for get request
-        # request = self.factory.get('/api/friends/{}'.format(self.user_profile.guid))
-        #
-        # response = get_friends(request)
-        # self.assertEqual(response.status_code,501)
-        #
-        # # Factory for get request
-        # request = self.factory.get('/api/friends/{}/{}'.format(self.user_profile.guid, self.user_profile2.guid))
-        #
-        # response = is_friend(request)
-        # self.assertEqual(response.status_code,501)
-
-
-
-

@@ -34,6 +34,7 @@ class UserProfileTests(TestCase):
         ''' test get user profile '''
         request = self.factory.get('/profile/test/')
         request.user = self.user
+        request.profile = self.user_profile
         add_session_to_request(request)
         response = profile(request,self.user)
         self.assertEqual(response.status_code,200)
