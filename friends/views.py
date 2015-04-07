@@ -6,6 +6,8 @@ from friends.models import Friend, Follow, FriendRequest
 from django.db.models import Q
 from django.db import IntegrityError
 from user_profile.models import Profile
+from api.models import Server
+from urlparse import urlparse
 
 import json
 
@@ -160,11 +162,11 @@ def friend_request(request, page="0"):
         try:
             if author == None:
                 author = Profile.objects.create(is_external=True, display_name=data["author"]["displayname"],
-                                                host=data["author"]["host"])
+                                                host=data["author"]["host"],guid=data["author"]["id"])
 
             if friend == None:
                 friend = Profile.objects.create(is_external=True, display_name=data["friend"]["displayname"],
-                                                host=data["friend"]["host"])
+                                                host=data["friend"]["host"],guid=data["friend"]["id"])
 
             if author == friend:
                 return HttpResponseBadRequest()
@@ -186,6 +188,7 @@ def friend_request(request, page="0"):
 
                 # Create Friend Object
                 Friend.objects.create(requester=author,accepter=friend)
+                send_external_friend_request(author,friend)
 
                 # Add the follow object catch an errors they may be following already
                 try:
@@ -197,6 +200,7 @@ def friend_request(request, page="0"):
             # No friend object already create a request
             try:
                 FriendRequest.objects.create(requester=author, accepter=friend)
+                send_external_friend_request(author,friend)
                 Follow.objects.create(follower=author, following=friend)
             except IntegrityError as e:
                 pass
@@ -206,3 +210,12 @@ def friend_request(request, page="0"):
             return HttpResponse()
 
     return HttpResponseBadRequest()
+
+def send_external_friend_request(author,friend):
+    if friend.is_external:
+        url = urlparse(friend.host)
+        server = Server.objects.filter(host__icontains=url.netloc).first()
+        if server is not None:
+            return server.post_friend_request(author,friend)
+
+
