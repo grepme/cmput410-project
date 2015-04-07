@@ -48,10 +48,21 @@
       "auth_user": "user",
       "auth_password": "pass",
       "realm": "hi",
-      "api_path": "/main/api/",
+      "api_path": "/main/api",
       "posts": "/getposts/"
     },
     "model": "api.server",
     "pk": 2
+  },
+    {
+    "fields": {
+      "host": "50.65.95.145",
+      "auth_type": "Basic",
+      "auth_user": "user",
+      "auth_password": "pass",
+      "api_path": "/api"
+    },
+    "model": "api.server",
+    "pk": 3
   }
 ]

@@ -111,10 +111,13 @@ class Server(models.Model):
 
     def get_posts(self):
 
+        print  "{api_path}{path}".format(api_path=self.get_api_path(), path=self.posts)
+
         request = urllib2.Request("{api_path}{path}".format(api_path=self.get_api_path(), path=self.posts))
         # Assume basic Auth
         base64string = base64.encodestring('%s:%s' % (self.auth_user, self.auth_password)).replace('\n', '')
         request.add_header("Authorization", "Basic %s" % base64string)
+
         try:
             result = urllib2.urlopen(request)
         except (urllib2.HTTPError, urllib2.URLError) as e:
