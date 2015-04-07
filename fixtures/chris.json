@@ -1,0 +1,57 @@
+[
+  {
+    "fields": {
+      "username": "admin",
+      "first_name": "",
+      "last_name": "",
+      "is_active": true,
+      "is_superuser": true,
+      "is_staff": true,
+      "last_login": "2015-03-04T23:44:37.841Z",
+      "groups": [],
+      "user_permissions": [],
+      "password": "pbkdf2_sha256$15000$2CoOSiriXDJy$xDdZoZHyGw1v2PQ9J1rycY9v/BydMOi9ZXSGP93HQ1s=",
+      "email": "admin@admin.com",
+      "date_joined": "2015-02-26T21:20:21.440Z"
+    },
+    "model": "auth.user",
+    "pk": 1
+  },
+  {
+    "fields": {
+      "author": ["admin"],
+      "display_name": "Admin",
+      "github_name": "grepme",
+      "host": "http://50.65.95.145",
+      "guid": "7a1c7226-d1e4-11e4-aa4c-b8f6b116b2b7"
+    },
+    "model": "user_profile.profile",
+    "pk": 1
+  },
+  {
+    "fields": {
+      "host": "cmput410project15.herokuapp.com",
+      "auth_type": "Basic",
+      "auth_user": "user",
+      "auth_password": "pass",
+      "api_path": "",
+      "realm": "hi",
+      "posts": "/main/getposts/"
+    },
+    "model": "api.server",
+    "pk": 1
+  },
+  {
+    "fields": {
+      "host": "thought-bubble.herokuapp.com",
+      "auth_type": "Basic",
+      "auth_user": "user",
+      "auth_password": "pass",
+      "realm": "hi",
+      "api_path": "/main/api",
+      "posts": "/getposts/"
+    },
+    "model": "api.server",
+    "pk": 2
+  }
+]
