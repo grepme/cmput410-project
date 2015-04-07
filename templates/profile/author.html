@@ -5,7 +5,7 @@
         <div class="row profile-padding">
             <div class="col-md-4">
             {# We allow editing of the profile if this is the user' profile, else display #}
-            {% if user.username == profile.author.username %}
+            {% if author_profile.guid == profile.id %}
                 {% if not profile.image %}
                     <img style="width: 600px; height: 600px;" src="http://placehold.it/600x600" alt="" class="img-thumbnail">
                 {% else %}
@@ -30,21 +30,25 @@
                             </div>
                             
                     </form>
-                    
+            {% endif %} 
             </div>
             <div class="col-md-6">
                 <div class="panel panel-primary">
                     <div class="panel-heading">
-                        <h3 class="panel-title">Profile Details</h3>
+                        <h3 class="panel-title">Profile Details
+                        {% if profile.is_external %} 
+                        <i class="glyphicon glyphicon-globe pull-right"></i>
+                        {% endif %}
+                        </h3>
                     </div>
                     <div class="panel-body">
                         {# We allow editing of the profile if this is the user' profile, else display #}
-                        {% if user.username == author_profile.author.username %}
+                        {% if author_profile.guid == profile.id %}
                         <div class="row">
                             <div class="col-lg-12">
                                 <div class="input-group">
                                     <span class="input-group-addon">Display Name</span>
-                                    <input type="text" class="form-control" placeholder="{{ author_profile.display_name }}"
+                                    <input type="text" class="form-control" placeholder="{{ profile.displayname}}"
                                            disabled>
                                     <span class="input-group-btn">
                                     <button class="btn btn-default" onclick="editProfileField(this, 'display_name')">
@@ -98,19 +102,18 @@
                             </div>
                             </div>
                         {% else %}
-                        <p>Display Name: {{ author_profile.display_name }}</p>
+                        <p>Display Name: {{ profile.displayname }}</p>
                         <div class="btn-group btn-group-m pull-right" role="group" aria-label="...">
-                            <button type="button" class="btn btn-warning follow-button" value="{{author_profile.guid}}" data-displayname="{{author_profile.display_name}}"><i class="glyphicon glyphicon-eye-open"></i>&nbsp;Follow</button>
-                            <button type="button" class="btn btn-primary friend-button" value="{{author_profile.guid}}" data-displayname="{{author_profile.display_name}}"><i class="glyphicon glyphicon-user"></i>&nbsp;Add Friend</button>
+                            {% if not profile.is_external %}
+                            <button type="button" class="btn btn-warning follow-button" value="{{profile.id}}" data-displayname="{{profile.displayname}}"><i class="glyphicon glyphicon-eye-open"></i>&nbsp;Follow</button>
+                            <button type="button" class="btn btn-primary friend-button" value="{{profile.id}}" data-displayname="{{profile.displayname}}"><i class="glyphicon glyphicon-user"></i>&nbsp;Add Friend</button>
+                            {% endif %}
                         </div>
                         {% endif %}
 
                     </div>
                 </div>
             </div>
-         {% else %}
-                <p>Display Name: {{ profile.display_name }}</p>
-        {% endif %}
         </div>
     </div>
     </div>
@@ -125,10 +128,10 @@
         $.post( "/friends/follow", JSON.stringify({
            "query":"friendrequest",
            "author":{
-           "id":"{{profile.guid}}",
+           "id":"{{author_profile.guid}}",
               "host":"http://127.0.0.1:8000/",
-              "displayname":"{{user.profile.display_name}}",
-              "url": "http://" + location.host + "/author/{{user.profile.display_name}}"},
+              "displayname":"{{author_profile.display_name}}",
+              "url": "http://" + location.host + "/author/{{author_profile.guid}}"},
            "follow":{
               "id":$(this).attr('value'),
               "host":"http://" + location.host,
@@ -140,10 +143,10 @@
         $.post( "/friends/friendrequest", JSON.stringify({
            "query":"friendrequest",
            "author":{
-           "id":"{{profile.guid}}",
+           "id":"{{author_profile.guid}}",
               "host":"http://127.0.0.1:8000/",
-              "displayname":"{{user.profile.display_name}}",
-              "url": "http://" + location.host + "/author/{{user.profile.display_name}}"},
+              "displayname":"{{author_profile.display_name}}",
+              "url": "http://" + location.host + "/author/{{author_profile.guid}}"},
            "friend":{
               "id":$(this).attr('value'),
               "host":"http://" + location.host,

@@ -155,10 +155,10 @@ function requestUser() {
         $.post( "/friends/follow", JSON.stringify({
            "query":"friendrequest",
            "author":{
-           "id":"{{profile.guid}}",
+           "id":"{{author_profile.guid}}",
               "host":"http://127.0.0.1:8000/",
-              "displayname":"{{user.profile.display_name}}",
-              "url": "http://" + location.host + "/author/{{user.profile.display_name}}"},
+              "displayname":"{{author_profile.display_name}}",
+              "url": "http://" + location.host + "/author/{{author_profile.guid}}"},
            "follow":{
               "id":$(this).attr('value'),
               "host":"http://" + location.host,
@@ -170,10 +170,10 @@ function requestUser() {
         $.post( "/friends/friendrequest", JSON.stringify({
            "query":"friendrequest",
            "author":{
-           "id":"{{profile.guid}}",
+           "id":"{{author_profile.guid}}",
               "host":"http://127.0.0.1:8000/",
-              "displayname":"{{user.profile.display_name}}",
-              "url": "http://" + location.host + "/author/{{user.profile.display_name}}"},
+              "displayname":"{{author_profile.display_name}}",
+              "url": "http://" + location.host + "/author/{{author_profile.guid}}"},
            "friend":{
               "id":$(this).attr('value'),
               "host":"http://" + location.host,

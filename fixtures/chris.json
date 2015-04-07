@@ -22,7 +22,7 @@
       "author": ["admin"],
       "display_name": "Admin",
       "github_name": "grepme",
-      "host": "http://projecthub.ca",
+      "host": "http://50.65.95.145",
       "guid": "7a1c7226-d1e4-11e4-aa4c-b8f6b116b2b7"
     },
     "model": "user_profile.profile",
@@ -32,7 +32,7 @@
     "fields": {
       "host": "cmput410project15.herokuapp.com",
       "auth_type": "Basic",
-      "auth_user": "projecthub.ca",
+      "auth_user": "user",
       "auth_password": "pass",
       "api_path": "",
       "realm": "hi",
@@ -53,16 +53,5 @@
     },
     "model": "api.server",
     "pk": 2
-  },
-    {
-    "fields": {
-      "host": "50.65.95.145",
-      "auth_type": "Basic",
-      "auth_user": "user",
-      "auth_password": "pass",
-      "api_path": "/api"
-    },
-    "model": "api.server",
-    "pk": 3
   }
 ]
