@@ -104,8 +104,10 @@
                         {% else %}
                         <p>Display Name: {{ profile.displayname }}</p>
                         <div class="btn-group btn-group-m pull-right" role="group" aria-label="...">
+                            {% if not profile.is_external %}
                             <button type="button" class="btn btn-warning follow-button" value="{{profile.id}}" data-displayname="{{profile.displayname}}"><i class="glyphicon glyphicon-eye-open"></i>&nbsp;Follow</button>
                             <button type="button" class="btn btn-primary friend-button" value="{{profile.id}}" data-displayname="{{profile.displayname}}"><i class="glyphicon glyphicon-user"></i>&nbsp;Add Friend</button>
+                            {% endif %}
                         </div>
                         {% endif %}
 
