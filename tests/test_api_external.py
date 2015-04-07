@@ -343,5 +343,4 @@ class ApiTestClass(unittest.TestCase):
         '''
         response = self.server.get_author_id(self.test_profile.guid)
 
-        print response
         check_profile(self,response)
