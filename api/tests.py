@@ -508,7 +508,7 @@ class ApiViewTests(TestCase):
         response = is_friend(request, author_id=firstProfile.guid, author_2_id=secondProfile.guid)
         self.assertContains(response, "YES")
 
-    def test_yes_isfriends(self):
+    def test_no_isfriends(self):
         ''' test get all friends of a list with only friends '''
         firstUser = User.objects.create_user(
             username='c1', email='c1@email.com', password='c1')
