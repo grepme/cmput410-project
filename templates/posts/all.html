@@ -62,6 +62,8 @@
         <div class="col-md-12 well" style="">
             {% if post.origin %}
                 <span class="label label-primary">{{ post.origin }}</span>
+            {% elif post.author.host %}
+                <span class="label label-primary">{{ post.author.host }}</span>
             {% else %}
                 <span class="label label-primary">Unknown</span>
             {% endif %}
