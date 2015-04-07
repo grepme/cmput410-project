@@ -189,6 +189,15 @@ def get_other_friends(friends, query):
             profiles.append(query_item.accepter)
     return profiles
 
+def get_other_friends_json(friends, query):
+    profiles = list()
+    for query_item in query:
+        if query_item.accepter in friends:
+            profiles.append(query_item.requester.as_dict())
+        else:
+            profiles.append(query_item.accepter.as_dict())
+    return profiles
+
 
 def get_post_query(request):
 
@@ -409,7 +418,7 @@ def get_author(request,profile_id):
 
     friends = Friend.objects.filter(Q(accepter=profile) | Q(requester=profile))
 
-    friends = get_other_friends(profile,friends)
+    friends = get_other_friends_json([profile],friends)
 
     profile_dict = profile.as_dict()
 
