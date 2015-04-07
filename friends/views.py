@@ -67,12 +67,12 @@ def sent_friends(request):
 
 @login_required
 def search_friends(request,name):
-    search = Profile.objects.filter(Q(display_name__icontains=name) & ~Q(guid=request.profile.guid))
+    search = Profile.objects.filter(Q(display_name__icontains=name) & ~Q(guid=request.profile.guid) & Q(is_external=False))
     return render(request, "friends/search.html",{"profiles":search})
 
 @login_required
 def search_all(request):
-    search = Profile.objects.filter(~Q(guid=request.profile.guid))
+    search = Profile.objects.filter(~Q(guid=request.profile.guid) & Q(is_external=False))
     return render(request, "friends/search.html",{"profiles":search,"author_profile":request.profile})
 
 @login_required
