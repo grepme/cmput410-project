@@ -55,7 +55,6 @@ def update_profile(request):
     if "upload_image" in request.FILES:
         image = request.FILES['upload_image']
         setattr(user, 'image', image)
-    else:
 
     user.save()
 
@@ -71,9 +70,6 @@ def update_profilepic(request):
     if "upload_image" in request.FILES:
         image = request.FILES['upload_image']
         setattr(user, 'image', image)
-    else:
-
-    user.save()
-
+        user.save()
 
     return redirect('/profile/')

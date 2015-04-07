@@ -114,42 +114,38 @@ def has_keys(keys, dictionary, main_key):
     return True
 
 def follow_user(request):
+    data = None
     try:
-        data = None
-        try:
-            data = json.loads(request.body)
-        except ValueError as e:
-            return HttpResponseBadRequest()
+        data = json.loads(request.body)
+    except ValueError as e:
+        return HttpResponseBadRequest()
 
-        following_guid = data["follow"]["id"]
+    following_guid = data["follow"]["id"]
 
-        # Valid Profile?
-        following = None
-        try:
-            following = Profile.objects.get(guid=following_guid)
-        except Profile.DoesNotExist as e:
-            res = HttpResponse("Profile with id {} does not exist".format(following_guid))
-            res.status_code = 404
-            return res
-
-        # Create follow if does not exist
-        try:
-            Follow.objects.get(follower=request.profile, following=following)
-        except Follow.DoesNotExist as e:
-            Follow.objects.create(follower=request.profile, following=following)
-
-        # Return 201
-        res = HttpResponse()
-        res.status_code = 201
+    # Valid Profile?
+    following = None
+    try:
+        following = Profile.objects.get(guid=following_guid)
+    except Profile.DoesNotExist as e:
+        res = HttpResponse("Profile with id {} does not exist".format(following_guid))
+        res.status_code = 404
         return res
-    except Exception as e:
-        print e.message
+
+    # Create follow if does not exist
+    try:
+        Follow.objects.get(follower=request.profile, following=following)
+    except Follow.DoesNotExist as e:
+        Follow.objects.create(follower=request.profile, following=following)
+
+    # Return 201
+    res = HttpResponse()
+    res.status_code = 201
+    return res
 
 def friend_request(request, page="0"):
     # get data from request
     data = None
 
-    print request.body
     try:
         data = json.loads(request.body)
     except ValueError as e:
