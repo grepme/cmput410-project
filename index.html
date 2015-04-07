@@ -56,7 +56,88 @@
       <div class="row">
           <div class="col-lg-12 col-md-12 col-sm-12">
 
+<div class="panel panel-primary" id="auth">
+  <div class="panel-heading">
+    <h3 class="panel-title">Authenticating as a user</h3>
+  </div>
+  <div class="panel-body">
+      <h4>Authentication</h4>
+      To authenticate as a user all you need to do is include the header User, which contains the UUID of the author you wish to authenticate as. It has been indicated in the request where Authentication is required
+      <div class="hightlight">
+          <h5>Expected Sample Request</h5>
+<pre><code>GET /author/posts HTTP/1.1
+Host: projecthub.ca
+User: :author_id</code></pre>
+</div>
+</div>
+</div>
 
+
+
+<div class="panel panel-default">
+  <div class="panel-heading">
+    <h3 class="panel-title">/api/author</h3>
+  </div>
+  <div class="panel-body">
+      <h4>Method: GET</h4>
+      Retrive all our author profiles.
+      <div class="hightlight">
+          <h5>Expected Input</h5>
+<pre><code>No input required</code></pre>
+      </div>
+      <div class="hightlight">
+          <h5>Expected Output</h5>
+<pre><code>{
+   "authors":[
+      {
+         "url":"projecthub.ca/author/7a1c7226-d1e4-11e4-aa4c-b8f6b116b2b7",
+         "host":"projecthub.ca",
+         "displayname":"Admin",
+         "id":"7a1c7226-d1e4-11e4-aa4c-b8f6b116b2b7",
+         "github_name":"grepme"
+      }
+   ]
+}</code></pre>
+      </div>
+</div>
+</div>
+
+<div class="panel panel-default">
+  <div class="panel-heading">
+      <h3 class="panel-title">/api/author/:author_id</h3>
+  </div>
+  <div class="panel-body">
+      <h4>Method: GET</h4>
+      Retrive a specific authors profile.
+      <div class="hightlight">
+          <h5>Expected Input</h5>
+<pre><code>No input required</code></pre>
+      </div>
+      <div class="hightlight">
+          <h5>Expected Output</h5>
+<pre><code>{  
+   "id":"9de17f29c12e8f97bcbbd34cc908f1baba40658e",
+   "host":"http://127.0.0.1:5454/",
+   "displayname":"Lara",
+   "url":"http://127.0.0.1:5454/author/9de17f29c12e8f97bcbbd34cc908f1baba40658e",
+   "friends":[  
+      {  
+         "id":"8d919f29c12e8f97bcbbd34cc908f19ab9496989",
+         "host":"http://127.0.0.1:5454/",
+         "displayname":"Greg",
+         "url":"http://127.0.0.1:5454/author/8d919f29c12e8f97bcbbd34cc908f19ab9496989"
+      }
+   ],
+   "github_username":"lara",
+   "first_name":"Lara",
+   "last_name":"Smith",
+   "email":"lara@lara.com",
+   "bio":"Hi, I'm Lara"
+}</code></pre>
+      </div>
+</div>
+
+</div>
 <div class="panel panel-default">
   <div class="panel-heading">
     <h3 class="panel-title">/api/author/posts</h3>
@@ -66,7 +147,7 @@
       Retrive the currently authenticated users visable posts.
       <div class="hightlight">
           <h5>Expected Input</h5>
-<pre><code>No input required - User must be authenticated</code></pre>
+          <pre><code>No input required - <a href="#auth">User must be authenticated</a></code></pre>
       </div>
       <div class="hightlight">
           <h5>Expected Output</h5>
@@ -120,7 +201,7 @@
       Replace :author_guid with the guid of the author
       <div class="hightlight">
           <h5>Expected Input</h5>
-<pre><code>No input required - User must be authenticated</code></pre>
+<pre><code>No input required - <a href="#auth">User must be authenticated</a></code></pre>
       </div>
       <div class="hightlight">
           <h5>Expected Output</h5>
