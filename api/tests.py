@@ -198,7 +198,6 @@ class ApiViewTests(TestCase):
         request.user = self.user
         request.profile = self.user_profile
         response = get_post(request,post_id)
-        print response
         self.assertEqual(response.status_code,406)
 
 
@@ -256,9 +255,7 @@ class ApiViewTests(TestCase):
         # Set the user
         request.user = self.user;
         request.profile = self.user_profile;
-        print("HERE")
         response = get_post(request,post.guid)
-        print(response)
         json_obj = json.loads(response.content)
         self.assertEqual(response.status_code,200)
         self.assertEqual(len(json_obj['posts']),1)
@@ -485,14 +482,15 @@ class ApiViewTests(TestCase):
         self.assertIsNotNone(secondFound)
 
         authors = list()
-        authors.append(secondProfile.as_dict())
-        authors.append(thirdProfile.as_dict())
-        request_dict = json.dumps({"author":firstProfile.as_dict(), "authors":authors})
+        authors.append(secondProfile.guid)
+        authors.append(thirdProfile.guid)
+        request_dict = json.dumps({"author":firstProfile.guid, "authors":authors})
 
         request = self.factory.post('/api/friends/'+str(firstProfile.guid), data=request_dict, content_type='application/json')
         response = get_friends(request,author_id=firstProfile.guid)
-        print(response)
-        #TODO: FINISH ME
+
+        self.assertContains(response, secondProfile.guid)
+        self.assertContains(response, thirdProfile.guid)
 
     def test_yes_isfriends(self):
         ''' test get all friends of a list with only friends '''
@@ -500,19 +498,28 @@ class ApiViewTests(TestCase):
             username='b1', email='a1@email.com', password='b1')
         firstProfile = Profile.objects.create(author=firstUser, display_name="b1")
         secondUser = User.objects.create_user(
-            username='b2', email='a2@email.com', password='b2')
+            username='b2', email='b2@email.com', password='b2')
         secondProfile = Profile.objects.create(author=secondUser, display_name="b2")
         Friend.objects.create(requester=secondProfile,accepter=firstProfile)
         firstFound = Friend.objects.filter(Q(accepter=firstProfile,requester=secondProfile))
         self.assertIsNotNone(firstFound)
-        request_dict = json.dumps({})
-        request = self.factory.post('/api/friends/'+str(firstProfile.id)+"/"+str(secondProfile.id), data=request_dict, content_type='application/json')
-        response = is_friend(request)
-        print(response)
-        #TODO: FINISH ME
 
+        request = self.factory.get('/api/friends/'+str(firstProfile.guid)+"/"+str(secondProfile.guid), content_type='application/json')
+        response = is_friend(request, author_id=firstProfile.guid, author_2_id=secondProfile.guid)
+        self.assertContains(response, "YES")
 
+    def test_yes_isfriends(self):
+        ''' test get all friends of a list with only friends '''
+        firstUser = User.objects.create_user(
+            username='c1', email='c1@email.com', password='c1')
+        firstProfile = Profile.objects.create(author=firstUser, display_name="c1")
+        secondUser = User.objects.create_user(
+            username='d1', email='d1@email.com', password='d1')
+        secondProfile = Profile.objects.create(author=secondUser, display_name="d1")
 
+        request = self.factory.get('/api/friends/'+str(firstProfile.guid)+"/"+str(secondProfile.guid), content_type='application/json')
+        response = is_friend(request, author_id=firstProfile.guid, author_2_id=secondProfile.guid)
+        self.assertContains(response, "NO")
 
     # def test_not_implemented_paths(self):
     #     ''' Test all paths not implemented for error code 501 '''

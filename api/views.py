@@ -435,7 +435,7 @@ def is_friend(request, author_id=None, author_2_id=None, page="0"):
 
     try:
         author = Profile.objects.get(guid=author_id)
-    except Profile.NotFound as e:
+    except Profile.DoesNotExist as e:
         response = JsonResponse({"message": "Author with id {} does not exist".format(author_id)})
         response.status_code = 404
         return response
