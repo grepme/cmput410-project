@@ -205,6 +205,8 @@ class ApiTestClass(unittest.TestCase):
 
         posts = self.server.get_author_posts(request, self.test_profile)
 
+        print posts
+
         self.assertEqual(len(posts["posts"]),1)
 
     def test_server_post_friend_request(self):
@@ -322,3 +324,24 @@ class ApiTestClass(unittest.TestCase):
 
         self.assertTrue(response.code,401)
 
+    def test_server_get_author(self):
+        '''
+            Test for Server get_author():
+            Path: '/api/author'
+
+        '''
+        response = self.server.get_author()
+
+        for author in response["authors"]:
+            check_author(self,author)
+
+    def test_server_get_author_id(self):
+        '''
+            Test for Server get_author_id():
+            Path: '/api/author/{author_id}'
+
+        '''
+        response = self.server.get_author_id(self.test_profile.guid)
+
+        print response
+        check_profile(self,response)
