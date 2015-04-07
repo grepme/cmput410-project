@@ -33,7 +33,6 @@ def profile(request, guid):
 @login_required
 def user_profile(request):
     """This will redirect /profile/ to /profile/<profile.guid>"""
-    print request.profile
     return redirect(profile, request.profile.guid)
 
 
@@ -50,27 +49,20 @@ def update_profile(request):
 
     # Iterate over all posted fields in profile update
     for key, value in request.POST.items():
-        print key + " // " + value
         if key in allowed_field:
             setattr(user, key, value)
     # Images are in a dictionary that were encoded in the multipart
     if "upload_image" in request.FILES:
         image = request.FILES['upload_image']
         setattr(user, 'image', image)
-        print("picture:" + str(image))
-    else:
-        print("no picture")
 
     user.save()
-    print (user.author)
-    print (user.image)
 
     return HttpResponse(json.dumps({'status': True}), content_type='application/json')
 
 @login_required()
 def update_profilepic(request):
     """This will update all posted fields"""
-    print('hi')
     # Profile object to save
     user = Profile.objects.get(guid=request.profile.guid)
 
@@ -78,12 +70,6 @@ def update_profilepic(request):
     if "upload_image" in request.FILES:
         image = request.FILES['upload_image']
         setattr(user, 'image', image)
-        print("picture:" + str(image))
-    else:
-        print("no picture")
-
-    user.save()
-
-    print (user.image)
+        user.save()
 
     return redirect('/profile/')

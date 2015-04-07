@@ -112,7 +112,6 @@ class Server(models.Model):
 
     def get_posts(self):
 
-        print  "{api_path}{path}".format(api_path=self.get_api_path(), path=self.posts)
 
         request = urllib2.Request("{api_path}{path}".format(api_path=self.get_api_path(), path=self.posts))
         # Assume basic Auth
@@ -122,7 +121,6 @@ class Server(models.Model):
         try:
             result = urllib2.urlopen(request)
         except (urllib2.HTTPError, urllib2.URLError) as e:
-            print e
             return None
 
         return json.loads(result.read())
@@ -137,7 +135,6 @@ class Server(models.Model):
         try:
             result = urllib2.urlopen(request)
         except (urllib2.HTTPError, urllib2.URLError) as e:
-            print e
             return None
         return json.loads(result.read())
 
@@ -162,7 +159,6 @@ class Server(models.Model):
         try:
             result = urllib2.urlopen(request)
         except (urllib2.HTTPError, urllib2.URLError) as e:
-            print e
             return None
         return json.loads(result.read())
 
@@ -176,7 +172,6 @@ class Server(models.Model):
         try:
             result = urllib2.urlopen(request)
         except (urllib2.HTTPError, urllib2.URLError) as e:
-            print e.reason
             return None
 
         return json.loads(result.read())
@@ -198,7 +193,6 @@ class Server(models.Model):
         try:
             result = urllib2.urlopen(request)
         except (urllib2.HTTPError, urllib2.URLError) as e:
-            print e.reason
             return None
 
         return json.loads(result.read())

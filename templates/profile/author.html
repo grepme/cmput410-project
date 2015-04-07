@@ -104,10 +104,8 @@
                         {% else %}
                         <p>Display Name: {{ profile.displayname }}</p>
                         <div class="btn-group btn-group-m pull-right" role="group" aria-label="...">
-                            {% if not profile.is_external %}
-                            <button type="button" class="btn btn-warning follow-button" value="{{profile.id}}" data-displayname="{{profile.displayname}}"><i class="glyphicon glyphicon-eye-open"></i>&nbsp;Follow</button>
-                            <button type="button" class="btn btn-primary friend-button" value="{{profile.id}}" data-displayname="{{profile.displayname}}"><i class="glyphicon glyphicon-user"></i>&nbsp;Add Friend</button>
-                            {% endif %}
+                            <button type="button" class="btn btn-warning follow-button" value="{{profile.id}}" data-displayname="{{profile.displayname}}" data-host="{{profile.host}}"><i class="glyphicon glyphicon-eye-open"></i>&nbsp;Follow</button>
+                            <button type="button" class="btn btn-primary friend-button" value="{{profile.id}}" data-displayname="{{profile.displayname}}" data-host="{{profile.host}}"><i class="glyphicon glyphicon-user"></i>&nbsp;Add Friend</button>
                         </div>
                         {% endif %}
 
@@ -149,9 +147,9 @@
               "url": "http://" + location.host + "/author/{{author_profile.guid}}"},
            "friend":{
               "id":$(this).attr('value'),
-              "host":"http://" + location.host,
+              "host":$(this).attr('data-host'),
               "displayname": $(this).attr('data-displayname'),
-              "url":"http://" + location.host + "/author/" + $(this).attr('value')
+              "url":$(this).attr('data-host') + "/author/" + $(this).attr('value')
            }
         }) , function( data ) {});
     }

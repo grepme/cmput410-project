@@ -322,7 +322,7 @@ class ApiTestClass(unittest.TestCase):
 
         response = self.server.post_posts_id(request, self.post.guid)
 
-        self.assertTrue(response.code,401)
+        self.assertEqual(response,None)
 
     def test_server_get_author(self):
         '''
@@ -343,5 +343,4 @@ class ApiTestClass(unittest.TestCase):
         '''
         response = self.server.get_author_id(self.test_profile.guid)
 
-        print response
         check_profile(self,response)

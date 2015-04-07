@@ -10,11 +10,12 @@ from friends.models import Friend
 import feedparser
 from bs4 import BeautifulSoup
 import json
-
+from django.views.decorators.http import require_http_methods
 # Create your views here
 
 
 @login_required
+@require_http_methods(["POST"])
 def new_post(request, source=None):
     origin = request.build_absolute_uri().strip("new/")
 

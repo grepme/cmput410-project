@@ -6,6 +6,8 @@ from friends.models import Friend, Follow, FriendRequest
 from django.db.models import Q
 from django.db import IntegrityError
 from user_profile.models import Profile
+from api.models import Server
+from urlparse import urlparse
 
 import json
 
@@ -67,12 +69,12 @@ def sent_friends(request):
 
 @login_required
 def search_friends(request,name):
-    search = Profile.objects.filter(Q(display_name__icontains=name) & ~Q(guid=request.profile.guid))
+    search = Profile.objects.filter(Q(display_name__icontains=name) & ~Q(guid=request.profile.guid) & Q(is_external=False))
     return render(request, "friends/search.html",{"profiles":search})
 
 @login_required
 def search_all(request):
-    search = Profile.objects.filter(~Q(guid=request.profile.guid))
+    search = Profile.objects.filter(~Q(guid=request.profile.guid) & Q(is_external=False))
     return render(request, "friends/search.html",{"profiles":search,"author_profile":request.profile})
 
 @login_required
@@ -114,42 +116,38 @@ def has_keys(keys, dictionary, main_key):
     return True
 
 def follow_user(request):
+    data = None
     try:
-        data = None
-        try:
-            data = json.loads(request.body)
-        except ValueError as e:
-            return HttpResponseBadRequest()
+        data = json.loads(request.body)
+    except ValueError as e:
+        return HttpResponseBadRequest()
 
-        following_guid = data["follow"]["id"]
+    following_guid = data["follow"]["id"]
 
-        # Valid Profile?
-        following = None
-        try:
-            following = Profile.objects.get(guid=following_guid)
-        except Profile.DoesNotExist as e:
-            res = HttpResponse("Profile with id {} does not exist".format(following_guid))
-            res.status_code = 404
-            return res
-
-        # Create follow if does not exist
-        try:
-            Follow.objects.get(follower=request.profile, following=following)
-        except Follow.DoesNotExist as e:
-            Follow.objects.create(follower=request.profile, following=following)
-
-        # Return 201
-        res = HttpResponse()
-        res.status_code = 201
+    # Valid Profile?
+    following = None
+    try:
+        following = Profile.objects.get(guid=following_guid)
+    except Profile.DoesNotExist as e:
+        res = HttpResponse("Profile with id {} does not exist".format(following_guid))
+        res.status_code = 404
         return res
-    except Exception as e:
-        print e.message
+
+    # Create follow if does not exist
+    try:
+        Follow.objects.get(follower=request.profile, following=following)
+    except Follow.DoesNotExist as e:
+        Follow.objects.create(follower=request.profile, following=following)
+
+    # Return 201
+    res = HttpResponse()
+    res.status_code = 201
+    return res
 
 def friend_request(request, page="0"):
     # get data from request
     data = None
 
-    print request.body
     try:
         data = json.loads(request.body)
     except ValueError as e:
@@ -164,11 +162,11 @@ def friend_request(request, page="0"):
         try:
             if author == None:
                 author = Profile.objects.create(is_external=True, display_name=data["author"]["displayname"],
-                                                host=data["author"]["host"])
+                                                host=data["author"]["host"],guid=data["author"]["id"])
 
             if friend == None:
                 friend = Profile.objects.create(is_external=True, display_name=data["friend"]["displayname"],
-                                                host=data["friend"]["host"])
+                                                host=data["friend"]["host"],guid=data["friend"]["id"])
 
             if author == friend:
                 return HttpResponseBadRequest()
@@ -190,6 +188,7 @@ def friend_request(request, page="0"):
 
                 # Create Friend Object
                 Friend.objects.create(requester=author,accepter=friend)
+                send_external_friend_request(author,friend)
 
                 # Add the follow object catch an errors they may be following already
                 try:
@@ -201,6 +200,7 @@ def friend_request(request, page="0"):
             # No friend object already create a request
             try:
                 FriendRequest.objects.create(requester=author, accepter=friend)
+                send_external_friend_request(author,friend)
                 Follow.objects.create(follower=author, following=friend)
             except IntegrityError as e:
                 pass
@@ -210,3 +210,12 @@ def friend_request(request, page="0"):
             return HttpResponse()
 
     return HttpResponseBadRequest()
+
+def send_external_friend_request(author,friend):
+    if friend.is_external:
+        url = urlparse(friend.host)
+        server = Server.objects.filter(host__icontains=url.netloc).first()
+        if server is not None:
+            return server.post_friend_request(author,friend)
+
+

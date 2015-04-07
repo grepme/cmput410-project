@@ -39,7 +39,6 @@ def signup(request):
         email = request.POST.get("signupEmail", "")
         username = request.POST.get("signupUsername", "")
         password = request.POST.get("signupPassword", "")
-        print(firstName,lastName,email,username,password)
 
         if User.objects.filter(username=username).exists():
             # try to log in as this user
@@ -49,9 +48,6 @@ def signup(request):
                 if user.is_active:
                     django_login(request, user)
                     return redirect(dashboard)
-            else:
-                print("Username already in use: %s" % username)
-        # username does not yet exist
         else:
             newUser = User.objects.create_user(username=username, email=email, password=password)
             # newUser.save()  # didn't seem to do anything
