@@ -2,7 +2,7 @@ from django.contrib.auth.models import AnonymousUser, User
 from django.db.models import Q
 from django.db import transaction
 from posts.models import Post
-from friends.models import Friend, Follow
+from friends.models import Friend, Follow, FriendRequest
 from user_profile.models import Profile
 from django.test import TestCase, RequestFactory
 from django.utils import timezone
@@ -192,7 +192,7 @@ class ApiViewTests(TestCase):
         ''' try to get with invalid accept /api/posts/200'''
 
         # Factory for get request
-        request = self.factory.get('/api/posts/{}'.format(post_id,Accept='html/text'))
+        request = self.factory.get('/api/posts/{}'.format(post_id), Accept='html/text')
 
         # Set the user
         request.user = self.user
@@ -256,8 +256,9 @@ class ApiViewTests(TestCase):
         # Set the user
         request.user = self.user;
         request.profile = self.user_profile;
-
+        print("HERE")
         response = get_post(request,post.guid)
+        print(response)
         json_obj = json.loads(response.content)
         self.assertEqual(response.status_code,200)
         self.assertEqual(len(json_obj['posts']),1)
@@ -276,11 +277,11 @@ class ApiViewTests(TestCase):
         request = self.factory.post('/api/friendrequest/', data=request_dict, content_type='application/json')
 
         # make sure it doesn't already exist
-        found = Friend.objects.filter(requester=newProfile).first()
+        found = FriendRequest.objects.filter(requester=newProfile).first()
         self.assertIsNone(found)
 
         response = friend_request(request)
-        found = Friend.objects.filter(Q(requester=newProfile,
+        found = FriendRequest.objects.filter(Q(requester=newProfile,
                                       accepter=secondProfile)).first()
         self.assertEqual(response.status_code, 200)
         self.assertIsNotNone(found)
@@ -321,15 +322,15 @@ class ApiViewTests(TestCase):
         request = self.factory.post('/api/friendrequest/', data=request_dict, content_type='application/json')
 
         # make sure it doesn't already exist
-        found = Friend.objects.filter(requester=newProfile).first()
+        found = FriendRequest.objects.filter(requester=newProfile).first()
         self.assertIsNone(found)
         with transaction.atomic():
             response = friend_request(request)
         with transaction.atomic():
             response = friend_request(request)
         # check that duplicate didn't accept wrongfully
-        found = Friend.objects.filter(Q(requester=newProfile,accepter=secondProfile, accepted=False) |
-                                      Q(requester=secondProfile,accepter=newProfile, accepted=False)).first()
+        found = FriendRequest.objects.filter(Q(requester=newProfile,accepter=secondProfile) |
+                                      Q(requester=secondProfile,accepter=newProfile)).first()
         self.assertEqual(response.status_code, 200)
         self.assertIsNotNone(found)
 
@@ -347,12 +348,11 @@ class ApiViewTests(TestCase):
         request = self.factory.post('/api/friendrequest/', data=request_dict, content_type='application/json')
 
         # make sure it is not already accepted
-        found = Friend.objects.filter(Q(requester=newProfile,accepter=secondProfile, accepted=True) |
-                                      Q(requester=secondProfile,accepter=newProfile, accepted=True)).first()
-
+        found = Friend.objects.filter(Q(requester=newProfile,accepter=secondProfile) |
+                                      Q(requester=secondProfile,accepter=newProfile)).first()
+        self.assertIsNone(found)
         response = friend_request(request)
         self.assertEqual(response.status_code, 200)
-        self.assertIsNone(found)
 
         request_dict = json.dumps({"author":secondProfile.as_dict(), "friend":newProfile.as_dict()})
         request = self.factory.post('/api/friendrequest/', data=request_dict, content_type='application/json')
@@ -360,8 +360,8 @@ class ApiViewTests(TestCase):
         response = friend_request(request)
 
         # check that it was accepted and status indicates refresh page required (because now friends)
-        found = Friend.objects.filter(Q(requester=newProfile,accepter=secondProfile, accepted=True) |
-                                      Q(requester=secondProfile,accepter=newProfile, accepted=True)).first()
+        found = Friend.objects.filter(Q(requester=newProfile,accepter=secondProfile) |
+                                      Q(requester=secondProfile,accepter=newProfile)).first()
         self.assertEqual(response.status_code, 200)
         self.assertIsNotNone(found)
 
@@ -423,7 +423,7 @@ class ApiViewTests(TestCase):
 
 
     def test_empty_displayName_friendrequest(self):
-        ''' invalid author name (is GUID) '''
+        ''' invalid author name '''
 
         newUser = User.objects.create_user(
             username='newUser', email='13@email.com', password='13')
@@ -464,13 +464,62 @@ class ApiViewTests(TestCase):
         #TODO: Make sure these are the same found FOLLOW objects?
         # self.assertEquals(firstFound, found)
 
+    def test_valid_getfriends(self):
+        ''' test get all friends of a list with only friends '''
 
-    def test_not_implemented_paths(self):
-        ''' Test all paths not implemented for error code 501 '''
+        firstUser = User.objects.create_user(
+            username='a1', email='a1@email.com', password='a1')
+        firstProfile = Profile.objects.create(author=firstUser, display_name="a1")
+        secondUser = User.objects.create_user(
+            username='a2', email='a2@email.com', password='a2')
+        secondProfile = Profile.objects.create(author=secondUser, display_name="a2")
+        thirdUser = User.objects.create_user(
+            username='a3', email='a3@email.com', password='a3')
+        thirdProfile = Profile.objects.create(author=thirdUser, display_name="a3")
 
-        # # Factory for get request
-        # request = self.factory.get('/api/friendrequest')
-        #
+        Friend.objects.create(requester=secondProfile,accepter=firstProfile)
+        Friend.objects.create(requester=thirdProfile,accepter=firstProfile)
+        firstFound = Friend.objects.filter(Q(accepter=firstProfile,requester=secondProfile))
+        secondFound = Friend.objects.filter(Q(accepter=firstProfile,requester=thirdProfile))
+        self.assertIsNotNone(firstFound)
+        self.assertIsNotNone(secondFound)
+
+        authors = list()
+        authors.append(secondProfile.as_dict())
+        authors.append(thirdProfile.as_dict())
+        request_dict = json.dumps({"author":firstProfile.as_dict(), "authors":authors})
+
+        request = self.factory.post('/api/friends/'+str(firstProfile.guid), data=request_dict, content_type='application/json')
+        response = get_friends(request,author_id=firstProfile.guid)
+        print(response)
+        #TODO: FINISH ME
+
+    def test_yes_isfriends(self):
+        ''' test get all friends of a list with only friends '''
+        firstUser = User.objects.create_user(
+            username='b1', email='a1@email.com', password='b1')
+        firstProfile = Profile.objects.create(author=firstUser, display_name="b1")
+        secondUser = User.objects.create_user(
+            username='b2', email='a2@email.com', password='b2')
+        secondProfile = Profile.objects.create(author=secondUser, display_name="b2")
+        Friend.objects.create(requester=secondProfile,accepter=firstProfile)
+        firstFound = Friend.objects.filter(Q(accepter=firstProfile,requester=secondProfile))
+        self.assertIsNotNone(firstFound)
+        request_dict = json.dumps({})
+        request = self.factory.post('/api/friends/'+str(firstProfile.id)+"/"+str(secondProfile.id), data=request_dict, content_type='application/json')
+        response = is_friend(request)
+        print(response)
+        #TODO: FINISH ME
+
+
+
+
+    # def test_not_implemented_paths(self):
+    #     ''' Test all paths not implemented for error code 501 '''
+
+    #     # Factory for get request
+    #     request = self.factory.get('/api/friendrequest')
+
         # response = friend_request(request)
         # self.assertEqual(response.status_code,501)
         #
