@@ -398,6 +398,28 @@ def get_authors(request):
 
     return JsonResponse({"authors": profiles})
 
+@csrf_exempt
+@require_http_methods(["GET"])
+@require_http_accept(['application/json'])
+@require_http_content_type(['application/json'])
+def get_author(request,profile_id):
+    # get all accepted friends
+    profile = None
+    try:
+        profile = Profile.objects.get(guid=profile_id)
+    except Profile.DoesNotExist as e:
+        return JsonNotFound("Profile",profile_id)
+
+    friends = Friend.objects.filter(Q(accepter=profile) | Q(requester=profile))
+
+    friends = model_list(get_other_friends(profile,friends))
+
+    profile_dict = profile.as_dict()
+
+    profile_dict["friends"] = friends
+
+    return JsonResponse(profile_dict)
+
 
 #TODO PUT THIS IN COMMON PLACE THIS IS FROM
 # THE FRIENDS APP

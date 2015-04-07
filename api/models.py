@@ -21,6 +21,8 @@ class Server(models.Model):
     auth_password = models.CharField(max_length=50)
     realm = models.CharField(max_length=50)
 
+    author = models.CharField(max_length=60, default="/author")
+    author_id = models.CharField(max_length=60, default="/author/{author_id}")
     author_posts = models.CharField(max_length=60, default="/author/posts")
     author_id_posts = models.CharField(max_length=60, default="/author/{author_guid}/posts")
     posts = models.CharField(max_length=60, default="/posts")
@@ -41,6 +43,32 @@ class Server(models.Model):
 
         # Add User header for current auth user
         request.add_header("User", "%s" % user_request.profile.guid)
+        try:
+            result = urllib2.urlopen(request)
+        except (urllib2.HTTPError, urllib2.URLError) as e:
+            return e
+
+        return json.loads(result.read())
+
+    def get_author(self):
+        request = urllib2.Request("{api_path}{path}".format(api_path=self.get_api_path(), path=self.author))
+        # Assume basic Auth
+        base64string = base64.encodestring('%s:%s' % (self.auth_user, self.auth_password)).replace('\n', '')
+        request.add_header("Authorization", "Basic %s" % base64string)
+
+        try:
+            result = urllib2.urlopen(request)
+        except (urllib2.HTTPError, urllib2.URLError) as e:
+            return e
+
+        return json.loads(result.read())
+
+    def get_author_id(self, author_id):
+        request = urllib2.Request("{api_path}{path}".format(api_path=self.get_api_path(), path=self.author_id).format(author_id=author_id))
+        # Assume basic Auth
+        base64string = base64.encodestring('%s:%s' % (self.auth_user, self.auth_password)).replace('\n', '')
+        request.add_header("Authorization", "Basic %s" % base64string)
+
         try:
             result = urllib2.urlopen(request)
         except (urllib2.HTTPError, urllib2.URLError) as e:
