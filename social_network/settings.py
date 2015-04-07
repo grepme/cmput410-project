@@ -124,4 +124,4 @@ MEDIA_URL = '/uploads/'
 # As such, they need to be prefixed with CUSTOM_ to prevent collision
 #
 
-CUSTOM_HOST_DEFAULT = "http://projecthub.ca/"
+CUSTOM_HOST_DEFAULT = "http://projecthub.ca"

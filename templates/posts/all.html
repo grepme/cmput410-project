@@ -22,7 +22,7 @@
             </form>
         </div>
         <div style="float: right;"><span class="link">
-          <a href="{{profile.host}}/profile/{{ post.author.display_name }}/">{{ post.author.display_name }}</a>
+          <a href="{{profile.host}}/profile/{{ post.author.guid }}/">{{ post.author.display_name }}</a>
         </span> on {{ post.date }}</div>
         <br/>
         <div style="text-align:left;">
@@ -76,7 +76,7 @@
                     <span class="glyphicon  glyphicon-comment" aria-hidden="true"></span> Add Comment
                 </button>
             </div>
-            <div style="float: right;">{{ post.author.displayname }} on {{ post.pubdate }}</div>
+            <div style="float: right;">          <a href="{{profile.host}}/profile/{{ post.author.id }}/">{{ post.author.displayname }}</a> on {{ post.pubDate }}</div>
             <br/>
             {% if  post.commonmark %}
                 <span>{{ post.content|commonmark|safe }}</span>
