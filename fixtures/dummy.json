@@ -32,7 +32,7 @@
     "fields": {
       "host": "cmput410project15.herokuapp.com",
       "auth_type": "Basic",
-      "auth_user": "user",
+      "auth_user": "projecthub.ca",
       "auth_password": "pass",
       "api_path": "",
       "realm": "hi",
