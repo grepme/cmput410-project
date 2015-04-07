@@ -23,7 +23,7 @@
       "display_name": "Admin",
       "github_name": "grepme",
       "host": "http://projecthub.ca",
-      "guid": "7a1c7226-d1e4-11e4-aa4c-b8f6b116b2b7"
+      "guid": "e39048dc-3b46-426a-857d-4bb02aa5d3b6"
     },
     "model": "user_profile.profile",
     "pk": 1
