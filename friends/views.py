@@ -29,7 +29,7 @@ def get_other_following(profile,query):
 
 @login_required
 def friends(request):
-    return render(request, "friends/index.html", {"user":request.user,"profile":request.profile})
+    return render(request, "friends/index.html", {"user":request.user,"author_profile":request.profile})
 
 # Create your views here.
 @login_required
@@ -39,7 +39,7 @@ def friends_friends(request):
 
     friends_profile = get_other_profiles(request.profile,friends_query)
 
-    return render(request, "friends/accepted.html", {'profiles': friends_profile, "user":request.user,"profile":request.profile})
+    return render(request, "friends/accepted.html", {'profiles': friends_profile, "user":request.user,"author_profile":request.profile,"type": "friends"})
 
 # Create your views here.
 @login_required
@@ -49,7 +49,7 @@ def following_friends(request):
 
     profiles = [item.following for item in follow_query]
 
-    return render(request, "friends/accepted.html", {'profiles': profiles, "user":request.user,"profile":request.profile})
+    return render(request, "friends/accepted.html", {'profiles': profiles, "user":request.user,"author_profile":request.profile,"type": "following"})
 
 @login_required
 def incoming_friends(request):
@@ -73,7 +73,7 @@ def search_friends(request,name):
 @login_required
 def search_all(request):
     search = Profile.objects.filter(~Q(guid=request.profile.guid))
-    return render(request, "friends/search.html",{"profiles":search})
+    return render(request, "friends/search.html",{"profiles":search,"author_profile":request.profile})
 
 @login_required
 def delete(request, friend_guid):
@@ -105,9 +105,13 @@ def delete(request, friend_guid):
     return HttpResponse(200)
 
 def has_keys(keys, dictionary, main_key):
-    if all(key in dictionary[main_key] for key in keys):
-        return True
-    return False
+    for key in keys:
+        item = dictionary[main_key]
+        if key in item and len(item[key]) > 2:
+            continue;
+        else:
+            return False
+    return True
 
 def follow_user(request):
     try:
@@ -145,7 +149,7 @@ def friend_request(request, page="0"):
     # get data from request
     data = None
 
-    # print request.body
+    print request.body
     try:
         data = json.loads(request.body)
     except ValueError as e:

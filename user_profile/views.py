@@ -26,7 +26,9 @@ def profile(request, guid):
                 break;
         return render(request, "profile/author.html", {'author_profile': request.profile, 'profile': profile})
     # TODO: Return profile not found if that's the case
-    return render(request, "profile/author.html", {'author_profile': request.profile, 'profile': profile.as_dict()})
+    profile_dict = profile.as_dict()
+    profile_dict["is_external"] = profile.is_external
+    return render(request, "profile/author.html", {'author_profile': request.profile, 'profile': profile_dict})
 
 @login_required
 def user_profile(request):
