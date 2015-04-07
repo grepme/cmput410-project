@@ -180,18 +180,49 @@ class SetEncoder(json.JSONEncoder):
             return list(obj)
         return json.JSONEncoder.default(self, obj)
 
+def get_other_friends(friends, query):
+    profiles = list()
+    for query_item in query:
+        if query_item.accepter in friends:
+            profiles.append(query_item.requester)
+        else:
+            profiles.append(query_item.accepter)
+    return profiles
+
 
 def get_post_query(request):
-    return  (Q(visibility=Post.private, author=request.profile) |
+
+        # All people I follow
+    following = Follow.objects.filter(follower=request.profile)
+
+    # My Friends
+    friends = Friend.objects.filter(Q(requester=request.profile) | Q(accepter=request.profile))
+
+    # The Friends Profile
+    friends = get_other_profiles(request.profile,friends)
+
+    # Get my Friends of Friends
+    friends_friends = Friend.objects.filter(Q(requester__in=friends) | Q(accepter__in=friends))
+
+    # Get the other friends..
+    friends_friends = get_other_friends(friends,friends_friends)
+
+    return (Q(author=request.profile) | Q(visibility=Post.public) |
+                                Q(visibility=Post.friend, author__requester=request.profile) |
+                                Q(visibility=Post.friend, author__accepter=request.profile) |
+                                Q(visibility=Post.FOAF, author__requester=request.profile)|
+                                Q(visibility=Post.FOAF, author__accepter=request.profile) |
+                                Q(author__in=friends_friends,visibility=Post.FOAF))
+
+    '''return  (Q(visibility=Post.private, author=request.profile) |
                             Q(visibility=Post.public) |
                             Q(visibility=Post.friend, author__accepter=request.profile) |
                             Q(visibility=Post.friend, author__requester=request.profile) |
                             Q(visibility=Post.FOAF, author__requester__requester=request.profile) |
                             Q(visibility=Post.FOAF, author__requester__accepter=request.profile) |
                             Q(visibility=Post.FOAF, author__accepter__requester=request.profile) |
-                            Q(visibility=Post.FOAF, author__accepter__accepter=request.profile)
-
-    )
+                            Q(visibility=Post.FOAF, author__accepter__accepter=request.profile))
+    '''
 
 
 def model_list(model_query):
@@ -287,7 +318,7 @@ def get_posts(request, author_id=None, page="0"):
         except Profile.DoesNotExist as e:
             return JsonNotFound("Author",author_id)
 
-    posts_query = Post.objects.filter(query)
+    posts_query = Post.objects.filter(query).distinct()
     posts = model_list(posts_query)
 
     # TODO Add Pagination
@@ -331,14 +362,14 @@ def get_post(request, post_id=None, page="0"):
 
         query = (get_post_query(request) & Q(guid=post_id))
 
-        posts_query = Post.objects.filter(query)
+        posts_query = Post.objects.filter(query).distinct()
         return_data = model_list(posts_query)
 
         if len(posts_query) == 0:
             return JsonNotFound("Post",post_id)
 
     else:
-        posts_query = Post.objects.filter(visibility=Post.public).order_by('-date')
+        posts_query = Post.objects.filter(visibility=Post.public).order_by('-date').distinct()
         return_data = model_list(posts_query)
 
 

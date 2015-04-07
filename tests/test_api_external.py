@@ -205,6 +205,8 @@ class ApiTestClass(unittest.TestCase):
 
         posts = self.server.get_author_posts(request, self.test_profile)
 
+        print posts
+
         self.assertEqual(len(posts["posts"]),1)
 
     def test_server_post_friend_request(self):
